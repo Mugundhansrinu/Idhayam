@@ -1,45 +1,68 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ThemeProvider } from './src/theme';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+// ── Screens ──────────────────────────────────────────────────────────────────
+import LoginScreen from './src/screens/LoginScreen';
+import RegistrationScreen from './src/screens/RegistrationScreen';
+import DashboardScreen from './src/screens/DashboardScreen';
+import OrderEntryScreen from './src/screens/OrderEntryScreen';
+import DiscountScreen from './src/screens/DiscountScreen';
+import PriceDetailsScreen from './src/screens/PriceDetailsScreen';
+import ReportScreen from './src/screens/ReportScreen';
+import InvoiceDetailScreen from './src/screens/InvoiceDetailScreen';
+import MiniStatementScreen from './src/screens/MiniStatementScreen';
+import BankDetailsScreen from './src/screens/BankDetailsScreen';
+import ContactUsScreen from './src/screens/ContactUsScreen';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+// ─────────────────────────────────────────
+//  Navigation types
+// ─────────────────────────────────────────
+export type RootStackParamList = {
+  Login: undefined;
+  Registration: undefined;
+  Dashboard: undefined;
+  OrderEntry: undefined;
+  Discount: undefined;
+  PriceDetails: undefined;
+  Report: undefined;
+  InvoiceDetail: undefined;
+  MiniStatement: undefined;
+  BankDetails: undefined;
+  ContactUs: undefined;
+};
 
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// ─────────────────────────────────────────
+//  Root App
+// ─────────────────────────────────────────
+function App(): React.JSX.Element {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Registration" component={RegistrationScreen} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="OrderEntry" component={OrderEntryScreen} />
+          <Stack.Screen name="Discount" component={DiscountScreen} />
+          <Stack.Screen name="PriceDetails" component={PriceDetailsScreen} />
+          <Stack.Screen name="Report" component={ReportScreen} />
+          <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+          <Stack.Screen name="MiniStatement" component={MiniStatementScreen} />
+          <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
+          <Stack.Screen name="ContactUs" component={ContactUsScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
