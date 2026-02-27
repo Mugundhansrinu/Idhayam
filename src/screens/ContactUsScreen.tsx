@@ -4,7 +4,7 @@
 import React, { useRef, useEffect } from 'react';
 import {
     View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    Animated, ScrollView, Linking, Alert,
+    Animated, ScrollView, Linking, Alert, Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
@@ -17,11 +17,13 @@ import { RootStackParamList } from '../../App';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'ContactUs'> };
 
+const WHATSAPP_IMAGE = require('../assets/whatsapp.png');
+
 const CONTACTS = [
-    { icon: '📞', label: 'Sales Helpline', value: '+91 44 2345 6789', action: 'tel:+914423456789', color: '#22C55E' },
-    { icon: '📱', label: 'WhatsApp Support', value: '+91 98765 43210', action: 'https://wa.me/919876543210', color: '#25D366' },
-    { icon: '✉️', label: 'Email Support', value: 'distributor@idhayam.com', action: 'mailto:distributor@idhayam.com', color: BrandColors.blue500 },
-    { icon: '🌐', label: 'Website', value: 'www.idhayam.com', action: 'https://www.idhayam.com', color: BrandColors.yellow500 },
+    { icon: '📞', label: 'Sales Helpline', value: '+91 44 2345 6789', action: 'tel:+914423456789', color: '#22C55E', image: null },
+    { icon: '', label: 'WhatsApp Support', value: '+91 98765 43210', action: 'https://wa.me/+919876543210', color: '#25D366', image: WHATSAPP_IMAGE },
+    { icon: '✉️', label: 'Email Support', value: 'distributor@idhayam.com', action: 'mailto:distributor@idhayam.com', color: BrandColors.blue500, image: null },
+    { icon: '🌐', label: 'Website', value: 'www.idhayam.com', action: 'https://www.idhayam.com', color: BrandColors.yellow500, image: null },
 ];
 
 const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
@@ -81,7 +83,10 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
                                     <LinearGradient
                                         colors={[c.color + '44', c.color + '11']}
                                         style={styles.iconBg}>
-                                        <Text style={styles.icon}>{c.icon}</Text>
+                                        {c.image
+                                            ? <Image source={c.image} style={styles.whatsappIcon} resizeMode="contain" />
+                                            : <Text style={styles.icon}>{c.icon}</Text>
+                                        }
                                     </LinearGradient>
                                     <View style={styles.contactInfo}>
                                         <Text style={[styles.contactLabel, { color: colors.textSecondary }]}>{c.label}</Text>
@@ -139,6 +144,7 @@ const styles = StyleSheet.create({
     contactRow: { flexDirection: 'row', alignItems: 'center' },
     iconBg: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
     icon: { fontSize: 22 },
+    whatsappIcon: { width: 32, height: 32, borderRadius: 6 },
     contactInfo: { flex: 1 },
     contactLabel: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 },
     contactValue: { fontSize: 14, fontWeight: '600' },
