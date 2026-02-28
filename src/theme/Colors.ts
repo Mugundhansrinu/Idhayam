@@ -33,7 +33,7 @@ export const BrandColors = {
   // Neutrals
   white: '#FFFFFF',
   black: '#000000',
-  grey50:  '#F8FAFC',
+  grey50: '#F8FAFC',
   grey100: '#F1F5F9',
   grey200: '#E2E8F0',
   grey300: '#CBD5E1',
@@ -54,10 +54,10 @@ export const BrandColors = {
 
   // Gradient stops
   gradientBlueStart: '#0D1F5C',
-  gradientBlueMid:   '#1A3C8F',
-  gradientBlueEnd:   '#1E4DB7',
-  gradientAccent1:   '#E3001B',
-  gradientAccent2:   '#F5C800',
+  gradientBlueMid: '#1A3C8F',
+  gradientBlueEnd: '#1E4DB7',
+  gradientAccent1: '#E3001B',
+  gradientAccent2: '#F5C800',
   transparent: 'transparent',
 } as const;
 

@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ThemeProvider } from './src/theme';
 
 // ── Screens ──────────────────────────────────────────────────────────────────
+import SplashScreen from './src/screens/SplashScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
@@ -15,11 +16,13 @@ import InvoiceDetailScreen from './src/screens/InvoiceDetailScreen';
 import MiniStatementScreen from './src/screens/MiniStatementScreen';
 import BankDetailsScreen from './src/screens/BankDetailsScreen';
 import ContactUsScreen from './src/screens/ContactUsScreen';
+import VehicleTrackingScreen from './src/screens/VehicleTrackingScreen';
 
 // ─────────────────────────────────────────
 //  Navigation types
 // ─────────────────────────────────────────
 export type RootStackParamList = {
+  Splash: undefined;
   Login: undefined;
   Registration: undefined;
   Dashboard: undefined;
@@ -31,6 +34,7 @@ export type RootStackParamList = {
   MiniStatement: undefined;
   BankDetails: undefined;
   ContactUs: undefined;
+  VehicleTracking: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,11 +47,12 @@ function App(): React.JSX.Element {
     <ThemeProvider>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Login"
+          initialRouteName="Splash"
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
           }}>
+          <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Registration" component={RegistrationScreen} />
           <Stack.Screen name="Dashboard" component={DashboardScreen} />
@@ -59,6 +64,7 @@ function App(): React.JSX.Element {
           <Stack.Screen name="MiniStatement" component={MiniStatementScreen} />
           <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
           <Stack.Screen name="ContactUs" component={ContactUsScreen} />
+          <Stack.Screen name="VehicleTracking" component={VehicleTrackingScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

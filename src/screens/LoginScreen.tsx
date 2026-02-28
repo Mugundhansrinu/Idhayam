@@ -210,10 +210,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}>
 
-                    {/* Logo */}
+                    {/* Mascot */}
                     <View style={styles.logoContainer}>
-                        <View style={styles.logoWrapper}>
-                            <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+                        <View style={styles.mascotWrapper}>
+                            <Image source={require('../assets/idhayam.png')} style={styles.mascot} resizeMode="contain" />
                         </View>
                         <Text style={[styles.tagline, { color: colors.textSecondary }]}>Distributor Portal</Text>
                     </View>
@@ -452,17 +452,21 @@ const styles = StyleSheet.create({
     accentCircle2: { width: 200, height: 200, bottom: 60, left: -60 },
     accentCircle3: { width: 150, height: 150, top: height * 0.35, right: -40 },
 
-    // Logo
+    // Mascot
     logoContainer: { alignItems: 'center', marginBottom: 32 },
-    logoWrapper: {
-        width: 200, height: 100,
-        backgroundColor: 'rgba(255,255,255,0.08)',
-        borderRadius: 16, overflow: 'hidden',
+    mascotWrapper: {
+        width: 140, height: 140,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderRadius: 36, overflow: 'hidden',
         alignItems: 'center', justifyContent: 'center',
-        borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
-        marginBottom: 12,
+        borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)',
+        marginBottom: 16,
+        elevation: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.4, shadowRadius: 20,
     },
-    logo: { width: 180, height: 80 },
+    mascot: { width: 140, height: 140 },
     tagline: { fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', fontWeight: '500' },
 
     // Glass card

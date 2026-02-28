@@ -79,6 +79,7 @@ const DiscountScreen: React.FC<Props> = ({ navigation }) => {
             <View style={[styles.tabBar, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
                 <Animated.View style={[styles.tabIndicator, {
                     width: tabWidth - 8,
+                    height: 50,
                     left: Animated.multiply(tabIndicator, tabWidth + (8 / TABS.length)),
                     backgroundColor: BrandColors.yellow500,
                 }]} />

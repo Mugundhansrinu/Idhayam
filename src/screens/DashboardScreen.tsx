@@ -2,7 +2,7 @@
  * DashboardScreen – Home page with feature grid
  * Glassmorphism + oil flow background
  */
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -90,6 +90,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, label, color, delay, on
 
 const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
+    const [showBalance, setShowBalance] = useState(false);
+    const [showVehicle, setShowVehicle] = useState(false);
+
     const headerOpacity = useRef(new Animated.Value(0)).current;
     const headerTranslateY = useRef(new Animated.Value(-20)).current;
 
@@ -119,33 +122,73 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 {/* Header */}
                 <Animated.View style={[styles.header, { opacity: headerOpacity, transform: [{ translateY: headerTranslateY }] }]}>
                     <View style={styles.headerTop}>
-                        <View>
-                            <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome back 👋</Text>
-                            <Text style={[styles.distributorName, { color: colors.textPrimary }]}>Distributor Portal</Text>
-                        </View>
-                        <View style={[styles.logoBox, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: colors.glassBorder }]}>
-                            <Image
-                                source={require('../assets/logo.png')}
-                                style={styles.logo}
-                                resizeMode="contain"
-                            />
+                        <TouchableOpacity style={styles.hamburger}>
+                            <Text style={styles.hamburgerIcon}>≡</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.distributorNameTitle]}>DISTRIBUTOR'S NAME</Text>
+                        <View style={styles.headerRight}>
+                            <Image source={require('../assets/idhayam.png')} style={styles.headerAvatar} />
+                            <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.replace('Login')}>
+                                <Text style={styles.logoutIcon}>🚪</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
-                    {/* Summary Glass Cards */}
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statsRow}>
-                        {[
-                            { label: 'Pending Orders', value: '12', icon: '📦', color: BrandColors.blue500 },
-                            { label: "Today's Sales", value: '₹1.4L', icon: '📈', color: '#22C55E' },
-                            { label: 'Outstanding', value: '₹3.2L', icon: '💰', color: BrandColors.yellow500 },
-                        ].map((stat, i) => (
-                            <GlassCard key={i} style={styles.statCard}>
-                                <Text style={styles.statIcon}>{stat.icon}</Text>
-                                <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.label}</Text>
+                    {/* Check Balance & Vehicle */}
+                    <View style={styles.actionSection}>
+                        <TouchableOpacity onPress={() => { setShowBalance(!showBalance); setShowVehicle(false); }} activeOpacity={0.8}>
+                            <GlassCard style={styles.actionButtonGlass} padding={14}>
+                                <Text style={[styles.actionButtonText, { color: colors.textPrimary }]}>Check Balance</Text>
+                                <Text style={[styles.actionButtonIcon, { color: colors.textPrimary }]}>{showBalance ? '▲' : '▶'}</Text>
                             </GlassCard>
-                        ))}
-                    </ScrollView>
+                        </TouchableOpacity>
+
+                        {showBalance && (
+                            <GlassCard style={styles.infoBoxGlass} padding={16}>
+                                <View style={styles.infoRow}>
+                                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>BALANCE</Text>
+                                    <Text style={[styles.infoValue, { color: colors.textPrimary }]}>Rs. 19562.66</Text>
+                                </View>
+                                <View style={[styles.infoLine, { backgroundColor: colors.divider }]} />
+                                <View style={styles.infoRow}>
+                                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>PENDING ORDER</Text>
+                                    <Text style={[styles.infoValue, { color: colors.textPrimary }]}>Rs. 0</Text>
+                                </View>
+                                <View style={[styles.infoLine, { backgroundColor: colors.divider }]} />
+                                <View style={styles.infoRow}>
+                                    <Text style={[styles.infoLabel, { color: BrandColors.yellow500 }]}>NET BALANCE</Text>
+                                    <Text style={[styles.infoValue, { color: BrandColors.yellow500 }]}>Rs. 19562.66</Text>
+                                </View>
+                            </GlassCard>
+                        )}
+
+                        <TouchableOpacity onPress={() => { setShowVehicle(!showVehicle); setShowBalance(false); }} activeOpacity={0.8}>
+                            <GlassCard style={styles.actionButtonGlass} padding={14}>
+                                <Text style={[styles.actionButtonText, { color: colors.textPrimary }]}>Check Vehicle</Text>
+                                <Text style={[styles.actionButtonIcon, { color: colors.textPrimary }]}>{showVehicle ? '▲' : '▶'}</Text>
+                            </GlassCard>
+                        </TouchableOpacity>
+
+                        {showVehicle && (
+                            <View style={styles.dispatchContainer}>
+                                <Text style={[styles.dispatchTitle, { color: colors.textSecondary }]}>Your dispatch is on the way....</Text>
+                                <TouchableOpacity activeOpacity={0.8} onPress={() => navigate('VehicleTracking' as any)}>
+                                    <GlassCard style={styles.dispatchCardGlass} padding={12}>
+                                        <View style={styles.dispatchImagePlaceholder}>
+                                            <Text style={{ fontSize: 22 }}>🚚</Text>
+                                        </View>
+                                        <View style={styles.dispatchInfo}>
+                                            <Text style={[styles.dispatchVehicleNo, { color: colors.textPrimary }]}>TN67BH5688</Text>
+                                            <Text style={[styles.dispatchRef, { color: colors.textSecondary }]}>TJ-1870</Text>
+                                        </View>
+                                        <View style={styles.dispatchBadge}>
+                                            <Text style={styles.dispatchBadgeText}>TN</Text>
+                                        </View>
+                                    </GlassCard>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
                 </Animated.View>
 
                 {/* Features Grid */}
@@ -193,15 +236,104 @@ const styles = StyleSheet.create({
     scroll: { paddingBottom: 40 },
     header: { paddingTop: 56, paddingHorizontal: 20, paddingBottom: 8 },
     headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    greeting: { fontSize: 13, letterSpacing: 0.5 },
-    distributorName: { fontSize: 22, fontWeight: '800', letterSpacing: 0.3 },
-    logoBox: { width: 70, height: 44, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-    logo: { width: 60, height: 36 },
-    statsRow: { marginBottom: 4 },
-    statCard: { width: 130, marginRight: 12, padding: 14, alignItems: 'center' },
-    statIcon: { fontSize: 22, marginBottom: 4 },
-    statValue: { fontSize: 20, fontWeight: '800' },
-    statLabel: { fontSize: 10, textAlign: 'center', marginTop: 2, letterSpacing: 0.3 },
+    hamburger: { padding: 8, marginLeft: -8 },
+    hamburgerIcon: { fontSize: 24, color: '#FFFFFF' },
+    distributorNameTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1 },
+    headerRight: { flexDirection: 'row', alignItems: 'center' },
+    headerAvatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' },
+    logoutBtn: { marginLeft: 12, padding: 4 },
+    logoutIcon: { fontSize: 20, color: '#FFFFFF' },
+
+    actionSection: { marginBottom: 10 },
+    actionButtonGlass: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    actionButtonText: {
+        fontSize: 15,
+        fontWeight: 'bold'
+    },
+    actionButtonIcon: {
+        fontSize: 14,
+    },
+    infoBoxGlass: {
+        marginBottom: 12,
+    },
+    infoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 4,
+    },
+    infoLabel: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        letterSpacing: 0.5,
+    },
+    infoValue: {
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    infoLine: {
+        height: 1,
+        marginVertical: 4,
+    },
+    dispatchContainer: {
+        paddingTop: 8,
+        marginBottom: 12,
+        alignItems: 'center',
+    },
+    dispatchTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        marginBottom: 12,
+        textAlign: 'center',
+        fontStyle: 'italic',
+    },
+    dispatchCardGlass: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: 320,
+    },
+    dispatchImagePlaceholder: {
+        width: 50,
+        height: 35,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+    },
+    dispatchInfo: {
+        flex: 1,
+    },
+    dispatchVehicleNo: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: 'bold',
+        letterSpacing: 0.5,
+    },
+    dispatchRef: {
+        color: '#BBDEFB',
+        fontSize: 13,
+        marginTop: 2,
+        fontWeight: '600',
+    },
+    dispatchBadge: {
+        backgroundColor: '#00E676',
+        borderRadius: 4,
+        paddingHorizontal: 6,
+        paddingVertical: 3,
+    },
+    dispatchBadgeText: {
+        color: '#FFFFFF',
+        fontSize: 11,
+        fontWeight: 'bold',
+    },
     section: { paddingHorizontal: 20, marginTop: 20 },
     sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
     sectionLine: { height: 2, width: 40, borderRadius: 1, marginBottom: 16 },
