@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "1029728018015",
+    "project_id": "digisailorapi",
+    "storage_bucket": "digisailorapi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029728018015:android:850fa9769d7d04040e05ea",
+        "android_client_info": {
+          "package_name": "com.companyname.idhayam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHHCE_U2609DTFpxcTp4rnAdeyKMEv_5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029728018015:android:c88ce5d9d71ee81f0e05ea",
+        "android_client_info": {
+          "package_name": "com.digisailor.api.digisailorapi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHHCE_U2609DTFpxcTp4rnAdeyKMEv_5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029728018015:android:3828ecfa790629180e05ea",
+        "android_client_info": {
+          "package_name": "com.digisailor.api.untitled"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHHCE_U2609DTFpxcTp4rnAdeyKMEv_5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
