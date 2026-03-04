@@ -15,6 +15,7 @@ import {
     Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
 import OilFlowBackground from '../components/OilFlowBackground';
@@ -39,6 +40,41 @@ const FEATURES = [
     { id: 'BankDetails', icon: '🏦', label: 'Bank Details', color: '#0E7490' },
     { id: 'ContactUs', icon: '📞', label: 'Contact Us', color: '#065F46' },
 ];
+
+/** Custom ⏻  Power On/Off icon drawn with pure RN Views — no font dependency */
+const PowerIcon: React.FC = () => (
+    <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
+        {/* Vertical line at top */}
+        <View style={{
+            position: 'absolute',
+            top: 2,
+            width: 3,
+            height: 11,
+            backgroundColor: '#FFFFFF',
+            borderRadius: 1.5,
+            zIndex: 10,
+        }} />
+        {/* Circle ring */}
+        <View style={{
+            width: 18,
+            height: 18,
+            borderRadius: 9,
+            borderWidth: 3,
+            borderColor: '#FFFFFF',
+            position: 'absolute',
+            bottom: 2,
+        }} />
+        {/* Mask to create the gap at the top of the ring */}
+        <View style={{
+            position: 'absolute',
+            top: 0,
+            width: 12,
+            height: 8,
+            backgroundColor: BrandColors.red600,
+            zIndex: 5,
+        }} />
+    </View>
+);
 
 interface FeatureCardProps {
     icon: string;
@@ -123,13 +159,12 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 <Animated.View style={[styles.header, { opacity: headerOpacity, transform: [{ translateY: headerTranslateY }] }]}>
                     <View style={styles.headerTop}>
                         <TouchableOpacity style={styles.hamburger}>
-                            <Text style={styles.hamburgerIcon}>≡</Text>
+                            <Image source={require('../assets/idhayam.png')} style={styles.headerLogo} />
                         </TouchableOpacity>
                         <Text style={[styles.distributorNameTitle]}>DISTRIBUTOR'S NAME</Text>
                         <View style={styles.headerRight}>
-                            <Image source={require('../assets/idhayam.png')} style={styles.headerAvatar} />
                             <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.replace('Login')}>
-                                <Text style={styles.logoutIcon}>🚪</Text>
+                                <PowerIcon />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -237,12 +272,26 @@ const styles = StyleSheet.create({
     header: { paddingTop: 56, paddingHorizontal: 20, paddingBottom: 8 },
     headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
     hamburger: { padding: 8, marginLeft: -8 },
-    hamburgerIcon: { fontSize: 24, color: '#FFFFFF' },
+    headerLogo: { width: 32, height: 32, resizeMode: 'contain' },
     distributorNameTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1 },
     headerRight: { flexDirection: 'row', alignItems: 'center' },
     headerAvatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' },
-    logoutBtn: { marginLeft: 12, padding: 4 },
-    logoutIcon: { fontSize: 20, color: '#FFFFFF' },
+    logoutBtn: {
+        marginLeft: 12,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: BrandColors.red600,
+        borderWidth: 2,
+        borderColor: 'rgba(255,255,255,0.4)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 8,
+        shadowColor: BrandColors.red600,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.6,
+        shadowRadius: 8,
+    },
 
     actionSection: { marginBottom: 10 },
     actionButtonGlass: {
