@@ -4,7 +4,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import {
     View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    Animated, ScrollView, Alert,
+    Animated, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
@@ -14,21 +14,22 @@ import GlassCard from '../components/GlassCard';
 import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { getTransactionList, getTransactionPdfUrl } from '../api';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'MiniStatement'> };
 
-const TRANSACTIONS = [
+const FALLBACK_TRANSACTIONS = [
     { date: '24 Feb 26', desc: 'Invoice INV-2026-0341', debit: 0, credit: 48200, bal: 352000 },
     { date: '22 Feb 26', desc: 'Payment Received', debit: 75000, credit: 0, bal: 303800 },
     { date: '18 Feb 26', desc: 'Invoice INV-2026-0289', debit: 0, credit: 31500, bal: 378800 },
     { date: '15 Feb 26', desc: 'Credit Note CN-0032', debit: 2400, credit: 0, bal: 347300 },
     { date: '10 Feb 26', desc: 'Invoice INV-2026-0244', debit: 0, credit: 72800, bal: 349700 },
-    { date: '05 Feb 26', desc: 'Payment Received', debit: 100000, credit: 0, bal: 276900 },
-    { date: '02 Feb 26', desc: 'Invoice INV-2026-0201', debit: 0, credit: 19400, bal: 376900 },
 ];
 
 const MiniStatementScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
+    const [transactions, setTransactions] = useState(FALLBACK_TRANSACTIONS);
+    const [loading, setLoading] = useState(true);
     const listAnim = useRef(new Animated.Value(0)).current;
     const headerScale = useRef(new Animated.Value(0.9)).current;
 
@@ -37,10 +38,31 @@ const MiniStatementScreen: React.FC<Props> = ({ navigation }) => {
             Animated.timing(listAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
             Animated.spring(headerScale, { toValue: 1, friction: 6, useNativeDriver: true }),
         ]).start();
+        // Fetch transactions for past 6 months
+        const today = new Date();
+        const from = new Date(today);
+        from.setMonth(today.getMonth() - 6);
+        const fmt = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+        getTransactionList(fmt(from), fmt(today))
+            .then(data => {
+                const rows = Array.isArray(data) ? data : (data?.data ?? []);
+                if (rows.length > 0) {
+                    setTransactions(rows.map((r: any) => ({
+                        date: r.TRANS_DATE ?? r.date ?? '',
+                        desc: r.PARTICULARS ?? r.desc ?? '',
+                        debit: parseFloat(r.DEBIT ?? r.debit ?? 0),
+                        credit: parseFloat(r.CREDIT ?? r.credit ?? 0),
+                        bal: parseFloat(r.BALANCE ?? r.bal ?? 0),
+                    })));
+                }
+            })
+            .catch(() => { })
+            .finally(() => setLoading(false));
     }, []);
 
     const handleDownloadPDF = () => {
-        Alert.alert('Account Copy PDF', 'Your account statement PDF is being generated and will be downloaded shortly.', [{ text: 'OK' }]);
+        const pdfUrl = getTransactionPdfUrl();
+        Alert.alert('Account Copy PDF', `PDF URL: ${pdfUrl}\n\nYour account statement PDF is being generated.`, [{ text: 'OK' }]);
     };
 
     return (
@@ -109,7 +131,9 @@ const MiniStatementScreen: React.FC<Props> = ({ navigation }) => {
                     <Text style={[styles.colBal, { color: colors.textMuted }]}>BAL</Text>
                 </View>
 
-                {TRANSACTIONS.map((tx, i) => (
+                {loading ? (
+                    <ActivityIndicator color="#fff" style={{ marginTop: 24 }} size="large" />
+                ) : transactions.map((tx, i) => (
                     <Animated.View key={i} style={{
                         opacity: listAnim,
                         transform: [{ translateX: listAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }) }],

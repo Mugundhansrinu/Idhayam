@@ -4,7 +4,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    Animated, ScrollView, Dimensions,
+    Animated, ScrollView, Dimensions, ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
@@ -14,6 +14,7 @@ import GlassCard from '../components/GlassCard';
 import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { getDiscountSummary } from '../api';
 
 const { width } = Dimensions.get('window');
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Discount'> };
@@ -24,7 +25,7 @@ const TABS = [
     { id: 'target', label: 'Target', icon: '🏆' },
 ];
 
-const SCHEME_DATA = [
+const FALLBACK_SCHEME_DATA = [
     { product: 'Sesame Oil 1L', scheme: 'Buy 10 Get 1 Free', validity: '31 Mar 2026', value: '₹180 saving' },
     { product: 'Groundnut Oil 5L', scheme: '3% Cash Discount', validity: '28 Feb 2026', value: '3%' },
     { product: 'Coconut Oil 500ml', scheme: 'Festival Bonus 2%', validity: '15 Mar 2026', value: '2%' },
@@ -47,9 +48,30 @@ const TARGET_DATA = [
 const DiscountScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
     const [activeTab, setActiveTab] = useState('scheme');
+    const [schemeData, setSchemeData] = useState(FALLBACK_SCHEME_DATA);
+    const [loadingDiscount, setLoadingDiscount] = useState(true);
     const tabIndicator = useRef(new Animated.Value(0)).current;
     const contentOpacity = useRef(new Animated.Value(1)).current;
 
+    useEffect(() => {
+        Animated.spring(tabIndicator, { toValue: 0, friction: 7, useNativeDriver: false }).start();
+        getDiscountSummary()
+            .then(data => {
+                const rows = Array.isArray(data) ? data : (data?.data ?? []);
+                if (rows.length > 0) {
+                    setSchemeData(rows.map((r: any) => ({
+                        product: r.DISCOUNT_NAME ?? r.product ?? '',
+                        scheme: r.DISCOUNT_DESC ?? r.scheme ?? '',
+                        validity: r.VALID_UPTO ?? r.validity ?? '',
+                        value: r.DISCOUNT_VALUE ?? r.value ?? '',
+                    })));
+                }
+            })
+            .catch(() => { })
+            .finally(() => setLoadingDiscount(false));
+    }, []);
+
+    const tabWidth = (width - 40) / TABS.length;
     const tabIndex = TABS.findIndex(t => t.id === activeTab);
 
     const switchTab = (id: string, idx: number) => {
@@ -61,12 +83,6 @@ const DiscountScreen: React.FC<Props> = ({ navigation }) => {
             ]).start();
         });
     };
-
-    useEffect(() => {
-        Animated.spring(tabIndicator, { toValue: 0, friction: 7, useNativeDriver: false }).start();
-    }, []);
-
-    const tabWidth = (width - 40) / TABS.length;
 
     return (
         <View style={styles.container}>
@@ -94,18 +110,22 @@ const DiscountScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <Animated.ScrollView style={{ opacity: contentOpacity }} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-                {activeTab === 'scheme' && SCHEME_DATA.map((s, i) => (
-                    <GlassCard key={i} style={styles.card}>
-                        <View style={styles.schemeHeader}>
-                            <Text style={[styles.schemeProd, { color: colors.textPrimary }]}>{s.product}</Text>
-                            <View style={[styles.badge, { backgroundColor: BrandColors.yellow500 + '33', borderColor: BrandColors.yellow500 }]}>
-                                <Text style={[styles.badgeText, { color: BrandColors.yellow500 }]}>{s.value}</Text>
+                {activeTab === 'scheme' && (
+                    loadingDiscount ? (
+                        <ActivityIndicator color="#fff" style={{ marginTop: 24 }} />
+                    ) : schemeData.map((s, i) => (
+                        <GlassCard key={i} style={styles.card}>
+                            <View style={styles.schemeHeader}>
+                                <Text style={[styles.schemeProd, { color: colors.textPrimary }]}>{s.product}</Text>
+                                <View style={[styles.badge, { backgroundColor: BrandColors.yellow500 + '33', borderColor: BrandColors.yellow500 }]}>
+                                    <Text style={[styles.badgeText, { color: BrandColors.yellow500 }]}>{s.value}</Text>
+                                </View>
                             </View>
-                        </View>
-                        <Text style={[styles.schemeDesc, { color: colors.textSecondary }]}>🎯 {s.scheme}</Text>
-                        <Text style={[styles.validity, { color: colors.textMuted }]}>Valid till: {s.validity}</Text>
-                    </GlassCard>
-                ))}
+                            <Text style={[styles.schemeDesc, { color: colors.textSecondary }]}>🎯 {s.scheme}</Text>
+                            <Text style={[styles.validity, { color: colors.textMuted }]}>Valid till: {s.validity}</Text>
+                        </GlassCard>
+                    ))
+                )}
 
                 {activeTab === 'qd' && (
                     <GlassCard accentLine style={styles.tableCard}>

@@ -21,6 +21,8 @@ import { BrandColors } from '../theme/Colors';
 import GlassCard from '../components/GlassCard';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { getCustomerBalance, getInvoicedVehicleList } from '../api';
+import { ActivityIndicator } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 64) / 2;
@@ -128,6 +130,14 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const [showBalance, setShowBalance] = useState(false);
     const [showVehicle, setShowVehicle] = useState(false);
 
+    // Balance state
+    const [balanceData, setBalanceData] = useState<any>(null);
+    const [loadingBalance, setLoadingBalance] = useState(false);
+
+    // Vehicle state
+    const [vehicles, setVehicles] = useState<any[]>([]);
+    const [loadingVehicles, setLoadingVehicles] = useState(false);
+
     const headerOpacity = useRef(new Animated.Value(0)).current;
     const headerTranslateY = useRef(new Animated.Value(-20)).current;
 
@@ -137,6 +147,42 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
             Animated.timing(headerTranslateY, { toValue: 0, duration: 600, useNativeDriver: true }),
         ]).start();
     }, []);
+
+    const handleToggleBalance = async () => {
+        const next = !showBalance;
+        setShowBalance(next);
+        setShowVehicle(false);
+        if (next && !balanceData) {
+            setLoadingBalance(true);
+            try {
+                const data = await getCustomerBalance();
+                setBalanceData(data);
+            } catch {
+                // Fallback mock
+                setBalanceData({ balance: '19562.66', pendingOrder: '0', netBalance: '19562.66' });
+            } finally {
+                setLoadingBalance(false);
+            }
+        }
+    };
+
+    const handleToggleVehicle = async () => {
+        const next = !showVehicle;
+        setShowVehicle(next);
+        setShowBalance(false);
+        if (next && vehicles.length === 0) {
+            setLoadingVehicles(true);
+            try {
+                const data = await getInvoicedVehicleList();
+                setVehicles(Array.isArray(data) ? data : (data?.data ?? []));
+            } catch {
+                // Fallback mock vehicle
+                setVehicles([{ vehicleNo: 'TN67BH5688', tripRefNo: 'TJ-1870', branchId: '92', tripId: '79' }]);
+            } finally {
+                setLoadingVehicles(false);
+            }
+        }
+    };
 
     const navigate = (screen: keyof RootStackParamList) => {
         navigation.navigate(screen as any);
@@ -169,7 +215,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
                     {/* Check Balance & Vehicle */}
                     <View style={styles.actionSection}>
-                        <TouchableOpacity onPress={() => { setShowBalance(!showBalance); setShowVehicle(false); }} activeOpacity={0.8}>
+                        <TouchableOpacity onPress={handleToggleBalance} activeOpacity={0.8}>
                             <GlassCard style={styles.actionButtonGlass} padding={14}>
                                 <Text style={[styles.actionButtonText, { color: colors.textPrimary }]}>Check Balance</Text>
                                 <Text style={[styles.actionButtonIcon, { color: colors.textPrimary }]}>{showBalance ? '▲' : '▶'}</Text>
@@ -178,24 +224,30 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
                         {showBalance && (
                             <GlassCard style={styles.infoBoxGlass} padding={16}>
-                                <View style={styles.infoRow}>
-                                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>BALANCE</Text>
-                                    <Text style={[styles.infoValue, { color: colors.textPrimary }]}>Rs. 19562.66</Text>
-                                </View>
-                                <View style={[styles.infoLine, { backgroundColor: colors.divider }]} />
-                                <View style={styles.infoRow}>
-                                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>PENDING ORDER</Text>
-                                    <Text style={[styles.infoValue, { color: colors.textPrimary }]}>Rs. 0</Text>
-                                </View>
-                                <View style={[styles.infoLine, { backgroundColor: colors.divider }]} />
-                                <View style={styles.infoRow}>
-                                    <Text style={[styles.infoLabel, { color: BrandColors.yellow500 }]}>NET BALANCE</Text>
-                                    <Text style={[styles.infoValue, { color: BrandColors.yellow500 }]}>Rs. 19562.66</Text>
-                                </View>
+                                {loadingBalance ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <>
+                                        <View style={styles.infoRow}>
+                                            <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>BALANCE</Text>
+                                            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>Rs. {balanceData?.balance ?? '—'}</Text>
+                                        </View>
+                                        <View style={[styles.infoLine, { backgroundColor: colors.divider }]} />
+                                        <View style={styles.infoRow}>
+                                            <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>PENDING ORDER</Text>
+                                            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>Rs. {balanceData?.pendingOrder ?? '—'}</Text>
+                                        </View>
+                                        <View style={[styles.infoLine, { backgroundColor: colors.divider }]} />
+                                        <View style={styles.infoRow}>
+                                            <Text style={[styles.infoLabel, { color: BrandColors.yellow500 }]}>NET BALANCE</Text>
+                                            <Text style={[styles.infoValue, { color: BrandColors.yellow500 }]}>Rs. {balanceData?.netBalance ?? balanceData?.balance ?? '—'}</Text>
+                                        </View>
+                                    </>
+                                )}
                             </GlassCard>
                         )}
 
-                        <TouchableOpacity onPress={() => { setShowVehicle(!showVehicle); setShowBalance(false); }} activeOpacity={0.8}>
+                        <TouchableOpacity onPress={handleToggleVehicle} activeOpacity={0.8}>
                             <GlassCard style={styles.actionButtonGlass} padding={14}>
                                 <Text style={[styles.actionButtonText, { color: colors.textPrimary }]}>Check Vehicle</Text>
                                 <Text style={[styles.actionButtonIcon, { color: colors.textPrimary }]}>{showVehicle ? '▲' : '▶'}</Text>
@@ -204,21 +256,31 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
                         {showVehicle && (
                             <View style={styles.dispatchContainer}>
-                                <Text style={[styles.dispatchTitle, { color: colors.textSecondary }]}>Your dispatch is on the way....</Text>
-                                <TouchableOpacity activeOpacity={0.8} onPress={() => navigate('VehicleTracking' as any)}>
-                                    <GlassCard style={styles.dispatchCardGlass} padding={12}>
-                                        <View style={styles.dispatchImagePlaceholder}>
-                                            <Text style={{ fontSize: 22 }}>🚚</Text>
+                                {loadingVehicles ? (
+                                    <ActivityIndicator color="#fff" style={{ marginTop: 8 }} />
+                                ) : vehicles.length === 0 ? (
+                                    <Text style={[styles.dispatchTitle, { color: colors.textSecondary }]}>No vehicles found.</Text>
+                                ) : (
+                                    vehicles.map((v: any, idx: number) => (
+                                        <View key={idx}>
+                                            <Text style={[styles.dispatchTitle, { color: colors.textSecondary }]}>Your dispatch is on the way....</Text>
+                                            <TouchableOpacity activeOpacity={0.8} onPress={() => navigate('VehicleTracking' as any)}>
+                                                <GlassCard style={styles.dispatchCardGlass} padding={12}>
+                                                    <View style={styles.dispatchImagePlaceholder}>
+                                                        <Text style={{ fontSize: 22 }}>🚚</Text>
+                                                    </View>
+                                                    <View style={styles.dispatchInfo}>
+                                                        <Text style={[styles.dispatchVehicleNo, { color: colors.textPrimary }]}>{v.vehicleNo ?? v.VEHICLE_NO ?? 'TN67BH5688'}</Text>
+                                                        <Text style={[styles.dispatchRef, { color: colors.textSecondary }]}>{v.tripRefNo ?? v.TRIP_REF_NO ?? 'TJ-1870'}</Text>
+                                                    </View>
+                                                    <View style={styles.dispatchBadge}>
+                                                        <Text style={styles.dispatchBadgeText}>TN</Text>
+                                                    </View>
+                                                </GlassCard>
+                                            </TouchableOpacity>
                                         </View>
-                                        <View style={styles.dispatchInfo}>
-                                            <Text style={[styles.dispatchVehicleNo, { color: colors.textPrimary }]}>TN67BH5688</Text>
-                                            <Text style={[styles.dispatchRef, { color: colors.textSecondary }]}>TJ-1870</Text>
-                                        </View>
-                                        <View style={styles.dispatchBadge}>
-                                            <Text style={styles.dispatchBadgeText}>TN</Text>
-                                        </View>
-                                    </GlassCard>
-                                </TouchableOpacity>
+                                    ))
+                                )}
                             </View>
                         )}
                     </View>
