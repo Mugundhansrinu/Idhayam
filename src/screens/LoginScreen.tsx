@@ -18,7 +18,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 
@@ -40,10 +39,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     /* ── Step state ── */
     const [step, setStep] = useState<'pan' | 'otp'>('pan');
 
-    /* ── PAN step ── */
+    /* ── PAN & Mobile step ── */
     const [pan, setPan] = useState('');
     const [panFocused, setPanFocused] = useState(false);
+    const [mobile, setMobile] = useState('');
+    const [mobileFocused, setMobileFocused] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
+    const [fetchingMobiles, setFetchingMobiles] = useState(false);
+    const [linkedMobiles, setLinkedMobiles] = useState<string[]>([]);
 
     /* ── OTP step ── */
     const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
@@ -64,6 +67,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         const unsubscribe = navigation.addListener('blur', () => {
             setStep('pan');
             setPan('');
+            setMobile('');
+            setLinkedMobiles([]);
+            setFetchingMobiles(false);
             setOtp(Array(OTP_LENGTH).fill(''));
             setSendingOtp(false);
             setVerifying(false);
@@ -107,25 +113,40 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
     useEffect(() => () => { if (timerRef.current) { clearInterval(timerRef.current); } }, []);
 
-    /* ── PAN validation ── */
+    /* ── Validation ── */
     const isPanValid = (v: string) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v.toUpperCase());
+    const isMobileValid = (v: string) => /^[6-9][0-9]{9}$/.test(v);
 
-    /* ── Send OTP ── */
-    const handleSendOtp = async () => {
+    /* ── Fetch Linked Mobiles ── */
+    const handleFetchMobiles = () => {
         const cleanPan = pan.trim().toUpperCase();
         if (!isPanValid(cleanPan)) {
             Alert.alert('Invalid PAN', 'Please enter a valid 10-character PAN number.\nExample: ABCDE1234F');
             return;
         }
+        setFetchingMobiles(true);
+        // Simulate API taking PAN and returning linked mobiles
+        setTimeout(() => {
+            setFetchingMobiles(false);
+            const mockMobiles = ['+91 98765 43210', '+91 87654 32109', '+91 76543 21098'];
+            setLinkedMobiles(mockMobiles);
+            setMobile(mockMobiles[0]); // Select first by default
+        }, 1200);
+    };
+
+    /* ── Send OTP ── */
+    const handleSendOtp = async () => {
+        if (!mobile) {
+            Alert.alert('Select Mobile', 'Please select a linked mobile number to receive the OTP.');
+            return;
+        }
         setSendingOtp(true);
-        // Simulate API: lookup PAN → get masked mobile
         setTimeout(() => {
             setSendingOtp(false);
-            // Demo: mask last 7 digits of a mobile
-            setMaskedMobile('+91 XXXXXX3210');
+            setMaskedMobile(mobile);
             animateStep(() => setStep('otp'));
             startTimer();
-        }, 1500);
+        }, 1200);
     };
 
     /* ── OTP input handlers ── */
@@ -190,12 +211,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                 end={{ x: 0.9, y: 1 }}
                 style={StyleSheet.absoluteFill}
             />
-            <OilFlowBackground />
-
-            {/* Decorative circles */}
-            <View style={[styles.accentCircle, styles.accentCircle1, { backgroundColor: BrandColors.red600 + '22' }]} />
-            <View style={[styles.accentCircle, styles.accentCircle2, { backgroundColor: BrandColors.yellow500 + '18' }]} />
-            <View style={[styles.accentCircle, styles.accentCircle3, { backgroundColor: BrandColors.blue500 + '30' }]} />
 
             {/* Theme toggle */}
             <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme} activeOpacity={0.8}>
@@ -210,11 +225,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}>
 
-                    {/* Mascot */}
                     <View style={styles.logoContainer}>
-                        <View style={styles.mascotWrapper}>
-                            <Image source={require('../assets/idhayam.png')} style={styles.mascot} resizeMode="contain" />
-                        </View>
                         <Text style={[styles.tagline, { color: colors.textSecondary }]}>Distributor Portal</Text>
                     </View>
 
@@ -263,13 +274,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                     <View style={[
                                         styles.inputContainer,
                                         {
-                                            backgroundColor: colors.inputBackground,
+                                            backgroundColor: linkedMobiles.length > 0 ? colors.inputBackground + '88' : colors.inputBackground,
                                             borderColor: panFocused ? colors.inputFocusBorder : colors.inputBorder,
                                         },
                                     ]}>
                                         <Text style={styles.inputIcon}>🪪</Text>
                                         <TextInput
-                                            style={[styles.input, { color: colors.inputText }]}
+                                            style={[styles.input, { color: colors.inputText, opacity: linkedMobiles.length > 0 ? 0.6 : 1 }]}
                                             value={pan}
                                             onChangeText={t => setPan(t.toUpperCase())}
                                             placeholder="e.g. ABCDE1234F"
@@ -279,37 +290,99 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                             maxLength={10}
                                             onFocus={() => setPanFocused(true)}
                                             onBlur={() => setPanFocused(false)}
+                                            editable={linkedMobiles.length === 0}
                                         />
-                                        {pan.length === 10 && (
+                                        {pan.length === 10 && linkedMobiles.length === 0 && (
                                             <Text style={{ fontSize: 16 }}>
                                                 {isPanValid(pan) ? '✅' : '❌'}
                                             </Text>
                                         )}
+                                        {linkedMobiles.length > 0 && (
+                                            <TouchableOpacity onPress={() => setLinkedMobiles([])} style={{ paddingLeft: 10 }}>
+                                                <Text style={{ color: colors.textLink, fontSize: 13, fontWeight: '600' }}>Edit</Text>
+                                            </TouchableOpacity>
+                                        )}
                                     </View>
-                                    <Text style={[styles.panHint, { color: colors.textMuted }]}>
-                                        Format: AAAAA9999A
-                                    </Text>
+                                    {linkedMobiles.length === 0 && (
+                                        <Text style={[styles.panHint, { color: colors.textMuted }]}>
+                                            Format: AAAAA9999A
+                                        </Text>
+                                    )}
                                 </View>
 
-                                {/* Send OTP Button */}
-                                <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-                                    <TouchableOpacity
-                                        onPressIn={handlePressIn}
-                                        onPressOut={handlePressOut}
-                                        onPress={handleSendOtp}
-                                        activeOpacity={1}
-                                        disabled={sendingOtp}>
-                                        <LinearGradient
-                                            colors={[colors.buttonPrimaryGradientStart, colors.buttonPrimaryGradientEnd]}
-                                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                            style={styles.loginButton}>
-                                            {sendingOtp
-                                                ? <ActivityIndicator color="#FFFFFF" size="small" />
-                                                : <Text style={styles.loginButtonText}>Send OTP  →</Text>
-                                            }
-                                        </LinearGradient>
-                                    </TouchableOpacity>
-                                </Animated.View>
+                                {linkedMobiles.length === 0 ? (
+                                    /* Find Mobiles Button */
+                                    <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                                        <TouchableOpacity
+                                            onPressIn={handlePressIn}
+                                            onPressOut={handlePressOut}
+                                            onPress={handleFetchMobiles}
+                                            activeOpacity={1}
+                                            disabled={fetchingMobiles}>
+                                            <LinearGradient
+                                                colors={[colors.buttonPrimaryGradientStart, colors.buttonPrimaryGradientEnd]}
+                                                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                                                style={styles.loginButton}>
+                                                {fetchingMobiles
+                                                    ? <ActivityIndicator color="#FFFFFF" size="small" />
+                                                    : <Text style={styles.loginButtonText}>Find Linked Mobiles  →</Text>
+                                                }
+                                            </LinearGradient>
+                                        </TouchableOpacity>
+                                    </Animated.View>
+                                ) : (
+                                    <>
+                                        {/* Linked Mobiles List */}
+                                        <View style={styles.inputWrapper}>
+                                            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Select Registered Mobile</Text>
+                                            <View style={styles.mobileList}>
+                                                {linkedMobiles.map((num, idx) => (
+                                                    <TouchableOpacity
+                                                        key={idx}
+                                                        style={[
+                                                            styles.mobileOption,
+                                                            {
+                                                                borderColor: mobile === num ? BrandColors.blue500 : colors.inputBorder,
+                                                                backgroundColor: mobile === num ? BrandColors.blue500 + '15' : colors.inputBackground
+                                                            }
+                                                        ]}
+                                                        onPress={() => setMobile(num)}
+                                                        activeOpacity={0.7}
+                                                    >
+                                                        <View style={[
+                                                            styles.radioOuter,
+                                                            { borderColor: mobile === num ? BrandColors.blue500 : colors.inputBorder }
+                                                        ]}>
+                                                            {mobile === num && <View style={[styles.radioInner, { backgroundColor: BrandColors.blue500 }]} />}
+                                                        </View>
+                                                        <Text style={styles.inputIcon}>📱</Text>
+                                                        <Text style={[styles.mobileOptionText, { color: colors.textPrimary, fontWeight: mobile === num ? '700' : '500' }]}>{num}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </View>
+                                        </View>
+
+                                        {/* Send OTP Button */}
+                                        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                                            <TouchableOpacity
+                                                onPressIn={handlePressIn}
+                                                onPressOut={handlePressOut}
+                                                onPress={handleSendOtp}
+                                                activeOpacity={1}
+                                                disabled={sendingOtp}>
+                                                <LinearGradient
+                                                    colors={[colors.buttonPrimaryGradientStart, colors.buttonPrimaryGradientEnd]}
+                                                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                                                    style={styles.loginButton}>
+                                                    {sendingOtp
+                                                        ? <ActivityIndicator color="#FFFFFF" size="small" />
+                                                        : <Text style={styles.loginButtonText}>Send OTP  →</Text>
+                                                    }
+                                                </LinearGradient>
+                                            </TouchableOpacity>
+                                        </Animated.View>
+                                    </>
+                                )}
                             </Animated.View>
                         )}
 
@@ -500,6 +573,13 @@ const styles = StyleSheet.create({
     inputIcon: { fontSize: 16, marginRight: 10 },
     input: { flex: 1, fontSize: 15, fontWeight: '400' },
     panHint: { fontSize: 11, marginTop: 6, letterSpacing: 0.3 },
+
+    // Linked Mobiles List
+    mobileList: { marginTop: 4 },
+    mobileOption: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 12, borderWidth: 1.5, marginBottom: 8 },
+    mobileOptionText: { fontSize: 15, marginLeft: 8, letterSpacing: 1 },
+    radioOuter: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+    radioInner: { width: 10, height: 10, borderRadius: 5 },
 
     // OTP
     maskedMobileRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: 10 },

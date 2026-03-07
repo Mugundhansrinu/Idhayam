@@ -18,7 +18,6 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
 import GlassCard from '../components/GlassCard';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -152,7 +151,6 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
             />
-            <OilFlowBackground />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
                 {/* Header */}
