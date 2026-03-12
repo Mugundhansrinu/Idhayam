@@ -4,8 +4,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import LinearGradient from 'react-native-linear-gradient';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
-import { useTheme } from '../theme';
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Splash'>;
@@ -14,7 +12,6 @@ type Props = {
 const { width } = Dimensions.get('window');
 
 const SplashScreen: React.FC<Props> = ({ navigation }) => {
-    const { colors } = useTheme();
     const scale = useRef(new Animated.Value(0.85)).current;
     const opacity = useRef(new Animated.Value(0)).current;
 
@@ -51,7 +48,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
             />
-            <OilFlowBackground />
+
 
             <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
                 {/* Ultra-Modern Glass Wrapper framing everything */}

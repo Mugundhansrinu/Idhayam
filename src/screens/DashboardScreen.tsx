@@ -335,7 +335,6 @@ const styles = StyleSheet.create({
     headerLogo: { width: 32, height: 32, resizeMode: 'contain' },
     distributorNameTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1 },
     headerRight: { flexDirection: 'row', alignItems: 'center' },
-    headerAvatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' },
     logoutBtn: {
         marginLeft: 12,
         width: 44,

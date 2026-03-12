@@ -80,8 +80,8 @@ android {
     namespace "com.companyname.idhayam"
     defaultConfig {
         applicationId "com.companyname.idhayam"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdk rootProject.ext.minSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         ndk {
@@ -108,10 +108,13 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
-    externalNativeBuild {
-        cmake {
-            buildStagingDirectory = "C:/tmp/cxx"
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        buildConfig = true
+        aidl = true
     }
 }
 

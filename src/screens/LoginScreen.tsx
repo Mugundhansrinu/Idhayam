@@ -558,27 +558,8 @@ const styles = StyleSheet.create({
     themeToggleInner: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
     themeIcon: { fontSize: 20 },
 
-    // Circles
-    accentCircle: { position: 'absolute', borderRadius: 999 },
-    accentCircle1: { width: 280, height: 280, top: -80, right: -60 },
-    accentCircle2: { width: 200, height: 200, bottom: 60, left: -60 },
-    accentCircle3: { width: 150, height: 150, top: height * 0.35, right: -40 },
 
-    // Mascot
     logoContainer: { alignItems: 'center', marginBottom: 32 },
-    mascotWrapper: {
-        width: 140, height: 140,
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 36, overflow: 'hidden',
-        alignItems: 'center', justifyContent: 'center',
-        borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)',
-        marginBottom: 16,
-        elevation: 15,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.4, shadowRadius: 20,
-    },
-    mascot: { width: 140, height: 140 },
     tagline: { fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', fontWeight: '500' },
 
     // Glass card
