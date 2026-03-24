@@ -36,7 +36,7 @@ const GlassCard: React.FC<GlassCardProps> = ({
             ]}>
             {accentLine && (
                 <LinearGradient
-                    colors={[BrandColors.red600, BrandColors.yellow500, BrandColors.blue500]}
+                    colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={[styles.accentLine, { marginHorizontal: -padding, marginTop: -padding }]}

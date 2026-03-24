@@ -1,0 +1,151 @@
+﻿--------- beginning of crash
+03-12 23:17:34.922 20282 20334 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 20334 (mqt_v_js), pid 20282 (anyname.idhayam)
+03-12 23:17:35.861 20352 20352 F DEBUG   : Process name is com.companyname.idhayam, uid is 10421, not key_process
+03-12 23:17:35.861 20352 20352 F DEBUG   : keyProcess: 0
+03-12 23:17:35.861 20352 20352 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+03-12 23:17:35.861 20352 20352 F DEBUG   : Build fingerprint: 'realme/RMX3686/RE58A5L1:15/AP3A.240617.008/T.R4T2.2080136-1:user/release-keys'
+03-12 23:17:35.861 20352 20352 F DEBUG   : Revision: '0'
+03-12 23:17:35.861 20352 20352 F DEBUG   : ABI: 'arm64'
+03-12 23:17:35.861 20352 20352 F DEBUG   : Timestamp: 2026-03-12 23:17:35.063749561+0530
+03-12 23:17:35.861 20352 20352 F DEBUG   : Process uptime: 1s
+03-12 23:17:35.861 20352 20352 F DEBUG   : Cmdline: com.companyname.idhayam
+03-12 23:17:35.861 20352 20352 F DEBUG   : pid: 20282, tid: 20334, name: mqt_v_js  >>> com.companyname.idhayam <<<
+03-12 23:17:35.861 20352 20352 F DEBUG   : uid: 10421
+03-12 23:17:35.861 20352 20352 F DEBUG   : tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+03-12 23:17:35.861 20352 20352 F DEBUG   : signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+03-12 23:17:35.861 20352 20352 F DEBUG   : Abort message: 'terminating due to uncaught exception of type facebook::jni::JniException: com.facebook.react.common.JavascriptException: [runtime not ready]: Error: Non-js exception: Compiling JS failed: Wrong bytecode version. Expected 98 but got 96, sourceURL: index.android.bundle, stack:
+03-12 23:17:35.861 20352 20352 F DEBUG   : 
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.react.modules.core.ExceptionsManagerModule.reportException(ExceptionsManagerModule.kt:52)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.react.runtime.ReactInstance$ReactJsExceptionHandlerImpl.reportJsException(ReactInstance.kt:291)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.jni.NativeRunnable.run(Native Method)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at android.os.Handler.handleCallback(Handler.java:973)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at android.os.Handler.dispatchMessage(Handler.java:100)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadHandler.dispatchMessage(MessageQueueThreadHandler.kt:21)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at android.os.Looper.loopOnce(Looper.java:282)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at android.os.Looper.loop(Looper.java:387)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.startNewBackgroundThread$lambda$0(MessageQueueThreadImpl.kt:152)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.$r8$lambda$YYXYCFexeoKtAeDpeNYkxZZlpbA(Unknown Source:0)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+03-12 23:17:35.861 20352 20352 F DEBUG   : 	at java.lang.Thread.run(Thread.java:1563)'
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x0  0000000000000000  x1  0000000000004f6e  x2  0000000000000006  x3  000000791b684430
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x4  646277641f736766  x5  646277641f736766  x6  646277641f736766  x7  7f7f7f7f7f7f7f7f
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x8  00000000000000f0  x9  0000007aa2cd9378  x10 0000000000000001  x11 0000007aa2d5ea90
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x12 0000000069b2fc36  x13 000000007fffffff  x14 0000000040280618  x15 00002751b1dcc6c3
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x16 0000007aa2dcae68  x17 0000007aa2db26d0  x18 000000791a6a0000  x19 0000000000004f3a
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x20 0000000000004f6e  x21 00000000ffffffff  x22 000000791b684560  x23 000000791b6845a0
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x24 000000791b684650  x25 b4000079b25d7ec0  x26 000000791b684830  x27 0000000000000000
+03-12 23:17:35.861 20352 20352 F DEBUG   :     x28 0000000000000000  x29 000000791b6844b0
+03-12 23:17:35.861 20352 20352 F DEBUG   :     lr  0000007aa2d46d98  sp  000000791b684410  pc  0000007aa2d46dc8  pst 0000000000001000
+03-12 23:17:35.861 20352 20352 F DEBUG   : 36 total frames
+03-12 23:17:35.861 20352 20352 F DEBUG   : backtrace:
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #00 pc 0000000000093dc8  /apex/com.android.runtime/lib64/bionic/libc.so (abort+168) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #01 pc 00000000000a0210  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #02 pc 000000000009eeb0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #03 pc 000000000009f374  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #04 pc 000000000009f314  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (std::terminate()+56) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #05 pc 0000000000280294  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #06 pc 00000000004cce98  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #07 pc 00000000002e2c3c  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::JsErrorHandler::handleErrorWithCppPipeline(facebook::jsi::Runtime&, facebook::jsi::JSError&, bool, bool)+7440) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #08 pc 00000000002e0be0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::JsErrorHandler::handleError(facebook::jsi::Runtime&, facebook::jsi::JSError&, bool, bool)+1684) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #09 pc 00000000004666b4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::RuntimeScheduler_Modern::executeTask(facebook::jsi::Runtime&, facebook::react::Task&, bool) const+588) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #10 pc 0000000000466db4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::RuntimeScheduler_Modern::runEventLoopTick(facebook::jsi::Runtime&, facebook::react::Task&)+124) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #11 pc 0000000000466ac4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::RuntimeScheduler_Modern::runEventLoop(facebook::jsi::Runtime&)+88) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #12 pc 0000000000288a70  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #13 pc 00000000004a61b0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #14 pc 0000000000017dd0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libfbjni.so (offset 0x79c000) (facebook::jni::detail::MethodWrapper<void (facebook::jni::JNativeRunnable::*)(), &facebook::jni::JNativeRunnable::run(), facebook::jni::JNativeRunnable, void>::dispatch(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>)+72) (BuildId: e438f6554af1d86b210a05412e96c4251e570157)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #15 pc 0000000000017d10  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libfbjni.so (offset 0x79c000) (facebook::jni::detail::FunctionWrapper<void (*)(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>), facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*, void>::call(_JNIEnv*, _jobject*, void (*)(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>))+60) (BuildId: e438f6554af1d86b210a05412e96c4251e570157)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #16 pc 00000000012d0440  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (art_jni_trampoline+112)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #17 pc 0000000000b7e61c  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Handler.handleCallback+652)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #18 pc 0000000000b7e688  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Handler.dispatchMessage+56)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #19 pc 0000000000669700  /apex/com.android.art/lib64/libart.so (nterp_helper+4016) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #20 pc 000000000040cc6e  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadHandler.dispatchMessage+10)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #21 pc 0000000000b84ee8  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Looper.loopOnce+1208)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #22 pc 0000000000b84990  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Looper.loop+592)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #23 pc 00000000006687e8  /apex/com.android.art/lib64/libart.so (nterp_helper+152) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #24 pc 000000000040cf18  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.startNewBackgroundThread$lambda$0+28)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #25 pc 00000000006687e8  /apex/com.android.art/lib64/libart.so (nterp_helper+152) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #26 pc 000000000040ceb4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.$r8$lambda$YYXYCFexeoKtAeDpeNYkxZZlpbA+0)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #27 pc 00000000006687e8  /apex/com.android.art/lib64/libart.so (nterp_helper+152) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #28 pc 000000000040cd04  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion$$ExternalSyntheticLambda0.run+4)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #29 pc 00000000004495f0  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (java.lang.Thread.run+64)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #30 pc 00000000002cdd94  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #31 pc 000000000026e624  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+220) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #32 pc 00000000004c3f30  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1184) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #33 pc 00000000004c3a80  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallbackWithUffdGc(void*)+8) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #34 pc 00000000000a6524  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+196) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-12 23:17:35.861 20352 20352 F DEBUG   :       #35 pc 00000000000978a0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-12 23:18:13.511 20767 20824 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 20824 (mqt_v_js), pid 20767 (anyname.idhayam)
+03-12 23:18:14.525 20841 20841 F DEBUG   : Process name is com.companyname.idhayam, uid is 10421, not key_process
+03-12 23:18:14.525 20841 20841 F DEBUG   : keyProcess: 0
+03-12 23:18:14.525 20841 20841 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+03-12 23:18:14.525 20841 20841 F DEBUG   : Build fingerprint: 'realme/RMX3686/RE58A5L1:15/AP3A.240617.008/T.R4T2.2080136-1:user/release-keys'
+03-12 23:18:14.525 20841 20841 F DEBUG   : Revision: '0'
+03-12 23:18:14.525 20841 20841 F DEBUG   : ABI: 'arm64'
+03-12 23:18:14.525 20841 20841 F DEBUG   : Timestamp: 2026-03-12 23:18:13.633549333+0530
+03-12 23:18:14.525 20841 20841 F DEBUG   : Process uptime: 2s
+03-12 23:18:14.525 20841 20841 F DEBUG   : Cmdline: com.companyname.idhayam
+03-12 23:18:14.525 20841 20841 F DEBUG   : pid: 20767, tid: 20824, name: mqt_v_js  >>> com.companyname.idhayam <<<
+03-12 23:18:14.525 20841 20841 F DEBUG   : uid: 10421
+03-12 23:18:14.525 20841 20841 F DEBUG   : tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+03-12 23:18:14.525 20841 20841 F DEBUG   : signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+03-12 23:18:14.525 20841 20841 F DEBUG   : Abort message: 'terminating due to uncaught exception of type facebook::jni::JniException: com.facebook.react.common.JavascriptException: [runtime not ready]: Error: Non-js exception: Compiling JS failed: Wrong bytecode version. Expected 98 but got 96, sourceURL: index.android.bundle, stack:
+03-12 23:18:14.525 20841 20841 F DEBUG   : 
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.react.modules.core.ExceptionsManagerModule.reportException(ExceptionsManagerModule.kt:52)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.react.runtime.ReactInstance$ReactJsExceptionHandlerImpl.reportJsException(ReactInstance.kt:291)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.jni.NativeRunnable.run(Native Method)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at android.os.Handler.handleCallback(Handler.java:973)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at android.os.Handler.dispatchMessage(Handler.java:100)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadHandler.dispatchMessage(MessageQueueThreadHandler.kt:21)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at android.os.Looper.loopOnce(Looper.java:282)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at android.os.Looper.loop(Looper.java:387)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.startNewBackgroundThread$lambda$0(MessageQueueThreadImpl.kt:152)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.$r8$lambda$YYXYCFexeoKtAeDpeNYkxZZlpbA(Unknown Source:0)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+03-12 23:18:14.525 20841 20841 F DEBUG   : 	at java.lang.Thread.run(Thread.java:1563)'
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x0  0000000000000000  x1  0000000000005158  x2  0000000000000006  x3  0000007917fd7430
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x4  646277641f736766  x5  646277641f736766  x6  646277641f736766  x7  7f7f7f7f7f7f7f7f
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x8  00000000000000f0  x9  0000007aa2cd9378  x10 0000000000000001  x11 0000007aa2d5ea90
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x12 0000000069b2fc5d  x13 000000007fffffff  x14 0000000040284ea6  x15 00002751cfc3803c
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x16 0000007aa2dcae68  x17 0000007aa2db26d0  x18 00000079176b4000  x19 000000000000511f
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x20 0000000000005158  x21 00000000ffffffff  x22 0000007917fd7560  x23 0000007917fd75a0
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x24 0000007917fd7650  x25 b4000079b25d7ec0  x26 0000007917fd7830  x27 0000000000000000
+03-12 23:18:14.525 20841 20841 F DEBUG   :     x28 0000000000000000  x29 0000007917fd74b0
+03-12 23:18:14.525 20841 20841 F DEBUG   :     lr  0000007aa2d46d98  sp  0000007917fd7410  pc  0000007aa2d46dc8  pst 0000000000001000
+03-12 23:18:14.525 20841 20841 F DEBUG   : 36 total frames
+03-12 23:18:14.525 20841 20841 F DEBUG   : backtrace:
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #00 pc 0000000000093dc8  /apex/com.android.runtime/lib64/bionic/libc.so (abort+168) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #01 pc 00000000000a0210  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #02 pc 000000000009eeb0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #03 pc 000000000009f374  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #04 pc 000000000009f314  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libc++_shared.so (offset 0x660000) (std::terminate()+56) (BuildId: 6783a7f3a0d9c67c55a74cadc441ed55aaa493da)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #05 pc 0000000000280294  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #06 pc 00000000004cce98  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #07 pc 00000000002e2c3c  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::JsErrorHandler::handleErrorWithCppPipeline(facebook::jsi::Runtime&, facebook::jsi::JSError&, bool, bool)+7440) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #08 pc 00000000002e0be0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::JsErrorHandler::handleError(facebook::jsi::Runtime&, facebook::jsi::JSError&, bool, bool)+1684) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #09 pc 00000000004666b4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::RuntimeScheduler_Modern::executeTask(facebook::jsi::Runtime&, facebook::react::Task&, bool) const+588) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #10 pc 0000000000466db4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::RuntimeScheduler_Modern::runEventLoopTick(facebook::jsi::Runtime&, facebook::react::Task&)+124) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #11 pc 0000000000466ac4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (facebook::react::RuntimeScheduler_Modern::runEventLoop(facebook::jsi::Runtime&)+88) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #12 pc 0000000000288a70  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #13 pc 00000000004a61b0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libreactnative.so (offset 0xc48000) (BuildId: 7e30e03647a3148904c2390445561c90f979a562)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #14 pc 0000000000017dd0  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libfbjni.so (offset 0x79c000) (facebook::jni::detail::MethodWrapper<void (facebook::jni::JNativeRunnable::*)(), &facebook::jni::JNativeRunnable::run(), facebook::jni::JNativeRunnable, void>::dispatch(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>)+72) (BuildId: e438f6554af1d86b210a05412e96c4251e570157)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #15 pc 0000000000017d10  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/base.apk!libfbjni.so (offset 0x79c000) (facebook::jni::detail::FunctionWrapper<void (*)(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>), facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*, void>::call(_JNIEnv*, _jobject*, void (*)(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>))+60) (BuildId: e438f6554af1d86b210a05412e96c4251e570157)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #16 pc 00000000012d0440  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (art_jni_trampoline+112)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #17 pc 0000000000b7e61c  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Handler.handleCallback+652)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #18 pc 0000000000b7e688  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Handler.dispatchMessage+56)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #19 pc 0000000000669700  /apex/com.android.art/lib64/libart.so (nterp_helper+4016) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #20 pc 000000000040cc6e  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadHandler.dispatchMessage+10)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #21 pc 0000000000b84ee8  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Looper.loopOnce+1208)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #22 pc 0000000000b84990  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (android.os.Looper.loop+592)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #23 pc 00000000006687e8  /apex/com.android.art/lib64/libart.so (nterp_helper+152) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #24 pc 000000000040cf18  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.startNewBackgroundThread$lambda$0+28)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #25 pc 00000000006687e8  /apex/com.android.art/lib64/libart.so (nterp_helper+152) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #26 pc 000000000040ceb4  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.$r8$lambda$YYXYCFexeoKtAeDpeNYkxZZlpbA+0)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #27 pc 00000000006687e8  /apex/com.android.art/lib64/libart.so (nterp_helper+152) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #28 pc 000000000040cd04  /data/app/~~ykLU8uUsZsCZUSanEW9U7w==/com.companyname.idhayam-Hvq7EzqOsPEkzVFXa7SLog==/oat/arm64/base.vdex (com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion$$ExternalSyntheticLambda0.run+4)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #29 pc 00000000004495f0  /data/misc/apexdata/com.android.art/dalvik-cache/arm64/boot.oat (java.lang.Thread.run+64)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #30 pc 00000000002cdd94  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #31 pc 000000000026e624  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+220) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #32 pc 00000000004c3f30  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1184) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #33 pc 00000000004c3a80  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallbackWithUffdGc(void*)+8) (BuildId: be34fbe63ff357beb403f9cb39923ea7)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #34 pc 00000000000a6524  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+196) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-12 23:18:14.525 20841 20841 F DEBUG   :       #35 pc 00000000000978a0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: 5144907d23fac121cc594696acde97e0)

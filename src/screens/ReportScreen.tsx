@@ -1,16 +1,17 @@
-/**
- * ReportScreen – Report menu: Account Copy | Invoice | Order List | Credit/Debit Note
- */
 import React, { useRef, useEffect } from 'react';
 import {
-    View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    Animated, ScrollView, Alert,
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    StatusBar,
+    Animated,
+    ScrollView,
+    Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
-import GlassCard from '../components/GlassCard';
 import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -18,10 +19,10 @@ import { RootStackParamList } from '../../App';
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Report'> };
 
 const REPORTS = [
-    { id: 'MiniStatement', icon: '📋', title: 'Account Copy', desc: 'Full account statement as PDF', format: 'PDF', color: '#7C3AED' },
-    { id: 'InvoiceDetail', icon: '🧾', title: 'Invoice Details', desc: 'List of invoices — view or download', format: 'List / PDF', color: '#B71C1C' },
-    { id: 'OrderEntry', icon: '📦', title: 'Order Entry Report', desc: 'History of all placed orders', format: 'List', color: '#1E4DB7' },
-    { id: 'CreditDebit', icon: '💳', title: 'Credit / Debit Note', desc: 'CN/DN issued to your account', format: 'List / PDF', color: '#0E7490' },
+    { id: 'MiniStatement', icon: '📋', title: 'Account Copy', desc: 'Full account statement as PDF', format: 'PDF', color: '#7B61FF' },
+    { id: 'InvoiceDetail', icon: '🧾', title: 'Invoice Details', desc: 'List of invoices — view or download', format: 'List / PDF', color: '#FD79A8' },
+    { id: 'OrderEntry', icon: '📦', title: 'Order Entry Report', desc: 'History of all placed orders', format: 'List', color: '#00D2D3' },
+    { id: 'CreditDebit', icon: '💳', title: 'Credit / Debit Note', desc: 'CN/DN issued to your account', format: 'List / PDF', color: '#FDCB6E' },
 ];
 
 const ReportScreen: React.FC<Props> = ({ navigation }) => {
@@ -42,11 +43,10 @@ const ReportScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-            <LinearGradient colors={[BrandColors.blue900, BrandColors.blue800, '#0a1a4e']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-            <OilFlowBackground />
-            <GlassHeader title="Reports" subtitle="View and download your reports" onBack={() => navigation.goBack()} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            
+            <GlassHeader title="Reports" subtitle="View and download your reports" onBack={() => navigation.goBack()} gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} />
 
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
                 <Text style={[styles.heading, { color: colors.textPrimary }]}>Available Reports</Text>
@@ -56,35 +56,30 @@ const ReportScreen: React.FC<Props> = ({ navigation }) => {
                         opacity: anims[i],
                         transform: [{ translateX: anims[i].interpolate({ inputRange: [0, 1], outputRange: [-40, 0] }) }],
                     }}>
-                        <TouchableOpacity onPress={() => handleReport(r.id)} activeOpacity={0.8}>
-                            <GlassCard style={styles.reportCard}>
-                                <View style={styles.reportRow}>
-                                    <LinearGradient
-                                        colors={[r.color + '55', r.color + '22']}
-                                        style={styles.iconBg}>
-                                        <Text style={styles.icon}>{r.icon}</Text>
-                                    </LinearGradient>
-                                    <View style={styles.reportInfo}>
-                                        <Text style={[styles.reportTitle, { color: colors.textPrimary }]}>{r.title}</Text>
-                                        <Text style={[styles.reportDesc, { color: colors.textSecondary }]}>{r.desc}</Text>
-                                        <View style={[styles.formatBadge, { backgroundColor: r.color + '33', borderColor: r.color + '99' }]}>
-                                            <Text style={[styles.formatText, { color: r.color }]}>{r.format}</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={[styles.arrow, { color: colors.textMuted }]}>›</Text>
+                        <TouchableOpacity onPress={() => handleReport(r.id)} activeOpacity={0.8} style={styles.reportCard}>
+                            <View style={styles.reportRow}>
+                                <View style={[styles.iconBg, { backgroundColor: r.color + '15' }]}>
+                                    <Text style={styles.icon}>{r.icon}</Text>
                                 </View>
-                            </GlassCard>
+                                <View style={styles.reportInfo}>
+                                    <Text style={[styles.reportTitle, { color: colors.textPrimary }]}>{r.title}</Text>
+                                    <Text style={[styles.reportDesc, { color: colors.textSecondary }]}>{r.desc}</Text>
+                                    <View style={[styles.formatBadge, { backgroundColor: r.color + '10', borderColor: r.color + '30' }]}>
+                                        <Text style={[styles.formatText, { color: r.color }]}>{r.format}</Text>
+                                    </View>
+                                </View>
+                                <Text style={[styles.arrow, { color: colors.textSecondary }]}>→</Text>
+                            </View>
                         </TouchableOpacity>
                     </Animated.View>
                 ))}
 
-                {/* Info card */}
-                <GlassCard style={styles.infoCard}>
+                <View style={[styles.infoCard, { backgroundColor: colors.inputBackground }]}>
                     <Text style={styles.infoIcon}>ℹ️</Text>
                     <Text style={[styles.infoText, { color: colors.textSecondary }]}>
                         PDF reports can be downloaded directly to your device. List reports show paginated data within the app.
                     </Text>
-                </GlassCard>
+                </View>
             </ScrollView>
         </View>
     );
@@ -92,21 +87,21 @@ const ReportScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    scroll: { padding: 20, paddingBottom: 40 },
-    heading: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
-    reportCard: { marginBottom: 12, padding: 16 },
+    scroll: { padding: 20, paddingBottom: 60 },
+    heading: { fontSize: 24, fontWeight: '900', marginBottom: 20 },
+    reportCard: { backgroundColor: '#fff', borderRadius: 24, padding: 20, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
     reportRow: { flexDirection: 'row', alignItems: 'center' },
-    iconBg: { width: 52, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
-    icon: { fontSize: 26 },
+    iconBg: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    icon: { fontSize: 24 },
     reportInfo: { flex: 1 },
-    reportTitle: { fontSize: 15, fontWeight: '700', marginBottom: 2 },
-    reportDesc: { fontSize: 12, marginBottom: 6 },
-    formatBadge: { alignSelf: 'flex-start', borderRadius: 20, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 2 },
-    formatText: { fontSize: 10, fontWeight: '700' },
-    arrow: { fontSize: 24, marginLeft: 8 },
-    infoCard: { padding: 14, flexDirection: 'row', alignItems: 'flex-start', marginTop: 8 },
-    infoIcon: { fontSize: 16, marginRight: 10, marginTop: 2 },
-    infoText: { fontSize: 12, flex: 1, lineHeight: 18 },
+    reportTitle: { fontSize: 16, fontWeight: '800', marginBottom: 2 },
+    reportDesc: { fontSize: 12, marginBottom: 8, fontWeight: '500' },
+    formatBadge: { alignSelf: 'flex-start', borderRadius: 10, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3 },
+    formatText: { fontSize: 10, fontWeight: '800' },
+    arrow: { fontSize: 18, marginLeft: 10, fontWeight: '800' },
+    infoCard: { padding: 20, flexDirection: 'row', alignItems: 'flex-start', marginTop: 10, borderRadius: 20 },
+    infoIcon: { fontSize: 16, marginRight: 12, marginTop: 2 },
+    infoText: { fontSize: 12, flex: 1, lineHeight: 18, fontWeight: '600' },
 });
 
 export default ReportScreen;

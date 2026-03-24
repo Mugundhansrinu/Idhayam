@@ -1,264 +1,343 @@
 /**
- * api/index.ts — All API service functions for Idhayam Distributor App
- * Mapped directly from DIGISAILOR_JSON_DETAILS.xlsx
+ * api/index.ts — Mock API service functions for Idhayam Distributor App
  */
-import { encode } from 'base-64';
+
 import {
     BASE_URL,
-    AUTH_BASE_URL,
-    API_TOKEN,
-    DEVICE_INFO,
     DEMO_CUSTOMER_ID,
-    DEMO_BRANCH_ID,
     DEMO_CUST_TYPE,
-    DEMO_PARTY_MUD_ID,
+    API_TOKEN
 } from './config';
+import { encode as btoa } from 'base-64';
 
-/** Shared fetch wrapper */
-async function apiFetch(url: string, body?: object, method = 'POST'): Promise<any> {
-    const res = await fetch(url, {
-        method,
-        headers: {
-            'Authorization': API_TOKEN,
-            'Content-Type': 'application/json',
-        },
-        body: body ? JSON.stringify(body) : undefined,
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(`API Error [${res.status}]: ${JSON.stringify(data)}`);
-    return data;
-}
+/** Mock delay simulator */
+const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  AUTH
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Version check — called on app launch */
-export async function checkAppVersion(version: string): Promise<any> {
-    return apiFetch(`${AUTH_BASE_URL}/CLOUDAPP_KEY`, {
-        mobilenumber: version,
-        otp: '',
-        frm_dt: '',
-        to_dt: '',
-    });
+export async function checkAppVersion(): Promise<any> {
+    const pkg = require('../../package.json');
+    const appVersion = pkg?.version || '0.0.1';
+
+    const payload = {
+        "mobilenumber": appVersion,
+        "otp": "",
+        "frm_dt": "",
+        "to_dt": ""
+    };
+    
+    // Strict Minification (removing spaces/newlines)
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+    
+    try {
+        const response = await fetch('http://117.232.71.91:2101/MOB/APPEAL_UAT', {
+            method: 'POST',
+            headers: {
+                'F': 'CLOUDAPP_KEY',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST'
+            }
+        });
+        
+        // Handling both text and json response gracefully
+        const textData = await response.text();
+        console.log("CLOUDAPP_KEY Response:", textData);
+        return textData ? JSON.parse(textData) : { success: true };
+    } catch (e) {
+        console.error("CLOUDAPP_KEY Error:", e);
+        return { success: false };
+    }
 }
 
-/** Fetch list of mobile numbers linked to a PAN */
 export async function getMobileListByPan(pan: string): Promise<string[]> {
-    const encodedPan = encode(pan);
-    const data = await apiFetch(`${AUTH_BASE_URL}/GetmobileListByPan?pan=${encodedPan}`);
-    console.log('[getMobileListByPan]', data);
-    if (Array.isArray(data)) return data;
-    if (data?.data && Array.isArray(data.data)) return data.data;
-    if (data?.mobilenumber) return [data.mobilenumber];
-    return [];
+    try {
+        const base64Pan = btoa(pan);
+        const response = await fetch('http://117.232.71.91:2101/MOB/APPEAL_UAT', {
+            method: 'GET',
+            headers: {
+                'F': 'GetmobileListByPan',
+                'MODE': 'MOBILE',
+                'P': `pan=${base64Pan}`,
+                'J': '',
+                'M': 'GET',
+                'Authorization': API_TOKEN
+            }
+        });
+        const textData = await response.text();
+        console.log("GetmobileListByPan Response:", textData);
+        // Safely parse array response or return mock on fail
+        const data = textData ? JSON.parse(textData) : null;
+        return Array.isArray(data) ? data : ['9443534646', '9876543210'];
+    } catch (e) {
+        console.error("GetmobileListByPan Error:", e);
+        return ['9443534646', '9876543210']; // fallback mock
+    }
 }
 
-/** Generate OTP for selected mobile */
 export async function generateOtp(pan: string, mobile: string): Promise<any> {
-    const encodedPan = encode(pan);
-    return apiFetch(`${AUTH_BASE_URL}/Cust_OTP_GEN`, {
-        mobilenumber: mobile,
-        pan: encodedPan,
-        pwd: DEVICE_INFO,
-    });
+    await delay(400);
+    return { success: true, message: 'OTP Generated' };
 }
 
-/** Verify OTP */
 export async function verifyOtp(pan: string, mobile: string, otp: string): Promise<any> {
-    const encodedPan = encode(pan);
-    return apiFetch(`${BASE_URL}/Cust_OTP_VER`, {
-        mobilenumber: mobile,
-        pan: encodedPan,
-        otp,
-        pwd: DEVICE_INFO,
-    });
+    await delay(600);
+    return { success: true, message: 'OTP Verified' };
 }
 
-/** Final login — returns customer session data */
 export async function loginCheck(pan: string, mobile: string, deviceId: string): Promise<any> {
-    const encodedPan = encode(pan);
-    return apiFetch(`${BASE_URL}/Cust_LOGIN_CHK`, {
-        pan: encodedPan,
-        mobilenumber: mobile,
-        eid: DEMO_PARTY_MUD_ID,
-        did: deviceId,
-        pname: 'IDHAYAM',
-        dmobno: '',
-        deviceinfo: DEVICE_INFO,
-    });
+    await delay(800);
+    return {
+        success: true,
+        data: {
+            custId: DEMO_CUSTOMER_ID,
+            custName: 'IDHAYAM DISTRIBUTORS',
+            token: 'mock-token-123',
+        }
+    };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DASHBOARD / HOME
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Check customer balance */
-export async function getCustomerBalance(custId = DEMO_CUSTOMER_ID, custType = DEMO_CUST_TYPE): Promise<any> {
-    return apiFetch(`${BASE_URL}/CUST_BALANCE_CHK`, { A: custId, B: custType });
+export async function getCustomerBalance(custId = DEMO_CUSTOMER_ID): Promise<any> {
+    const payload = { A: custId, B: DEMO_CUST_TYPE };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'CUST_BALANCE_CHK',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('CUST_BALANCE_CHK Raw Response:', textData);
+
+        // Helper: keep parsing as long as the value is a JSON string
+        const deepParse = (val: any): any => {
+            if (typeof val === 'string') {
+                try { return deepParse(JSON.parse(val)); } catch { return val; }
+            }
+            return val;
+        };
+
+        // Fully unwrap all encoding layers
+        const outer = deepParse(textData);
+        console.log('CUST_BALANCE_CHK Outer:', JSON.stringify(outer));
+
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            console.log('CUST_BALANCE_CHK Inner:', JSON.stringify(inner));
+
+            return {
+                balance:      inner.DMOBNO ?? '0.00',   // Outstanding amount
+                pendingOrder: inner.MOBNO  ?? '0.00',   // Orders in queue
+                netBalance:   inner.NAME   ?? '0.00',   // Net payable
+            };
+        }
+    } catch (e) {
+        console.error('CUST_BALANCE_CHK Error:', e);
+    }
+
+    // Fallback so UI never breaks
+    return { balance: '0.00', pendingOrder: '0.00', netBalance: '0.00' };
 }
 
-/** Get invoiced vehicle list for delivery tracking */
-export async function getInvoicedVehicleList(branchId = DEMO_BRANCH_ID, custId = DEMO_CUSTOMER_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/CheckVehicleDetails`, {
-        A: branchId,
-        B: custId,
-        C: 'GetInvoicedVehicleList',
-    });
+export async function getInvoicedVehicleList(custId = DEMO_CUSTOMER_ID): Promise<any> {
+    await delay(500);
+    return [
+        { vehicleNo: 'TN67BH5688', tripRefNo: 'TJ-1870', branchId: '92', tripId: '79' }
+    ];
 }
 
-/** Get vehicle tracking status for a trip */
 export async function getVehicleTracking(branchId: string, tripId: string, tripRefNo: string): Promise<any> {
-    return apiFetch(`http://117.232.71.91:2101/School/GetVehicleTrackingStatus`, {
-        A: branchId,
-        B: tripId,
-        C: 'GetVehicleTrackingStatus',
-        D: '',
-        E: 'No',
-        F: tripRefNo,
-        G: 'PARTY',
-    });
+    await delay(800);
+    return {
+        latitude: 9.3622,
+        longitude: 77.9404,
+        status: 'On the way',
+        lastUpdated: new Date().toISOString()
+    };
 }
 
-/** Get stop list / map waypoints for a trip */
 export async function getTripStopList(tripTransId: string, tripRefNo: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/GetStopList`, {
-        A: DEMO_BRANCH_ID,
-        B: tripTransId,
-        C: custId,
-        D: tripRefNo,
-        E: 'Yes',
-        F: '',
-    });
+    await delay(600);
+    return [
+        { id: '1', name: 'Virudhunagar Hub', reached: true },
+        { id: '2', name: 'Sivakasi Point', reached: false },
+        { id: '3', name: 'Madurai Depot', reached: false },
+    ];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DISCOUNT
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Discount summary */
-export async function getDiscountSummary(custId = DEMO_CUSTOMER_ID, custType = DEMO_CUST_TYPE): Promise<any> {
-    return apiFetch(`${BASE_URL}/CUST_DISCOUNT_SUM`, {
+export async function getDiscountSummary(custId = DEMO_CUSTOMER_ID): Promise<any> {
+    const payload = {
         A: custId,
-        B: custType,
+        B: DEMO_CUST_TYPE,
         C: 'DISCOUNT_NAME',
         D: '',
-    });
+    };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+
+    // Reusable deep-parse helper (handles multi-encoded JSON strings)
+    const deepParse = (val: any): any => {
+        if (typeof val === 'string') {
+            try { return deepParse(JSON.parse(val)); } catch { return val; }
+        }
+        return val;
+    };
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'CUST_DISCOUNT_SUM',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('CUST_DISCOUNT_SUM Raw Response:', textData);
+
+        const outer = deepParse(textData);
+        console.log('CUST_DISCOUNT_SUM Outer:', JSON.stringify(outer));
+
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            console.log('CUST_DISCOUNT_SUM Inner:', JSON.stringify(inner));
+
+            // Result may be an array or a single object — normalise to array
+            const rows = Array.isArray(inner) ? inner : [inner];
+            return rows;
+        }
+    } catch (e) {
+        console.error('CUST_DISCOUNT_SUM Error:', e);
+    }
+
+    // Fallback so UI never breaks
+    return [];
 }
 
-/** Discount detail by discount IDs */
-export async function getDiscountDetail(discountIds: string, custId = DEMO_CUSTOMER_ID, custType = DEMO_CUST_TYPE): Promise<any> {
-    return apiFetch(`${BASE_URL}/CUST_DISCOUNT`, {
-        A: custId,
-        B: custType,
-        C: 'DISCOUNT_DETAIL',
-        D: 'TD',
-        E: discountIds,
-    });
+export async function getDiscountDetail(discountIds: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
+    await delay(600);
+    return [
+        { id: '101', slab: 'Slab 1', disc: '5%', min: '100', max: '500' },
+        { id: '101', slab: 'Slab 2', disc: '8%', min: '501', max: '2000' }
+    ];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  PRICE DETAILS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Get price list for customer */
 export async function getPriceList(custId = DEMO_CUSTOMER_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/FetchOrderItems?Cust_Id=${custId}`, undefined, 'GET');
+    await delay(600);
+    return [
+        { id: '1', name: 'H.Refined Groundnut Oil 1L', price: '195.00', unit: 'Bottle' },
+        { id: '2', name: 'H.Refined Groundnut Oil 500ml', price: '102.00', unit: 'Bottle' },
+        { id: '3', name: 'H.Sesame Oil 1L', price: '345.00', unit: 'Pouch' },
+        { id: '4', name: 'H.Sesame Oil 500ml', price: '178.00', unit: 'Pouch' }
+    ];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  ORDERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Fetch available items for an order */
 export async function getOrderItems(custId = DEMO_CUSTOMER_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/FetchOrderItems?Cust_Id=${custId}`, undefined, 'GET');
+    return getPriceList(custId);
 }
 
-/** Submit a new order */
-export async function submitOrder(custId: string, orderDetails: any[], branchId = DEMO_BRANCH_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/OrderCreation`, {
-        A: custId,
-        B: JSON.stringify(orderDetails),
-        C: branchId,
-        D: null,
-        E: null,
-        F: null,
-        G: null,
-        H: null,
-        I: null,
-        J: null,
-    });
+export async function submitOrder(custId: string, orderDetails: any[]): Promise<any> {
+    await delay(1000);
+    return {
+        success: true,
+        orderId: 'ORD-' + Math.floor(Math.random() * 90000 + 10000),
+        message: 'Order placed successfully'
+    };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  REPORTS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Fetch order list (report) */
-export async function getOrderList(fromDate: string, toDate: string, custId = DEMO_CUSTOMER_ID, branchId = DEMO_BRANCH_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/FetchOrderList`, {
-        A: fromDate,
-        B: toDate,
-        C: 'ORD',
-        D: branchId,
-        E: custId,
-    });
+export async function getOrderList(fromDate: string, toDate: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
+    await delay(700);
+    return [
+        { id: 'ORD-12345', date: '2026-03-15', amount: '5840.00', status: 'Delivered' },
+        { id: 'ORD-12348', date: '2026-03-18', amount: '2210.00', status: 'Pending' }
+    ];
 }
 
-/** Fetch invoice list */
-export async function getInvoiceList(fromDate: string, toDate: string, type: 'SI' | 'CNDN' = 'SI', custId = DEMO_CUSTOMER_ID, branchId = DEMO_BRANCH_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/FetchBills`, {
-        A: fromDate,
-        B: toDate,
-        C: type,
-        D: branchId,
-        E: custId,
-    });
+export async function getInvoiceList(fromDate: string, toDate: string, type: 'SI' | 'CNDN' = 'SI', custId = DEMO_CUSTOMER_ID): Promise<any> {
+    await delay(700);
+    return [
+        { id: 'INV-7890', date: '2026-03-10', amount: '12400.00' },
+        { id: 'INV-7901', date: '2026-03-12', amount: '8560.00' }
+    ];
 }
 
-/** Download invoice or CNDN PDF — returns PDF URL or base64 */
-export async function downloadBillPdf(type: 'SI' | 'CNDN', billIds: string, branchId = DEMO_BRANCH_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/FetchBillsPdf`, {
-        A: type,
-        B: billIds,
-        C: branchId,
-    });
+export async function downloadBillPdf(type: 'SI' | 'CNDN', billIds: string): Promise<any> {
+    await delay(1200);
+    return { success: true, url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' };
 }
 
-/** Fetch transaction details (ledger) */
 export async function getTransactionList(fromDate: string, toDate: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
-    return apiFetch(`${BASE_URL}/FetchTransDetails`, {
-        A: fromDate,
-        B: toDate,
-        C: custId,
-    });
+    await delay(700);
+    return [
+        { id: 'T1', date: '2026-03-01', type: 'Payment', credit: '10000.00', debit: '0.00', balance: '10000.00' },
+        { id: 'T2', date: '2026-03-05', type: 'Invoice', credit: '0.00', debit: '4500.00', balance: '5500.00' }
+    ];
 }
 
-/** Download transaction PDF */
 export function getTransactionPdfUrl(custId = DEMO_CUSTOMER_ID): string {
-    return `${BASE_URL}/FetchTransDetailsPdf?Cust_Id=${custId}`;
+    return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  CONTACT US
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Fetch contact info */
-export async function getContactInfo(branchId = DEMO_BRANCH_ID, custId = DEMO_CUSTOMER_ID, custType = DEMO_CUST_TYPE): Promise<any> {
-    return apiFetch(`${BASE_URL}/APP_Contact`, {
-        otp: branchId,
-        mobilenumber: API_TOKEN.replace('Bearer ', ''),
-        frm_dt: custId,
-        to_dt: custType,
-    });
+export async function getContactInfo(custId = DEMO_CUSTOMER_ID): Promise<any> {
+    await delay(400);
+    return {
+        company: 'IDHAYAM DISTRIBUTOR HEAD OFFICE',
+        address: 'Virudhunagar, Tamil Nadu',
+        phone: '+91 4562 252 252',
+        email: 'info@idhayam.com'
+    };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  BANK DETAILS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Fetch virtual/bank account details */
-export async function getBankDetails(custId = DEMO_CUSTOMER_ID, custType = DEMO_CUST_TYPE): Promise<any> {
-    return apiFetch(`${BASE_URL}/CUST_VitruaAcc_CHK`, { A: custId, B: custType });
+export async function getBankDetails(custId = DEMO_CUSTOMER_ID): Promise<any> {
+    await delay(400);
+    return {
+        accName: 'IDHAYAM G-NUT OIL PVT LTD',
+        accNo: '923020012345678',
+        ifsc: 'UTIB0000123',
+        bank: 'AXIS BANK LTD',
+        branch: 'VIRUDHUNAGAR'
+    };
 }
+

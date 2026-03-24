@@ -16,7 +16,6 @@ import { RootStackParamList } from '../../App';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
 import GlassCard from '../components/GlassCard';
 import GlassHeader from '../components/GlassHeader';
 
@@ -57,33 +56,12 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
         }));
     };
 
-    // Animation values for Page 2 scroll
     const scrollY = React.useRef(new Animated.Value(0)).current;
 
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: false }
     );
-
-    // Interpolations
-    const bottomBarHeight = scrollY.interpolate({
-        inputRange: [0, 100],
-        outputRange: [140, 70],
-        extrapolate: 'clamp',
-    });
-
-    const elementsOpacity = scrollY.interpolate({
-        inputRange: [0, 50],
-        outputRange: [1, 0],
-        extrapolate: 'clamp',
-    });
-
-    // Reverse opacity for the small layout elements
-    const smallElementsOpacity = scrollY.interpolate({
-        inputRange: [50, 100],
-        outputRange: [0, 1],
-        extrapolate: 'clamp',
-    });
 
     const updateOrder = (id: string, field: 'box' | 'pcs', value: string) => {
         setOrders(prev => ({
@@ -98,7 +76,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
         const pcs = parseFloat(o?.pcs || '0');
         const totalPcs = (box * p.perBox) + pcs;
         const amount = totalPcs * p.price;
-        const tax = amount * 0.05; // mock 5%
+        const tax = amount * 0.05;
         return { ...p, box, pcs, totalPcs, amount, tax, totalAmount: amount + tax };
     }).filter(o => o.box > 0 || o.pcs > 0);
 
@@ -110,22 +88,13 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: '#eeeeeeff' }]}>
             <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-            {/* Background Core */}
-            <LinearGradient
-                colors={[BrandColors.blue900, BrandColors.blue800, '#0a1a4e']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFill}
-            />
-            <OilFlowBackground />
-
-            {/* Header */}
             <GlassHeader
-                title="Order Details"
-                subtitle={page === 1 ? "Enter Item Quantities" : "Review Order Summary"}
+                title="Order Entry"
+                subtitle={page === 1 ? "Select items and quantities" : "Review your order"}
+                gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
                 onBack={() => {
                     if (page === 2) setPage(1);
                     else navigation.goBack();
@@ -133,7 +102,6 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
             />
 
             {page === 1 ? (
-                // ── PAGE 1: Item Entry (Glass Cards) ──
                 <View style={styles.flex1}>
                     <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                         {Object.entries(
@@ -149,154 +117,105 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                                     onPress={() => toggleGroup(groupName)}
                                     activeOpacity={0.8}
                                 >
-                                    <View style={[styles.groupBadge, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-                                        <Text style={[styles.groupHeaderText, { color: BrandColors.yellow500 }]}>
+                                    <View style={[styles.groupBadge, { backgroundColor: colors.inputBackground, borderColor: colors.divider }]}>
+                                        <Text style={[styles.groupHeaderText, { color: BrandColors.primaryGradientStart }]}>
                                             {expandedGroups[groupName] === false ? '▶' : '▼'} {groupName}
                                         </Text>
                                     </View>
                                 </TouchableOpacity>
 
                                 {expandedGroups[groupName] !== false && items.map((p) => (
-                                    <GlassCard key={p.id} style={styles.productCard}>
+                                    <View key={p.id} style={styles.productCard}>
                                         <Text style={[styles.productName, { color: colors.textPrimary }]}>{p.name}</Text>
                                         <Text style={[styles.productSub, { color: colors.textSecondary }]}>Price: ₹{p.price.toFixed(2)}   •   Per Box: {p.perBox}</Text>
 
-                                        <View style={styles.inputContainerRow}>
+                                        <View style={styles.inputRow}>
                                             <View style={styles.inputBox}>
-                                                <Text style={[styles.inputLabel, { color: colors.textMuted }]}>BOX QTY</Text>
+                                                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>BOX QTY</Text>
                                                 <TextInput
-                                                    style={[styles.glassInput, { color: colors.textPrimary, borderColor: colors.glassBorder, backgroundColor: colors.inputBackground }]}
+                                                    style={[styles.input, { color: '#1F1F39', backgroundColor: '#FFFFFF', borderColor: '#C8C8D8' }]}
                                                     value={orders[p.id]?.box || ''}
                                                     onChangeText={v => updateOrder(p.id, 'box', v)}
                                                     keyboardType="numeric"
                                                     placeholder="0"
-                                                    placeholderTextColor={colors.inputPlaceholder}
+                                                    placeholderTextColor="#888898"
                                                 />
                                             </View>
                                             <View style={styles.inputBox}>
-                                                <Text style={[styles.inputLabel, { color: colors.textMuted }]}>EXTRA PCS</Text>
+                                                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>EXTRA PCS</Text>
                                                 <TextInput
-                                                    style={[styles.glassInput, { color: colors.textPrimary, borderColor: colors.glassBorder, backgroundColor: colors.inputBackground }]}
+                                                    style={[styles.input, { color: '#1F1F39', backgroundColor: '#FFFFFF', borderColor: '#C8C8D8' }]}
                                                     value={orders[p.id]?.pcs || ''}
                                                     onChangeText={v => updateOrder(p.id, 'pcs', v)}
                                                     keyboardType="numeric"
                                                     placeholder="0"
-                                                    placeholderTextColor={colors.inputPlaceholder}
+                                                    placeholderTextColor="#888898"
                                                 />
                                             </View>
                                         </View>
-                                    </GlassCard>
+                                    </View>
                                 ))}
                             </View>
                         ))}
                     </ScrollView>
 
-                    {/* Bottom Nav Page 1 */}
-                    <GlassCard style={styles.bottomBarGlass}>
-                        <TouchableOpacity style={styles.primaryBtn} onPress={() => setPage(2)} activeOpacity={0.8}>
-                            <LinearGradient colors={[BrandColors.yellow500, BrandColors.yellow600]} style={styles.primaryBtnGrad}>
+                    <View style={styles.bottomBar}>
+                        <TouchableOpacity onPress={() => setPage(2)} activeOpacity={0.9}>
+                            <LinearGradient colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.primaryBtn}>
                                 <Text style={styles.primaryBtnText}>REVIEW ORDER  →</Text>
                             </LinearGradient>
                         </TouchableOpacity>
-                    </GlassCard>
+                    </View>
                 </View>
 
             ) : (
-                // ── PAGE 2: Review (Cards) ──
                 <View style={styles.flex1}>
-                    <Animated.ScrollView
-                        contentContainerStyle={styles.scrollContent}
-                        showsVerticalScrollIndicator={false}
-                        onScroll={handleScroll}
-                        scrollEventThrottle={16}
-                    >
-                        <Text style={[styles.reviewTitle, { color: colors.textPrimary }]}>Items In Cart</Text>
+                    <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Order Summary</Text>
 
                         {activeOrders.map((o) => (
-                            <GlassCard key={o.id} style={styles.reviewCard}>
+                            <View key={o.id} style={styles.reviewCard}>
                                 <View style={styles.reviewHeader}>
-                                    <Text style={[styles.reviewGroupName, { color: BrandColors.yellow500 }]}>{o.group}</Text>
+                                    <Text style={[styles.reviewGroupName, { color: BrandColors.primaryGradientStart }]}>{o.group}</Text>
                                     <Text style={[styles.reviewItemName, { color: colors.textPrimary }]}>{o.name}</Text>
                                 </View>
 
-                                <View style={styles.reviewStatsRow}>
-                                    <View style={styles.reviewStat}>
-                                        <Text style={[styles.reviewStatVal, { color: colors.textPrimary }]}>{o.box}</Text>
-                                        <Text style={[styles.reviewStatLbl, { color: colors.textSecondary }]}>BOXES</Text>
+                                <View style={styles.reviewStats}>
+                                    <View style={styles.statItem}>
+                                        <Text style={styles.statVal}>{o.box}</Text>
+                                        <Text style={styles.statLbl}>BOX</Text>
                                     </View>
-                                    <View style={styles.reviewStat}>
-                                        <Text style={[styles.reviewStatVal, { color: colors.textPrimary }]}>{o.pcs}</Text>
-                                        <Text style={[styles.reviewStatLbl, { color: colors.textSecondary }]}>PCS</Text>
+                                    <View style={styles.statItem}>
+                                        <Text style={styles.statVal}>{o.pcs}</Text>
+                                        <Text style={styles.statLbl}>PCS</Text>
                                     </View>
-                                    <View style={styles.reviewStat}>
-                                        <Text style={[styles.reviewStatVal, { color: colors.textPrimary }]}>{o.totalPcs}</Text>
-                                        <Text style={[styles.reviewStatLbl, { color: colors.textSecondary }]}>TOTAL PCS</Text>
+                                    <View style={styles.statItem}>
+                                        <Text style={[styles.statVal, { color: BrandColors.primaryGradientStart }]}>₹{o.totalAmount.toFixed(0)}</Text>
+                                        <Text style={styles.statLbl}>TOTAL</Text>
                                     </View>
                                 </View>
-
-                                <View style={styles.reviewDivider} />
-
-                                <View style={styles.reviewPriceRow}>
-                                    <Text style={[styles.reviewPriceLbl, { color: colors.textSecondary }]}>Price & Tax</Text>
-                                    <Text style={[styles.reviewPriceVal, { color: colors.textPrimary }]}>₹{o.totalAmount.toFixed(2)}</Text>
-                                </View>
-                            </GlassCard>
+                            </View>
                         ))}
 
                         {activeOrders.length === 0 && (
-                            <GlassCard style={styles.reviewCard}>
-                                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No items added to order</Text>
-                            </GlassCard>
+                            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No items in your order.</Text>
                         )}
 
-                        {/* Totals Box */}
-                        <GlassCard accentLine style={styles.finalTotalsCard}>
-                            <View style={styles.totalRow}>
-                                <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>BALANCE</Text>
-                                <Text style={[styles.totalValue, { color: colors.textPrimary }]}>₹3,137.61</Text>
+                        <View style={styles.totalsSection}>
+                            <View style={styles.totalLine}>
+                                <Text style={styles.totalLbl}>Total Amount</Text>
+                                <Text style={[styles.totalValLarger, { color: colors.textPrimary }]}>₹{totalOrderValue.toLocaleString()}</Text>
                             </View>
-                            <View style={[styles.totalRow, { marginVertical: 8 }]} >
-                                <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>PENDING</Text>
-                                <Text style={[styles.totalValue, { color: colors.textPrimary }]}>*₹104,668.00</Text>
-                            </View>
-                            <View style={styles.reviewDivider} />
-                            <View style={styles.totalRow}>
-                                <Text style={[styles.totalLabel, { color: BrandColors.yellow500, fontWeight: 'bold' }]}>NET BALANCE</Text>
-                                <Text style={[styles.totalValue, { color: BrandColors.yellow500, fontWeight: 'bold' }]}>*₹-101,530.39</Text>
-                            </View>
-                        </GlassCard>
-                    </Animated.ScrollView>
+                        </View>
+                    </ScrollView>
 
-                    {/* Bottom Nav Page 2 - Animated */}
-                    <Animated.View style={[styles.bottomBarGlassPage2Anim, { height: bottomBarHeight }]}>
-                        <GlassCard style={{ ...styles.fullHeightGlassOuter as any, backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }}>
-                            {/* LARGE Layout (Fades out on scroll) */}
-                            <Animated.View style={[styles.bottomBarColumn, { opacity: elementsOpacity }]} pointerEvents="box-none">
-                                <View style={styles.totalSection}>
-                                    <Text style={[styles.bottomTotalLabel, { color: colors.textSecondary }]}>Grand Total</Text>
-                                    <Text style={[styles.bottomTotalValue, { color: BrandColors.yellow500 }]}>*₹{totalOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
-                                </View>
-                                <TouchableOpacity style={styles.primaryBtn} onPress={handleSave} activeOpacity={0.8}>
-                                    <LinearGradient colors={[BrandColors.yellow500, BrandColors.yellow600]} style={styles.primaryBtnGrad}>
-                                        <Text style={styles.primaryBtnText}>CONFIRM ORDER  →</Text>
-                                    </LinearGradient>
-                                </TouchableOpacity>
-                            </Animated.View>
-
-                            {/* SMALL Layout (Fades in on scroll) */}
-                            <Animated.View style={[styles.bottomBarRowSmall, { opacity: smallElementsOpacity }]} pointerEvents="box-none">
-                                <View>
-                                    <Text style={[styles.bottomTotalLabelSmall, { color: colors.textSecondary }]}>Total</Text>
-                                    <Text style={[styles.bottomTotalValueSmall, { color: BrandColors.yellow500 }]}>₹{totalOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
-                                </View>
-                                <TouchableOpacity style={styles.primaryBtnSm} onPress={handleSave} activeOpacity={0.8}>
-                                    <LinearGradient colors={[BrandColors.yellow500, BrandColors.yellow600]} style={styles.primaryBtnGradSm}>
-                                        <Text style={[styles.primaryBtnText, { fontSize: 13 }]}>CONFIRM</Text>
-                                    </LinearGradient>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        </GlassCard>
-                    </Animated.View>
+                    <View style={styles.bottomBar}>
+                        <TouchableOpacity onPress={handleSave} activeOpacity={0.9}>
+                            <LinearGradient colors={[BrandColors.verifyGradientStart, BrandColors.verifyGradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.primaryBtn}>
+                                <Text style={styles.primaryBtnText}>✓  CONFIRM ORDER</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             )}
         </View>
@@ -306,62 +225,39 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     flex1: { flex: 1 },
-    scrollContent: { paddingHorizontal: 16, paddingBottom: 150, paddingTop: 16 },
+    scrollContent: { padding: 20, paddingBottom: 100 },
+    groupContainer: { marginBottom: 25 },
+    groupHeader: { marginBottom: 15 },
+    groupBadge: { paddingHorizontal: 15, paddingVertical: 8, borderRadius: 12, borderWidth: 1, alignSelf: 'flex-start' },
+    groupHeaderText: { fontSize: 13, fontWeight: '800', letterSpacing: 0.5 },
 
-    // Groups
-    groupContainer: { marginBottom: 16 },
-    groupHeader: { marginBottom: 12, alignSelf: 'flex-start' },
-    groupBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1 },
-    groupHeaderText: { fontSize: 13, fontWeight: 'bold', letterSpacing: 0.5 },
+    productCard: { backgroundColor: '#fff', borderRadius: 20, padding: 20, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
+    productName: { fontSize: 18, fontWeight: '800', marginBottom: 4 },
+    productSub: { fontSize: 13, marginBottom: 15 },
+    inputRow: { flexDirection: 'row', justifyContent: 'space-between' },
+    inputBox: { width: '47%' },
+    inputLabel: { fontSize: 11, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5 },
+    input: { borderRadius: 12, borderWidth: 1, paddingHorizontal: 15, paddingVertical: Platform.OS === 'ios' ? 12 : 8, fontSize: 16, fontWeight: '700' },
 
-    // Page 1 Product Cards
-    productCard: { marginBottom: 14, padding: 18 },
-    productName: { fontSize: 17, fontWeight: 'bold', marginBottom: 4 },
-    productSub: { fontSize: 13, marginBottom: 16, fontStyle: 'italic' },
-    inputContainerRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 16 },
-    inputBox: { flex: 1 },
-    inputLabel: { fontSize: 11, fontWeight: '600', marginBottom: 6, letterSpacing: 0.5 },
-    glassInput: { borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, fontWeight: 'bold' },
+    bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, backgroundColor: 'transparent' },
+    primaryBtn: { borderRadius: 18, paddingVertical: 18, alignItems: 'center', justifyContent: 'center' },
+    primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '800', letterSpacing: 1 },
 
-    // Page 2 Review Cards
-    reviewTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, marginLeft: 4, letterSpacing: 0.3 },
-    reviewCard: { marginBottom: 14, padding: 18 },
-    reviewHeader: { marginBottom: 16 },
-    reviewGroupName: { fontSize: 11, fontWeight: 'bold', letterSpacing: 1, marginBottom: 2, textTransform: 'uppercase' },
-    reviewItemName: { fontSize: 17, fontWeight: 'bold' },
-    reviewStatsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
-    reviewStat: { alignItems: 'center', flex: 1, backgroundColor: 'rgba(0,0,0,0.25)', paddingVertical: 10, borderRadius: 10, marginHorizontal: 4 },
-    reviewStatVal: { fontSize: 16, fontWeight: 'bold' },
-    reviewStatLbl: { fontSize: 10, marginTop: 4, letterSpacing: 0.5 },
-    reviewDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.15)', marginVertical: 14 },
-    reviewPriceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    reviewPriceLbl: { fontSize: 14, fontWeight: '500' },
-    reviewPriceVal: { fontSize: 18, fontWeight: 'bold' },
+    sectionTitle: { fontSize: 24, fontWeight: '900', marginBottom: 20 },
+    reviewCard: { backgroundColor: '#fff', borderRadius: 24, padding: 20, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 15, elevation: 3 },
+    reviewHeader: { marginBottom: 15 },
+    reviewGroupName: { fontSize: 10, fontWeight: '800', letterSpacing: 1, marginBottom: 4, textTransform: 'uppercase' },
+    reviewItemName: { fontSize: 18, fontWeight: '800' },
+    reviewStats: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#F8F9FD', borderRadius: 16, padding: 15 },
+    statItem: { alignItems: 'center' },
+    statVal: { fontSize: 16, fontWeight: '800', color: '#1F1F39' },
+    statLbl: { fontSize: 10, fontWeight: '700', color: '#858597', marginTop: 4 },
 
-    emptyText: { textAlign: 'center', padding: 20, fontSize: 15 },
-
-    finalTotalsCard: { padding: 20, marginTop: 10, marginBottom: 20 },
-    totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    totalLabel: { fontSize: 13, fontWeight: '600', letterSpacing: 0.5 },
-    totalValue: { fontSize: 16, fontWeight: 'bold' },
-
-    // Bottom Action Bars
-    bottomBarGlass: { position: 'absolute', bottom: 16, left: 16, right: 16, padding: 0, borderRadius: 24, overflow: 'hidden' },
-    primaryBtn: { width: '100%' },
-    primaryBtnGrad: { paddingVertical: 18, alignItems: 'center', justifyContent: 'center' },
-    primaryBtnText: { color: '#091A42', fontWeight: 'bold', fontSize: 15, letterSpacing: 1 },
-
-    bottomBarGlassPage2Anim: { position: 'absolute', bottom: 16, left: 16, right: 16 },
-    fullHeightGlassOuter: { padding: 16, borderRadius: 24, height: '100%', justifyContent: 'center' },
-    bottomBarColumn: { flexDirection: 'column', position: 'absolute', top: 16, left: 16, right: 16 },
-    bottomBarRowSmall: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', position: 'absolute', top: 12, left: 16, right: 16 },
-    totalSection: { alignItems: 'center', marginBottom: 12 },
-    bottomTotalLabel: { fontSize: 13, fontWeight: '600', letterSpacing: 0.5, marginBottom: 2, textTransform: 'uppercase' },
-    bottomTotalValue: { fontSize: 24, fontWeight: 'bold' },
-    bottomTotalLabelSmall: { fontSize: 11, fontWeight: '600', letterSpacing: 0.5, marginBottom: 0, textTransform: 'uppercase' },
-    bottomTotalValueSmall: { fontSize: 18, fontWeight: 'bold' },
-    primaryBtnSm: { borderRadius: 14, overflow: 'hidden', elevation: 2 },
-    primaryBtnGradSm: { paddingVertical: 10, paddingHorizontal: 16, justifyContent: 'center' },
+    emptyText: { textAlign: 'center', marginTop: 40, fontSize: 16 },
+    totalsSection: { marginTop: 20, paddingHorizontal: 10 },
+    totalLine: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    totalLbl: { fontSize: 16, fontWeight: '600', color: '#858597' },
+    totalValLarger: { fontSize: 28, fontWeight: '900' },
 });
 
 export default OrderEntryScreen;

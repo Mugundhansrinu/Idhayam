@@ -1,0 +1,53 @@
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.83.4
+              Fast - Scalable - Integrated
+
+
+[31m[1merror[22m[39m [0mUnable to resolve module ../components/OilFlowBackground from C:\ReactWorkSpace\Idhayam\src\screens\RegistrationScreen.tsx: 
+
+None of these files exist:
+  * src\components\OilFlowBackground(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\components\OilFlowBackground
+[0m [90m 23 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../theme'[39m[33m;[39m
+ [90m 24 |[39m [36mimport[39m { [33mBrandColors[39m } [36mfrom[39m [32m'../theme/Colors'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 25 |[39m [36mimport[39m [33mOilFlowBackground[39m [36mfrom[39m [32m'../components/OilFlowBackground'[39m[33m;[39m
+ [90m    |[39m                                [31m[1m^[22m[39m
+ [90m 26 |[39m [36mimport[39m [33mGlassCard[39m [36mfrom[39m [32m'../components/GlassCard'[39m[33m;[39m
+ [90m 27 |[39m [36mimport[39m { [33mNativeStackNavigationProp[39m } [36mfrom[39m [32m'@react-navigation/native-stack'[39m[33m;[39m
+ [90m 28 |[39m [36mimport[39m { [33mRootStackParamList[39m } [36mfrom[39m [32m'../../App'[39m[33m;[39m[0m.[0m
+[0mError: Unable to resolve module ../components/OilFlowBackground from C:\ReactWorkSpace\Idhayam\src\screens\RegistrationScreen.tsx: 
+
+None of these files exist:
+  * src\components\OilFlowBackground(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * src\components\OilFlowBackground
+[0m [90m 23 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../theme'[39m[33m;[39m
+ [90m 24 |[39m [36mimport[39m { [33mBrandColors[39m } [36mfrom[39m [32m'../theme/Colors'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 25 |[39m [36mimport[39m [33mOilFlowBackground[39m [36mfrom[39m [32m'../components/OilFlowBackground'[39m[33m;[39m
+ [90m    |[39m                                [31m[1m^[22m[39m
+ [90m 26 |[39m [36mimport[39m [33mGlassCard[39m [36mfrom[39m [32m'../components/GlassCard'[39m[33m;[39m
+ [90m 27 |[39m [36mimport[39m { [33mNativeStackNavigationProp[39m } [36mfrom[39m [32m'@react-navigation/native-stack'[39m[33m;[39m
+ [90m 28 |[39m [36mimport[39m { [33mRootStackParamList[39m } [36mfrom[39m [32m'../../App'[39m[33m;[39m[0m
+    at ModuleResolver.resolveDependency (C:\ReactWorkSpace\Idhayam\node_modules\metro\src\node-haste\DependencyGraph\ModuleResolution.js:149:15)
+    at DependencyGraph.resolveDependency (C:\ReactWorkSpace\Idhayam\node_modules\metro\src\node-haste\DependencyGraph.js:256:43)
+    at C:\ReactWorkSpace\Idhayam\node_modules\metro\src\lib\transformHelpers.js:169:21
+    at resolveDependencies (C:\ReactWorkSpace\Idhayam\node_modules\metro\src\DeltaBundler\buildSubgraph.js:47:25)
+    at visit (C:\ReactWorkSpace\Idhayam\node_modules\metro\src\DeltaBundler\buildSubgraph.js:85:30)
+    at async Promise.all (index 4)
+    at async visit (C:\ReactWorkSpace\Idhayam\node_modules\metro\src\DeltaBundler\buildSubgraph.js:94:5)
+    at async Promise.all (index 2)
+    at async visit (C:\ReactWorkSpace\Idhayam\node_modules\metro\src\DeltaBundler\buildSubgraph.js:94:5)
+    at async Promise.all (index 0)[0m

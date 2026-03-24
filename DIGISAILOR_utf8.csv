@@ -1,0 +1,131 @@
+﻿MOBILE APP DEMO URL,,,,,,,,,,
+LOGIN URL,,,,,,,,,,
+URL,http://117.232.71.91:2101/MOB/APPEAL_UAT,,MODE,MOBILE,,,,,,
+PAGE NAME,Function Name (F),Authorization,Parameter  (P),JSON(J),M,,,,,
+VERSION CHECKING,CLOUDAPP_KEY,,,"{
+    ""mobilenumber"":""6.7"", (Mobile Version Check)
+    ""otp"":"""",
+    ""frm_dt"":"""",
+    ""to_dt"":""""
+}",POST,,,,,
+PAN NUMBER CHECK,GetmobileListByPan,Bearer 5HNdr62cpgiZ/Op3AU/uuUXRpkUVurMbVZPrUE+nOF1iHgazGrL8iWUU2jRuPPbU,pan = UzFBMkIzWjRZNg== (Base 64 encode value),,GET,,,,,
+OTP GENERATION,Cust_OTP_GEN,Bearer 5HNdr62cpgiZ/Op3AU/uuUXRpkUVurMbVZPrUE+nOF1iHgazGrL8iWUU2jRuPPbU,,"{
+   ""mobilenumber"":""1237894560"",
+   ""pan"":""UzFBMkIzWjRZNg=="",
+   ""pwd"":""Oneplus ## OPPO ## Never Settle""
+}",GET,,,,,
+OTP VERIFICATION,Cust_OTP_VER,,,"{
+   ""mobilenumber"":""1237894560"",
+   ""pan"":""UzFBMkIzWjRZNg=="",(Base 64 encode value )
+   ""otp"" : ""031682"",
+   ""pwd"":""Oneplus ## OPPO ## Never Settle"" (Device Information)
+}",POST,,,,,
+BRANCH SELECTION ,,,,,,,,,,
+BRANCH SELECTION ,Cust_LOGIN_CHK,,,"{
+    ""pan"":""UzFBMkIzWjRZNg=="",(Base 64 encode value)
+    ""mobilenumber"":""1237894560"",
+    ""eid"":""3004"", (PARTY MUD ID)
+    ""did"":""e21b332ee46131ae"",(Mobile Device ID)
+    ""pname"":""IDHAYAM"",
+    ""dmobno"":"""",
+    ""deviceinfo"":""Oneplus ## OPPO ## Never Settle ## andriod15"" (Mobile Device Information)
+}",POST,,,,,
+HOME PAGE,,,,,,,,,,
+Check Vehicle,CheckVehicleDetails,,,"{
+    ""A"":""51"", (BRANCH ID)
+    ""B"":""10895"", (CUSTOMER ID)
+    ""C"":""GetInvoicedVehicleList""
+}",POST,,,,,
+Get Vehicle Tracking,GetVehicleTrackingStatus,,,"{
+    ""A"":""54"", (BRANCH_ID)
+    ""B"":""79"",(TRIP_ID)
+    ""C"":""GetVehicleTrackingStatus"",
+    ""D"":"""",
+    ""E"":""No"",
+    ""F"":""2025-26-121"",(TRIP_REF_NO)
+    ""G"":""PARTY""
+}",POST,,,,,
+MAP Display,GetStopList,,,"{
+   ""A"":""92"",
+   ""B"":""39869"", (TRIP TRANS ID)
+   ""C"":""10895"", (Customer ID)
+   ""D"":""2025-26-125"", (TRIP_REF_NO)
+   ""E"":""Yes"",
+   ""F"":""""
+}",POST,,,,,
+Customer Balance Check,CUST_BALANCE_CHK,,,"{
+  ""A"":""10895"",
+  ""B"":""CM""
+}",POST,,,,,
+DISCOUNT ,,,,,,,,,,
+Discount Summary,CUST_DISCOUNT_SUM,,,"{
+    ""A"":""10895"", (Customer_ID)
+    ""B"":""CM"", (Customer Type)
+    ""C"":""DISCOUNT_NAME"",
+    ""D"":""""
+}",POST,,,,,
+Discount Detail,CUST_DISCOUNT,,,"   {                                                                                                ""A"":""10895"",
+   ""B"":""CM"",
+   ""C"":""DISCOUNT_DETAIL"",
+   ""D"":""TD"",   (Target Discount)
+ ""E"":""32340,32341,32342,32629,32630,32686""   (Discount ID)                                                                                      }",POST,,,,,
+PRICE DETAILS,,,,,,,,,,
+Price Details,FetchOrderItems,,Cust_Id=10895,,POST,,,,,
+ORDER DETAILS,,,,,,,,,,
+Distributor Order Entry,FetchOrderItems,,Cust_Id=10895,,POST,,,,,
+Distributor order details,OrderCreation,,,"{
+    ""A"":""10895"",  (Customer_ID)                ""B"":""[{\""ITEM_ID\"":\""502\"",\""ITEM_GROUP_ID\"":\""322\"",\""ITEM_GRP_NAME\"":\""Sesame Oil\"",\""ITEM_DESC\"":\""5 LT. CAN\"",\""DISPLAY_NAME\"":null,\""SALES_UOM\"":\""Pcs\"",\""UOM\"":\""Box(4)\"",\""CONV_FACTOR\"":4.0,\""PACKING_FACTOR\"":0.0,\""SO_ID\"":null,\""ORDER_NO\"":null,\""ORDER_DATE\"":null,\""ORD_QTY\"":null,\""TOTAL_BOX\"":null,\""TOTAL_AMOUNT\"":null,\""ORD_PCS\"":80.0,\""APP_PRICE\"":1745.000000,\""PLUS_TAX\"":null,\""APP_MRP\"":2040.000000,\""TAX_PER\"":6980.0,\""APP_LINE_AMT\"":139600.0000000,\""APP_ORDER_AMT\"":146580.0000000,\""ORDER_NO_STR\"":null,\""ID\"":0,\""IG_SORT\"":0,\""APP_PCS\"":null,\""APP_QTY\"":null,\""USR_ID\"":2937,\""STATUS\"":null,\""BOX_QTY\"":20.0,\""PCS_QTY\"":0.0,\""PRICETAG\"":true,\""FaList\"":null,\""IsRefreshing\"":false,\""RefreshCommand\"":null}]"", (ORDER DETAILS)
+    ""C"":""92"" ,(Branch ID)                                                    ""D"":null,                                                                                    ""E"":null,                                                                                     ""F"":null,                                                                                       ""G"":null,
+    ""H"":null,                                                                        ""I"":null,                                                                                     ""J"":null
+}",POST,,,,,
+REPORT ,,,,,,,,,,
+Order Details Show ,FetchOrderList,,,"{
+    ""A"":""01/01/2026"", (From Date )
+    ""B"":""01/31/2026"",(To Date )
+    ""C"":""ORD"", (Type)
+    ""D"":""92"", (Branch ID)
+    ""E"":""10895""(Customer Id)
+}",POST,,,,,
+Invoice Details Show,FetchBills,,,"{
+       ""A"":""01/01/2026"", (From Date )
+    ""B"":""01/31/2026"",(To Date )
+    ""C"":""SI"", (Type)
+    ""D"":""92"", (Branch ID)
+    ""E"":""10895""(Customer Id)
+}",POST,,,,,
+Invoice Report ,FetchBillsPdf,,,"{
+  ""A"":""SI"", (TYPE)
+    ""B"":""601210,598838"", (Bill ID)
+    ""C"":""92"" (Branch ID)
+}",POST,,,,,
+CNDN SHOW,FetchBills,,,"{
+    ""A"":""12/01/2023"", 
+    ""B"":""12/01/2023"",
+    ""C"":""CNDN"", 
+    ""D"":""92"",
+    ""E"":""10895""
+}",POST,,,,,
+CNDN Details Report,FetchBillsPdf,,,"{
+  ""A"":""CNDN"", (TYPE)
+    ""B"":""601210,598838"", (Credit Note ID)
+    ""C"":""92"" (Branch ID)
+}",POST,,,,,
+Transaction Report,FetchTransDetails,,,"{
+    ""A"":""04/01/2025"", (From Date)
+    ""B"":""12/31/2025"", (To Date)
+    ""C"":""10895""  (Customer id)
+}",POST,,,,,
+TRANSACTION ,,,,,POST,,,,,
+TRANSACTION ,FetchTransDetailsPdf,,Cust_Id=10895,,POST,,,,,
+CONTACT US,,,,,POST,,,,,
+Contact Us,APP_Contact,,,"{
+    ""otp"":""92"", (Branch ID)
+    ""mobilenumber"":""5HNdr62cpgiZ/Op3AU/uuUXRpkUVurMbVZPrUE+nOF1iHgazGrL8iWUU2jRuPPbU"", (Token )
+    ""frm_dt"":""10895"", (Customer id)
+    ""to_dt"":""CM"" ( Cust type)
+}",POST,,,,,
+BANK DETAIL,,,,,POST,,,,,
+Bank Account Details,CUST_VitrualAcc_CHK,,,"{
+  ""A"":""10895"",
+  ""B"":""CM""
+}",POST,,,,,

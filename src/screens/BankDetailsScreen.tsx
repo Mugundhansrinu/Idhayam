@@ -1,19 +1,24 @@
-/**
- * BankDetailsScreen – Company bank details for payment
- */
 import React, { useRef, useEffect } from 'react';
 import {
-    View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    Animated, ScrollView, Alert, Clipboard,
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    StatusBar,
+    Animated,
+    ScrollView,
+    Alert,
+    Clipboard,
+    Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
-import GlassCard from '../components/GlassCard';
 import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+
+const { width } = Dimensions.get('window');
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'BankDetails'> };
 
@@ -26,7 +31,7 @@ const BANKS = [
         branch: 'Anna Salai, Chennai',
         type: 'Current Account',
         icon: '🏦',
-        color: '#1A5276',
+        color: '#7B61FF',
     },
     {
         bank: 'HDFC Bank',
@@ -36,17 +41,7 @@ const BANKS = [
         branch: 'T Nagar, Chennai',
         type: 'Current Account',
         icon: '🏛️',
-        color: '#943126',
-    },
-    {
-        bank: 'ICICI Bank',
-        accountName: 'Idhayam Exports Ltd',
-        accountNo: '001105011879',
-        ifsc: 'ICIC0000011',
-        branch: 'Nugambakkam, Chennai',
-        type: 'Current Account',
-        icon: '🏢',
-        color: '#7D6608',
+        color: '#FD79A8',
     },
 ];
 
@@ -68,24 +63,23 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
     const CopyField = ({ label, value }: { label: string; value: string }) => (
         <TouchableOpacity style={styles.fieldRow} onPress={() => copyToClipboard(value, label)} activeOpacity={0.7}>
             <View style={styles.fieldInfo}>
-                <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>{label}</Text>
+                <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
                 <Text style={[styles.fieldValue, { color: colors.textPrimary }]}>{value}</Text>
             </View>
-            <Text style={[styles.copyIcon, { color: colors.textLink }]}>📋</Text>
+            <Text style={{ fontSize: 16 }}>📋</Text>
         </TouchableOpacity>
     );
 
     return (
-        <View style={styles.container}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-            <LinearGradient colors={[BrandColors.blue900, BrandColors.blue800, '#0a1a4e']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-            <OilFlowBackground />
-            <GlassHeader title="Bank Details" subtitle="Company bank accounts for payment" onBack={() => navigation.goBack()} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            
+            <GlassHeader title="Bank Details" subtitle="Company accounts for payment" onBack={() => navigation.goBack()} gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} />
 
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-                <View style={[styles.notice, { backgroundColor: BrandColors.yellow500 + '22', borderColor: BrandColors.yellow500 + '55' }]}>
+                <View style={[styles.notice, { backgroundColor: BrandColors.primaryGradientStart + '10', borderColor: BrandColors.primaryGradientStart + '30' }]}>
                     <Text style={styles.noticeIcon}>⚠️</Text>
-                    <Text style={[styles.noticeText, { color: BrandColors.yellow500 }]}>
+                    <Text style={[styles.noticeText, { color: BrandColors.primaryGradientStart }]}>
                         Always verify bank details before making any payment. Tap any field to copy.
                     </Text>
                 </View>
@@ -95,11 +89,11 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
                         opacity: anims[i],
                         transform: [{ translateY: anims[i].interpolate({ inputRange: [0, 1], outputRange: [40, 0] }) }],
                     }}>
-                        <GlassCard accentLine style={styles.bankCard}>
+                        <View style={styles.bankCard}>
                             <View style={styles.bankHeader}>
-                                <LinearGradient colors={[bank.color + '55', bank.color + '22']} style={styles.bankIconBg}>
+                                <View style={[styles.bankIconBg, { backgroundColor: bank.color + '15' }]}>
                                     <Text style={styles.bankIcon}>{bank.icon}</Text>
-                                </LinearGradient>
+                                </View>
                                 <View style={styles.bankTitle}>
                                     <Text style={[styles.bankName, { color: colors.textPrimary }]}>{bank.bank}</Text>
                                     <Text style={[styles.bankType, { color: colors.textSecondary }]}>{bank.type}</Text>
@@ -115,22 +109,21 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
                             <CopyField label="IFSC Code" value={bank.ifsc} />
                             <View style={[styles.fieldDivider, { backgroundColor: colors.divider }]} />
                             <CopyField label="Branch" value={bank.branch} />
-                        </GlassCard>
+                        </View>
                     </Animated.View>
                 ))}
 
-                {/* UPI Info */}
-                <GlassCard style={styles.upiCard}>
+                <View style={[styles.upiCard, { backgroundColor: colors.inputBackground }]}>
                     <View style={styles.upiRow}>
                         <Text style={styles.upiIcon}>📲</Text>
                         <View>
-                            <Text style={[styles.upiTitle, { color: colors.textPrimary }]}>UPI Payment</Text>
+                            <Text style={[styles.upiTitle, { color: colors.textPrimary }]}>UPI Payment ID</Text>
                             <TouchableOpacity onPress={() => copyToClipboard('idhayam@sbi', 'UPI ID')} activeOpacity={0.7}>
-                                <Text style={[styles.upiId, { color: BrandColors.yellow500 }]}>idhayam@sbi  📋</Text>
+                                <Text style={[styles.upiId, { color: BrandColors.primaryGradientStart }]}>idhayam@sbi  📋</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
-                </GlassCard>
+                </View>
             </ScrollView>
         </View>
     );
@@ -138,29 +131,28 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    scroll: { padding: 16, paddingBottom: 40 },
-    notice: { flexDirection: 'row', alignItems: 'flex-start', borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 16, gap: 8 },
-    noticeIcon: { fontSize: 16 },
-    noticeText: { flex: 1, fontSize: 11, lineHeight: 16 },
-    bankCard: { marginBottom: 16 },
-    bankHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-    bankIconBg: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-    bankIcon: { fontSize: 24 },
+    scroll: { padding: 20, paddingBottom: 60 },
+    notice: { flexDirection: 'row', alignItems: 'center', borderRadius: 20, borderWidth: 1, padding: 15, marginBottom: 20 },
+    noticeIcon: { fontSize: 18, marginRight: 10 },
+    noticeText: { flex: 1, fontSize: 12, lineHeight: 18, fontWeight: '700' },
+    bankCard: { backgroundColor: '#fff', borderRadius: 28, padding: 20, marginBottom: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
+    bankHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+    bankIconBg: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    bankIcon: { fontSize: 26 },
     bankTitle: { flex: 1 },
-    bankName: { fontSize: 15, fontWeight: '700' },
-    bankType: { fontSize: 11, marginTop: 2 },
-    divider: { height: 1, marginBottom: 12 },
-    fieldRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+    bankName: { fontSize: 17, fontWeight: '900' },
+    bankType: { fontSize: 12, fontWeight: '600', marginTop: 2 },
+    divider: { height: 1, marginBottom: 15 },
+    fieldRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
     fieldInfo: { flex: 1 },
-    fieldLabel: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
-    fieldValue: { fontSize: 14, fontWeight: '600' },
-    copyIcon: { fontSize: 16, marginLeft: 8 },
-    fieldDivider: { height: 1 },
-    upiCard: { padding: 16 },
-    upiRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-    upiIcon: { fontSize: 32 },
-    upiTitle: { fontSize: 15, fontWeight: '700', marginBottom: 4 },
-    upiId: { fontSize: 15, fontWeight: '700' },
+    fieldLabel: { fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
+    fieldValue: { fontSize: 15, fontWeight: '700' },
+    fieldDivider: { height: 1, opacity: 0.5 },
+    upiCard: { padding: 25, borderRadius: 28, marginTop: 10 },
+    upiRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
+    upiIcon: { fontSize: 40 },
+    upiTitle: { fontSize: 16, fontWeight: '900', marginBottom: 4 },
+    upiId: { fontSize: 18, fontWeight: '900' },
 });
 
 export default BankDetailsScreen;

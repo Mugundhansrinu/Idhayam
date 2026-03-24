@@ -1,8 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Dimensions } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { useTheme } from '../theme';
+import { BrandColors } from '../theme/Colors';
+import GlassHeader from '../components/GlassHeader';
+
+const { width, height } = Dimensions.get('window');
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'VehicleTracking'>;
@@ -12,42 +16,59 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#0a1a4e" />
+        <View style={[styles.container, { backgroundColor: '#F0F4F8' }]}>
+            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
 
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Text style={styles.backIcon}>←</Text>
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Map View</Text>
-                <View style={{ width: 40 }} />
-            </View>
+            <GlassHeader 
+                title="Vehicle Tracking" 
+                subtitle="Live status of TN67BH5688" 
+                onBack={() => navigation.goBack()} 
+                gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
+            />
 
-            {/* Simulated Map Area */}
             <View style={styles.mapContainer}>
-                {/* Simulated routes and pins */}
-                <View style={styles.mapBackground}>
-                    {/* Placeholder content since react-native-maps is not installed. We create a styled UI that looks like a map layout */}
-                    <View style={styles.pathLine} />
+                {/* Simulated Map Background */}
+                <View style={styles.mapBase}>
+                    {/* Grid lines to simulate map */}
+                    {[...Array(10)].map((_, i) => (
+                        <View key={`h-${i}`} style={[styles.gridLineH, { top: (height / 10) * i }]} />
+                    ))}
+                    {[...Array(8)].map((_, i) => (
+                        <View key={`v-${i}`} style={[styles.gridLineV, { left: (width / 8) * i }]} />
+                    ))}
+                    
+                    {/* Simulated Path */}
+                    <View style={styles.road} />
+                    
+                    {/* Markers */}
                     <View style={[styles.marker, { top: '30%', left: '40%' }]}>
-                        <Text style={styles.markerIcon}>🏪</Text>
-                        <Text style={styles.markerLabel}>Kalyanapuram</Text>
+                        <View style={styles.markerCircle}><Text>🏪</Text></View>
+                        <View style={styles.labelBox}><Text style={styles.labelText}>Kalyanapuram</Text></View>
                     </View>
-                    <View style={[styles.marker, { top: '60%', left: '60%' }]}>
-                        <Text style={styles.markerIcon}>📍</Text>
-                        <Text style={styles.markerLabel}>Vehicle Here</Text>
+                    
+                    <View style={[styles.marker, { top: '55%', left: '55%' }]}>
+                        <View style={[styles.markerCircle, { backgroundColor: BrandColors.primaryGradientStart }]}><Text>🚛</Text></View>
+                        <View style={[styles.labelBox, { backgroundColor: BrandColors.primaryGradientStart }]}><Text style={[styles.labelText, { color: '#fff' }]}>Vehicle (Live)</Text></View>
                     </View>
-                    <View style={[styles.marker, { top: '80%', left: '30%' }]}>
-                        <Text style={styles.markerIcon}>🏢</Text>
-                        <Text style={styles.markerLabel}>Kandiyur</Text>
+                    
+                    <View style={[styles.marker, { top: '80%', left: '25%' }]}>
+                        <View style={styles.markerCircle}><Text>🏢</Text></View>
+                        <View style={styles.labelBox}><Text style={styles.labelText}>Kandiyur Warehouse</Text></View>
                     </View>
                 </View>
 
-                {/* Overlaid Vehicle Info Card */}
-                <View style={styles.topOverlayCard}>
-                    <Text style={styles.overlayText}>Vehicle No :</Text>
-                    <Text style={styles.overlayVehicle}>TN67BH5688</Text>
+                {/* Info Card Overlay */}
+                <View style={styles.infoOverlay}>
+                    <View style={styles.infoCard}>
+                        <View style={styles.infoLeft}>
+                            <Text style={styles.infoTitle}>Current Location</Text>
+                            <Text style={styles.infoDetail} numberOfLines={1}>Near Vandalur GST Road, Chennai</Text>
+                        </View>
+                        <View style={styles.statusBadge}>
+                            <View style={styles.dot} />
+                            <Text style={styles.statusText}>MOVING</Text>
+                        </View>
+                    </View>
                 </View>
             </View>
         </View>
@@ -55,103 +76,26 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#E8F5E9', // Light green-ish map land color
-    },
-    header: {
-        backgroundColor: '#1565C0',
-        paddingTop: 50,
-        paddingBottom: 16,
-        paddingHorizontal: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        zIndex: 10,
-    },
-    backButton: {
-        padding: 8,
-    },
-    backIcon: {
-        color: '#FFFFFF',
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    headerTitle: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    mapContainer: {
-        flex: 1,
-        position: 'relative',
-    },
-    mapBackground: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#F1F8E9',
-        overflow: 'hidden',
-    },
-    pathLine: {
-        position: 'absolute',
-        top: 0,
-        left: '50%',
-        width: 8,
-        height: '100%',
-        backgroundColor: '#90CAF9',
-        transform: [{ rotate: '15deg' }],
-    },
-    marker: {
-        position: 'absolute',
-        alignItems: 'center',
-    },
-    markerIcon: {
-        fontSize: 24,
-        textShadowColor: 'rgba(0,0,0,0.3)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 2,
-    },
-    markerLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#424242',
-        backgroundColor: 'rgba(255,255,255,0.7)',
-        paddingHorizontal: 4,
-        borderRadius: 4,
-        marginTop: 2,
-    },
-    topOverlayCard: {
-        position: 'absolute',
-        top: 20,
-        left: 20,
-        right: 20,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 8,
-        padding: 12,
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-    },
-    overlayText: {
-        color: '#757575',
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    overlayVehicle: {
-        color: '#1E88E5',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 4,
-    },
+    container: { flex: 1 },
+    mapContainer: { flex: 1, overflow: 'hidden' },
+    mapBase: { flex: 1, backgroundColor: '#E5E9F0', position: 'relative' },
+    gridLineH: { position: 'absolute', height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.05)' },
+    gridLineV: { position: 'absolute', width: 1, height: '100%', backgroundColor: 'rgba(0,0,0,0.05)' },
+    road: { position: 'absolute', top: 0, left: '45%', width: 40, height: '100%', backgroundColor: '#D1D9E6', transform: [{ rotate: '15deg' }] },
+    
+    marker: { position: 'absolute', alignItems: 'center' },
+    markerCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 5 },
+    labelBox: { backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginTop: 5, elevation: 3 },
+    labelText: { fontSize: 10, fontWeight: '800', color: '#1F1F39' },
+    
+    infoOverlay: { position: 'absolute', bottom: 30, left: 20, right: 20 },
+    infoCard: { backgroundColor: '#fff', borderRadius: 24, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20 },
+    infoLeft: { flex: 1, marginRight: 15 },
+    infoTitle: { fontSize: 11, fontWeight: '800', color: '#858597', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
+    infoDetail: { fontSize: 16, fontWeight: '700', color: '#1F1F39' },
+    statusBadge: { backgroundColor: '#E8FDF0', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, flexDirection: 'row', alignItems: 'center' },
+    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#27AE60', marginRight: 8 },
+    statusText: { fontSize: 11, fontWeight: '800', color: '#27AE60' },
 });
 
 export default VehicleTrackingScreen;

@@ -9,55 +9,35 @@
 //  Brand palette
 // ─────────────────────────────────────────
 export const BrandColors = {
-  // Blue family
-  blue900: '#0D1F5C',
-  blue800: '#1A3C8F',   // Primary brand blue
-  blue700: '#1E4DB7',
-  blue600: '#2563EB',
-  blue500: '#3B82F6',
-  blue400: '#60A5FA',
-  blue100: '#DBEAFE',
+  // Vibrant Purple-Pink (Primary Gradient)
+  primaryGradientStart: '#7B61FF',
+  primaryGradientEnd: '#FD79A8',
 
-  // Yellow family
-  yellow600: '#CA9E00',
-  yellow500: '#F5C800',  // Primary brand yellow
-  yellow400: '#FFD740',
-  yellow100: '#FFF9C4',
+  // Fresh Teal-Green (Verify Gradient)
+  verifyGradientStart: '#27AE60',
+  verifyGradientEnd: '#2FCCB0',
 
-  // Red family
-  red700: '#B71C1C',
-  red600: '#E3001B',    // Primary brand red
-  red500: '#EF4444',
-  red100: '#FEE2E2',
+  // Brand specific (from screenshots)
+  idhayamRed: '#E3001B',
+  idhayamYellow: '#F5C800',
 
-  // Neutrals
+  // Neutrals (Light Clean Theme)
   white: '#FFFFFF',
   black: '#000000',
-  grey50: '#F8FAFC',
-  grey100: '#F1F5F9',
-  grey200: '#E2E8F0',
-  grey300: '#CBD5E1',
+  grey50: '#F5F7FB',    // Subtle background
+  grey100: '#EBEEF2',
+  grey200: '#E0E5ED',
+  grey300: '#CBD3E1',
   grey400: '#94A3B8',
   grey500: '#64748B',
   grey600: '#475569',
   grey700: '#334155',
   grey800: '#1E293B',
-  grey900: '#0F172A',
+  grey900: '#1F1F39',   // Deep Navy Text
 
-  // Glass / overlay helpers (rgba strings)
-  glassWhite: 'rgba(255, 255, 255, 0.18)',
-  glassWhiteBorder: 'rgba(255, 255, 255, 0.35)',
-  glassDark: 'rgba(15, 23, 42, 0.45)',
-  glassDarkBorder: 'rgba(255, 255, 255, 0.12)',
-  overlayLight: 'rgba(255, 255, 255, 0.08)',
-  overlayDark: 'rgba(0, 0, 0, 0.25)',
-
-  // Gradient stops
-  gradientBlueStart: '#0D1F5C',
-  gradientBlueMid: '#1A3C8F',
-  gradientBlueEnd: '#1E4DB7',
-  gradientAccent1: '#E3001B',
-  gradientAccent2: '#F5C800',
+  // Helpers
+  overlayLight: 'rgba(123, 97, 255, 0.08)',
+  overlayDark: 'rgba(0, 0, 0, 0.4)',
   transparent: 'transparent',
 } as const;
 
@@ -70,7 +50,7 @@ export type ColorTokens = {
   backgroundSecondary: string;
   surface: string;
 
-  // Glass card
+  // Glass card / Standard card
   glassBackground: string;
   glassBorder: string;
   glassShadow: string;
@@ -97,6 +77,8 @@ export type ColorTokens = {
   buttonSecondaryText: string;
   buttonPrimaryGradientStart: string;
   buttonPrimaryGradientEnd: string;
+  buttonVerifyGradientStart: string;
+  buttonVerifyGradientEnd: string;
 
   // Icons
   iconPrimary: string;
@@ -117,102 +99,106 @@ export type ColorTokens = {
 };
 
 // ─────────────────────────────────────────
-//  Light theme tokens
+//  Light theme tokens (Matched to Screenshots)
 // ─────────────────────────────────────────
 export const LightColors: ColorTokens = {
-  background: BrandColors.blue900,
-  backgroundSecondary: BrandColors.blue800,
-  surface: BrandColors.grey50,
+  background: BrandColors.white,
+  backgroundSecondary: BrandColors.grey50,
+  surface: BrandColors.white,
 
-  glassBackground: BrandColors.glassWhite,
-  glassBorder: BrandColors.glassWhiteBorder,
-  glassShadow: 'rgba(0,0,0,0.25)',
+  glassBackground: 'rgba(255, 255, 255, 0.95)',
+  glassBorder: '#F1F4FF',
+  glassShadow: 'rgba(123, 97, 255, 0.15)',
 
-  textPrimary: BrandColors.white,
-  textSecondary: BrandColors.blue100,
-  textMuted: BrandColors.grey300,
+  textPrimary: BrandColors.grey900,
+  textSecondary: '#858597',
+  textMuted: '#BDBDBD',
   textOnPrimary: BrandColors.white,
-  textOnAccent: BrandColors.blue900,
-  textLink: BrandColors.yellow500,
+  textOnAccent: BrandColors.grey900,
+  textLink: '#6C5CE7',
 
-  inputBackground: 'rgba(255,255,255,0.12)',
-  inputBorder: 'rgba(255,255,255,0.25)',
-  inputFocusBorder: BrandColors.yellow500,
-  inputPlaceholder: 'rgba(255,255,255,0.55)',
-  inputText: BrandColors.white,
+  inputBackground: '#F5F5FA',
+  inputBorder: '#F0F0F5',
+  inputFocusBorder: '#7B61FF',
+  inputPlaceholder: '#BDBDBD',
+  inputText: BrandColors.grey900,
 
-  buttonPrimary: BrandColors.blue700,
+  buttonPrimary: '#7B61FF',
   buttonPrimaryText: BrandColors.white,
   buttonSecondary: BrandColors.transparent,
-  buttonSecondaryText: BrandColors.yellow500,
-  buttonPrimaryGradientStart: BrandColors.blue700,
-  buttonPrimaryGradientEnd: BrandColors.blue500,
+  buttonSecondaryText: '#7B61FF',
+  buttonPrimaryGradientStart: BrandColors.primaryGradientStart,
+  buttonPrimaryGradientEnd: BrandColors.primaryGradientEnd,
+  buttonVerifyGradientStart: BrandColors.verifyGradientStart,
+  buttonVerifyGradientEnd: BrandColors.verifyGradientEnd,
 
-  iconPrimary: BrandColors.white,
-  iconSecondary: BrandColors.yellow500,
+  iconPrimary: '#7B61FF',
+  iconSecondary: '#FD79A8',
 
-  success: '#22C55E',
-  error: BrandColors.red600,
-  warning: BrandColors.yellow500,
+  success: '#27AE60',
+  error: '#FF4D4D',
+  warning: '#F5C800',
 
   gradientColors: [
-    BrandColors.gradientBlueStart,
-    BrandColors.gradientBlueMid,
-    BrandColors.gradientBlueEnd,
+    BrandColors.white,
+    BrandColors.grey50,
+    BrandColors.white,
   ],
 
-  toggleThumbOn: BrandColors.yellow500,
-  toggleTrackOn: BrandColors.blue600,
-  divider: 'rgba(255,255,255,0.15)',
+  toggleThumbOn: '#7B61FF',
+  toggleTrackOn: '#E8E4FF',
+  divider: '#F0F0F5',
 };
 
 // ─────────────────────────────────────────
-//  Dark theme tokens
+//  Dark theme tokens (Kept as high-contrast version)
 // ─────────────────────────────────────────
 export const DarkColors: ColorTokens = {
   background: BrandColors.grey900,
   backgroundSecondary: BrandColors.grey800,
   surface: BrandColors.grey800,
 
-  glassBackground: BrandColors.glassDark,
-  glassBorder: BrandColors.glassDarkBorder,
-  glassShadow: 'rgba(0,0,0,0.55)',
+  glassBackground: 'rgba(31, 31, 57, 0.85)',
+  glassBorder: 'rgba(255, 255, 255, 0.1)',
+  glassShadow: 'rgba(0,0,0,0.5)',
 
   textPrimary: BrandColors.white,
   textSecondary: BrandColors.grey300,
-  textMuted: BrandColors.grey400,
+  textMuted: BrandColors.grey500,
   textOnPrimary: BrandColors.white,
   textOnAccent: BrandColors.grey900,
-  textLink: BrandColors.yellow400,
+  textLink: '#A29BFE',
 
-  inputBackground: 'rgba(255,255,255,0.07)',
-  inputBorder: 'rgba(255,255,255,0.14)',
-  inputFocusBorder: BrandColors.yellow400,
-  inputPlaceholder: 'rgba(255,255,255,0.35)',
+  inputBackground: BrandColors.grey800,
+  inputBorder: BrandColors.grey700,
+  inputFocusBorder: '#7B61FF',
+  inputPlaceholder: BrandColors.grey500,
   inputText: BrandColors.white,
 
-  buttonPrimary: BrandColors.blue700,
+  buttonPrimary: '#7B61FF',
   buttonPrimaryText: BrandColors.white,
   buttonSecondary: BrandColors.transparent,
-  buttonSecondaryText: BrandColors.yellow400,
-  buttonPrimaryGradientStart: BrandColors.blue800,
-  buttonPrimaryGradientEnd: BrandColors.blue600,
+  buttonSecondaryText: '#A29BFE',
+  buttonPrimaryGradientStart: BrandColors.primaryGradientStart,
+  buttonPrimaryGradientEnd: BrandColors.primaryGradientEnd,
+  buttonVerifyGradientStart: BrandColors.verifyGradientStart,
+  buttonVerifyGradientEnd: BrandColors.verifyGradientEnd,
 
-  iconPrimary: BrandColors.grey200,
-  iconSecondary: BrandColors.yellow400,
+  iconPrimary: '#A29BFE',
+  iconSecondary: '#FD79A8',
 
-  success: '#4ADE80',
-  error: BrandColors.red500,
-  warning: BrandColors.yellow400,
+  success: '#27AE60',
+  error: '#FF6B6B',
+  warning: '#F5C800',
 
   gradientColors: [
     BrandColors.grey900,
-    '#0D1832',
-    '#0A0F24',
+    '#25254B',
+    '#1F1F39',
   ],
 
-  toggleThumbOn: BrandColors.yellow400,
-  toggleTrackOn: BrandColors.blue700,
+  toggleThumbOn: '#7B61FF',
+  toggleTrackOn: BrandColors.grey700,
   divider: 'rgba(255,255,255,0.08)',
 };
 

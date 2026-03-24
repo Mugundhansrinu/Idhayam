@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet, Text, Animated, Dimensions, StatusBar, ActivityIndicator } from 'react-native';
+import { View, Image, StyleSheet, Text, Animated, Dimensions, StatusBar, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import LinearGradient from 'react-native-linear-gradient';
 import { BrandColors } from '../theme/Colors';
+import { checkAppVersion } from '../api';
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Splash'>;
@@ -14,9 +15,25 @@ const { width } = Dimensions.get('window');
 const SplashScreen: React.FC<Props> = ({ navigation }) => {
     const scale = useRef(new Animated.Value(0.85)).current;
     const opacity = useRef(new Animated.Value(0)).current;
+    const progress = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Entry animation for logo and glass card
+        let timer: ReturnType<typeof setTimeout>;
+
+        // Trigger CLOUDAPP_KEY API on App Start
+        checkAppVersion().then((res) => {
+            const responseText = typeof res === 'string' ? res : JSON.stringify(res);
+            if (responseText && responseText.includes('EXPIRE')) {
+                clearTimeout(timer);
+                Alert.alert(
+                    'Update Required',
+                    'Please Update the New Version',
+                    [{ text: 'OK' }],
+                    { cancelable: false }
+                );
+            }
+        }).catch(err => console.log('Version check failed:', err));
+
         Animated.parallel([
             Animated.spring(scale, {
                 toValue: 1,
@@ -29,59 +46,71 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
                 duration: 800,
                 useNativeDriver: true,
             }),
+            Animated.timing(progress, {
+                toValue: 1,
+                duration: 3000,
+                useNativeDriver: false,
+            }),
         ]).start();
 
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
             navigation.replace('Login');
-        }, 3000);
+        }, 3200);
 
         return () => clearTimeout(timer);
     }, [navigation]);
 
+    const progressWidth = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0%', '100%'],
+    });
+
     return (
         <View style={styles.container}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-
-            <LinearGradient
-                colors={[BrandColors.blue900, '#02529C', '#013A70']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFill}
-            />
-
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
             <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
-                {/* Ultra-Modern Glass Wrapper framing everything */}
-                <View style={styles.glassContainer}>
-                    <LinearGradient
-                        colors={['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.05)']}
-                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                        style={styles.glassBackground}
+                {/* Logo Card */}
+                <View style={styles.logoCard}>
+                    <Image
+                        source={require('../assets/idhayam.png')}
+                        style={styles.image}
+                        resizeMode="contain"
                     />
-                    <View style={styles.glassBorder} />
+                </View>
 
-                    {/* Logo Image */}
-                    <View style={styles.imageWrapper}>
-                        <Image
-                            source={require('../assets/idhayam.png')}
-                            style={styles.image}
-                            resizeMode="contain"
-                        />
+                {/* Branding text */}
+                <View style={styles.textWrapper}>
+                    <Text style={styles.brandTitle}>IDHAYAM</Text>
+                    <View style={styles.taglineRow}>
+                        <Text style={styles.brandSubtitle}>Say Idhayam </Text>
+                        <Text style={styles.heart}>❤️</Text>
+                        <Text style={styles.brandSubtitle}> Spell Health</Text>
                     </View>
+                </View>
 
+                {/* Portal Button */}
+                <View style={styles.buttonWrapper}>
+                    <LinearGradient
+                        colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
+                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                        style={styles.portalButton}>
+                        <Text style={styles.portalButtonText}>DISTRIBUTOR PORTAL</Text>
+                    </LinearGradient>
+                </View>
 
-
-                    {/* Branding text */}
-                    <View style={styles.textWrapper}>
-                        <Text style={styles.brandTitle}>IDHAYAM</Text>
-                        <Text style={styles.brandSubtitle}>Say Idhayam  ♥  Spell Health</Text>
+                {/* Loading Bar */}
+                <View style={styles.loadingContainer}>
+                    <View style={styles.loadingBarBackground}>
+                        <Animated.View style={[
+                            styles.loadingBarFill, 
+                            { 
+                                width: progressWidth,
+                                backgroundColor: BrandColors.primaryGradientStart 
+                            }
+                        ]} />
                     </View>
-
-                    {/* Simple Loading Indicator at the bottom of the card */}
-                    <View style={styles.loadingWrapper}>
-                        <ActivityIndicator size="large" color={BrandColors.yellow500} />
-                        <Text style={styles.loadingText}>Loading...</Text>
-                    </View>
+                    <Text style={styles.loadingText}>Loading...</Text>
                 </View>
             </Animated.View>
         </View>
@@ -91,91 +120,96 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#FFFFFF',
     },
     content: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: 30,
     },
-    glassContainer: {
-        width: width * 0.9,
-        paddingVertical: 45,
-        paddingHorizontal: 20,
+    logoCard: {
+        width: width * 0.7,
+        height: width * 0.7,
+        backgroundColor: '#FFFFFF',
         borderRadius: 40,
-        alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
+        alignItems: 'center',
+        shadowColor: '#6C5CE7',
         shadowOffset: { width: 0, height: 20 },
-        shadowOpacity: 0.3,
-        shadowRadius: 35,
-        elevation: 15,
-        position: 'relative',
-        overflow: 'hidden',
-    },
-    glassBackground: {
-        ...StyleSheet.absoluteFillObject,
-        borderRadius: 40,
-    },
-    glassBorder: {
-        ...StyleSheet.absoluteFillObject,
-        borderRadius: 40,
-        borderWidth: 1.5,
-        borderColor: 'rgba(255, 255, 255, 0.4)',
-    },
-    imageWrapper: {
-        width: width * 0.55,
-        height: width * 0.55,
-        marginBottom: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
+        shadowOpacity: 0.15,
+        shadowRadius: 30,
+        elevation: 10,
+        marginBottom: 40,
+        padding: 20,
     },
     image: {
         width: '100%',
         height: '100%',
     },
-
     textWrapper: {
         alignItems: 'center',
-        marginBottom: 35,
+        marginBottom: 40,
     },
     brandTitle: {
-        fontSize: 42,
+        fontSize: 48,
         fontWeight: '900',
-        color: BrandColors.yellow500,
-        letterSpacing: 2,
-        fontFamily: 'serif',
-        textShadowColor: 'rgba(0, 0, 0, 0.5)',
-        textShadowOffset: { width: 2, height: 2 },
-        textShadowRadius: 4,
-        marginBottom: 8,
+        color: '#4F4F4F',
+        letterSpacing: 4,
+        marginBottom: 10,
+    },
+    taglineRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     brandSubtitle: {
-        fontSize: 14,
-        fontWeight: '800',
-        color: BrandColors.yellow500,
-        letterSpacing: 1.2,
-        textShadowColor: 'rgba(0, 0, 0, 0.4)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 2,
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#BDBDBD',
+        letterSpacing: 0.5,
     },
-    loadingWrapper: {
+    heart: {
+        fontSize: 14,
+        marginHorizontal: 4,
+    },
+    buttonWrapper: {
+        width: '100%',
+        marginBottom: 50,
+    },
+    portalButton: {
+        borderRadius: 25,
+        paddingVertical: 14,
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'row',
-        backgroundColor: 'rgba(0,0,0,0.15)',
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
+    },
+    portalButtonText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '800',
+        letterSpacing: 1,
+    },
+    loadingContainer: {
+        width: '80%',
+        alignItems: 'center',
+    },
+    loadingBarBackground: {
+        width: '100%',
+        height: 4,
+        backgroundColor: '#F2F2F2',
+        borderRadius: 2,
+        marginBottom: 12,
+        overflow: 'hidden',
+    },
+    loadingBarFill: {
+        height: '100%',
+        backgroundColor: '#E0E0E0',
+        borderRadius: 2,
     },
     loadingText: {
-        color: BrandColors.yellow500,
-        fontSize: 16,
-        fontWeight: '700',
+        color: '#828282',
+        fontSize: 13,
+        fontWeight: '600',
         letterSpacing: 1,
-        marginLeft: 12,
     }
 });
 

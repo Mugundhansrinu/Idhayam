@@ -1,19 +1,24 @@
-/**
- * PriceDetailsScreen – Product-wise price list
- */
 import React, { useRef, useEffect, useState } from 'react';
 import {
-    View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    Animated, ScrollView, TextInput,
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    StatusBar,
+    Animated,
+    ScrollView,
+    TextInput,
+    Dimensions,
+    Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import OilFlowBackground from '../components/OilFlowBackground';
-import GlassCard from '../components/GlassCard';
 import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+
+const { width } = Dimensions.get('window');
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'PriceDetails'> };
 
@@ -41,15 +46,13 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
     const filtered = PRICES.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
 
     return (
-        <View style={styles.container}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-            <LinearGradient colors={[BrandColors.blue900, BrandColors.blue800, '#0a1a4e']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-            <OilFlowBackground />
-            <GlassHeader title="Price Details" subtitle="Current distributor prices" onBack={() => navigation.goBack()} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            
+            <GlassHeader title="Price Details" subtitle="Current distributor prices" onBack={() => navigation.goBack()} gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} />
 
-            {/* Search */}
             <View style={styles.searchWrapper}>
-                <View style={[styles.searchBox, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder }]}>
+                <View style={[styles.searchBox, { backgroundColor: colors.inputBackground, borderColor: colors.divider }]}>
                     <Text style={styles.searchIcon}>🔍</Text>
                     <TextInput
                         style={[styles.searchInput, { color: colors.inputText }]}
@@ -61,52 +64,45 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
             </View>
 
-            {/* Header row */}
             <View style={[styles.tableHeader, { borderBottomColor: colors.divider }]}>
-                <Text style={[styles.colProduct, { color: colors.textMuted }]}>PRODUCT</Text>
-                <Text style={[styles.colMrp, { color: colors.textMuted }]}>MRP</Text>
-                <Text style={[styles.colPrice, { color: colors.textMuted }]}>YOUR PRICE</Text>
+                <Text style={[styles.colProduct, { color: colors.textSecondary }]}>PRODUCT</Text>
+                <Text style={[styles.colMrp, { color: colors.textSecondary }]}>MRP</Text>
+                <Text style={[styles.colPrice, { color: colors.textSecondary }]}>PRICE</Text>
             </View>
 
             <Animated.ScrollView style={{ opacity: listAnim }} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
                 {filtered.map((item, i) => (
-                    <Animated.View
-                        key={i}
-                        style={{
-                            opacity: listAnim,
-                            transform: [{ translateY: listAnim.interpolate({ inputRange: [0, 1], outputRange: [20 + i * 5, 0] }) }],
-                        }}>
-                        <GlassCard style={styles.priceCard}>
-                            <View style={styles.priceRow}>
-                                <View style={styles.productCol}>
-                                    <Text style={[styles.productName, { color: colors.textPrimary }]} numberOfLines={2}>
-                                        {item.name}
+                    <View key={i} style={styles.priceCard}>
+                        <View style={styles.priceRow}>
+                            <View style={styles.productCol}>
+                                <Text style={[styles.productName, { color: colors.textPrimary }]}>{item.name}</Text>
+                                {item.change !== 0 && (
+                                    <Text style={[styles.change, { color: item.change > 0 ? '#E3001B' : '#27AE60' }]}>
+                                        {item.change > 0 ? `▲ +${item.change}` : `▼ ${item.change}`} since last update
                                     </Text>
-                                    {item.change !== 0 && (
-                                        <Text style={[styles.change, { color: item.change > 0 ? BrandColors.red600 : '#22C55E' }]}>
-                                            {item.change > 0 ? `▲ +${item.change}` : `▼ ${item.change}`} since last update
-                                        </Text>
-                                    )}
-                                </View>
+                                )}
+                            </View>
+                            <View style={styles.priceCol}>
                                 <Text style={[styles.mrpText, { color: colors.textMuted }]}>₹{item.mrp}</Text>
-                                <Text style={[styles.priceText, { color: BrandColors.yellow500 }]}>₹{item.price}</Text>
+                                <Text style={[styles.priceText, { color: BrandColors.primaryGradientStart }]}>₹{item.price}</Text>
                             </View>
-                            {/* Margin strip */}
-                            <View style={styles.marginRow}>
-                                <Text style={[styles.marginLabel, { color: colors.textMuted }]}>
-                                    Margin: {Math.round(((item.mrp - item.price) / item.mrp) * 100)}%
-                                </Text>
-                                <View style={[styles.marginBg, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                                    <LinearGradient
-                                        colors={[BrandColors.yellow500, BrandColors.yellow600 ?? '#CA9E00']}
-                                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                        style={[styles.marginFill, { width: `${Math.round(((item.mrp - item.price) / item.mrp) * 100)}%` }]}
-                                    />
-                                </View>
+                        </View>
+                        
+                        <View style={styles.marginRow}>
+                            <Text style={[styles.marginLabel, { color: colors.textSecondary }]}>
+                                Margin: {Math.round(((item.mrp - item.price) / item.mrp) * 100)}%
+                            </Text>
+                            <View style={[styles.marginBg, { backgroundColor: colors.inputBackground }]}>
+                                <LinearGradient
+                                    colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
+                                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                                    style={[styles.marginFill, { width: `${Math.round(((item.mrp - item.price) / item.mrp) * 100)}%` }]}
+                                />
                             </View>
-                        </GlassCard>
-                    </Animated.View>
+                        </View>
+                    </View>
                 ))}
+                
                 {filtered.length === 0 && (
                     <View style={styles.empty}>
                         <Text style={styles.emptyIcon}>🔍</Text>
@@ -120,29 +116,30 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    searchWrapper: { paddingHorizontal: 20, paddingVertical: 10 },
-    searchBox: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 8 },
-    searchIcon: { fontSize: 14, marginRight: 8 },
-    searchInput: { flex: 1, fontSize: 14 },
-    tableHeader: { flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 8, borderBottomWidth: 1 },
-    colProduct: { flex: 1, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
-    colMrp: { width: 52, fontSize: 10, fontWeight: '700', letterSpacing: 0.5, textAlign: 'right' },
-    colPrice: { width: 72, fontSize: 10, fontWeight: '700', letterSpacing: 0.5, textAlign: 'right' },
-    scroll: { padding: 20, paddingTop: 12, paddingBottom: 40 },
-    priceCard: { marginBottom: 10, padding: 12 },
-    priceRow: { flexDirection: 'row', alignItems: 'flex-start' },
-    productCol: { flex: 1 },
-    productName: { fontSize: 13, fontWeight: '600', marginBottom: 2 },
-    change: { fontSize: 10, fontStyle: 'italic' },
-    mrpText: { width: 52, fontSize: 13, textAlign: 'right', textDecorationLine: 'line-through' },
-    priceText: { width: 72, fontSize: 16, fontWeight: '800', textAlign: 'right' },
-    marginRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 8 },
-    marginLabel: { fontSize: 10, width: 70 },
-    marginBg: { flex: 1, height: 4, borderRadius: 2, overflow: 'hidden' },
-    marginFill: { height: '100%', borderRadius: 2 },
-    empty: { alignItems: 'center', paddingTop: 60 },
-    emptyIcon: { fontSize: 40, marginBottom: 12 },
-    emptyText: { fontSize: 14 },
+    searchWrapper: { paddingHorizontal: 20, paddingVertical: 15 },
+    searchBox: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, borderWidth: 1, paddingHorizontal: 15, paddingVertical: Platform.OS === 'ios' ? 14 : 8 },
+    searchIcon: { fontSize: 16, marginRight: 10 },
+    searchInput: { flex: 1, fontSize: 15, fontWeight: '600' },
+    tableHeader: { flexDirection: 'row', paddingHorizontal: 25, paddingBottom: 12, borderBottomWidth: 1 },
+    colProduct: { flex: 1, fontSize: 11, fontWeight: '800', letterSpacing: 0.5 },
+    colMrp: { width: 50, fontSize: 11, fontWeight: '800', letterSpacing: 0.5, textAlign: 'right' },
+    colPrice: { width: 70, fontSize: 11, fontWeight: '800', letterSpacing: 0.5, textAlign: 'right' },
+    scroll: { padding: 20, paddingBottom: 60 },
+    priceCard: { backgroundColor: '#fff', borderRadius: 24, padding: 20, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
+    priceRow: { flexDirection: 'row', justifyContent: 'space-between' },
+    productCol: { flex: 1, marginRight: 10 },
+    productName: { fontSize: 16, fontWeight: '800', marginBottom: 4 },
+    change: { fontSize: 11, fontWeight: '600' },
+    priceCol: { alignItems: 'flex-end' },
+    mrpText: { fontSize: 12, textDecorationLine: 'line-through', marginBottom: 2 },
+    priceText: { fontSize: 20, fontWeight: '900' },
+    marginRow: { flexDirection: 'row', alignItems: 'center', marginTop: 15 },
+    marginLabel: { fontSize: 12, fontWeight: '700', width: 85 },
+    marginBg: { flex: 1, height: 6, borderRadius: 3, overflow: 'hidden' },
+    marginFill: { height: '100%', borderRadius: 3 },
+    empty: { alignItems: 'center', marginTop: 80 },
+    emptyIcon: { fontSize: 50, marginBottom: 15 },
+    emptyText: { fontSize: 16, fontWeight: '600' },
 });
 
 export default PriceDetailsScreen;
