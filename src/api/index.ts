@@ -111,11 +111,53 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
     return { balance: '0.00', pendingOrder: '0.00', netBalance: '0.00' };
 }
 
-export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
-    await delay(500);
-    return [
-        { vehicleNo: 'TN67BH5688', tripRefNo: 'TJ-1870', branchId: '92', tripId: '79' }
-    ];
+export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, branchId = FALLBACK_BRANCH_ID): Promise<any> {
+    const payload = {
+        A: branchId,
+        B: custId,
+        C: 'GetInvoicedVehicleList',
+    };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'CheckVehicleDetails',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('CheckVehicleDetails Raw Response:', textData);
+
+        const outer = deepParse(textData);
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            console.log('CheckVehicleDetails Inner:', JSON.stringify(inner));
+            
+            // Map common server fields to the app's internal format
+            // Based on typical naming conventions seen in other screens
+            const rows = Array.isArray(inner) ? inner : [inner];
+            const mapped = rows.map(v => ({
+                vehicleNo: v.VEH_NO || v.VEHICLE_NO || v.A || '—',
+                tripRefNo: v.TRIP_REF_NO || v.B || '',
+                branchId:  v.BRANCH_ID || branchId,
+                tripId:    v.TRIP_ID || v.C || '',
+            }));
+
+            // Dashboard currently expects a single object or null
+            return mapped.length > 0 ? mapped[0] : null;
+        }
+    } catch (e) {
+        console.error('CheckVehicleDetails Error:', e);
+    }
+
+    return null;
 }
 
 export async function getVehicleTracking(branchId: string, tripId: string, tripRefNo: string): Promise<any> {
@@ -189,25 +231,54 @@ export async function getDiscountDetail(discountIds: string, custId = FALLBACK_C
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  PRICE DETAILS
+//  PRICE DETAILS / ORDERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getPriceList(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
-    await delay(600);
-    return [
-        { id: '1', name: 'H.Refined Groundnut Oil 1L', price: '195.00', unit: 'Bottle' },
-        { id: '2', name: 'H.Refined Groundnut Oil 500ml', price: '102.00', unit: 'Bottle' },
-        { id: '3', name: 'H.Sesame Oil 1L', price: '345.00', unit: 'Pouch' },
-        { id: '4', name: 'H.Sesame Oil 500ml', price: '178.00', unit: 'Pouch' }
-    ];
+/**
+ * Fetches all items available for order or price list.
+ * Uses FetchOrderItems with Cust_Id parameter.
+ */
+export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'FetchOrderItems',
+                'MODE': 'MOBILE',
+                'P': `Cust_Id=${custId}`,
+                'J': '',
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('FetchOrderItems Raw Response:', textData);
+
+        const outer = deepParse(textData);
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            const rows = Array.isArray(inner) ? inner : [inner];
+
+            // Normalize server fields to app format
+            return rows.map(item => ({
+                id:       String(item.ID || item.ITEM_ID),
+                name:     `${item.ITEM_GRP_NAME} - ${item.ITEM_DESC}`,
+                price:    parseFloat(item.PLUS_TAX || item.APP_PRICE || '0').toFixed(2),
+                unit:     item.SALES_UOM || 'Pcs',
+                category: item.ITEM_GRP_NAME,
+                mrp:      parseFloat(item.APP_MRP || '0').toFixed(2),
+                tax:      item.TAX_PER ? `${item.TAX_PER}%` : '0%'
+            }));
+        }
+    } catch (e) {
+        console.error('FetchOrderItems Error:', e);
+    }
+    return [];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  ORDERS
-// ─────────────────────────────────────────────────────────────────────────────
-
-export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
-    return getPriceList(custId);
+export async function getPriceList(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
+    return getOrderItems(custId);
 }
 
 export async function submitOrder(custId: string, orderDetails: any[]): Promise<any> {

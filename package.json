@@ -20,6 +20,7 @@
     "hermes-compiler": "^250829098.0.7",
     "react": "19.2.3",
     "react-native": "^0.84.0",
+    "react-native-device-info": "^15.0.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",

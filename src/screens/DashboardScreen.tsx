@@ -70,18 +70,25 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
     const fetchData = async () => {
         try {
-            const custId = session?.custId || undefined;
-            const [bal, vehicles] = await Promise.all([
+            const custId   = session?.custId   || undefined;
+            const branchId = session?.branchId || undefined;
+            const [bal, vehicle] = await Promise.all([
                 getCustomerBalance(custId),
-                getInvoicedVehicleList(custId)
+                getInvoicedVehicleList(custId, branchId)
             ]);
             setBalanceData({
-                balance: bal.balance || '0.00',
+                balance:      bal.balance      || '0.00',
                 pendingOrder: bal.pendingOrder || '0.00',
-                netBalance: bal.netBalance || bal.balance || '0.00'
+                netBalance:   bal.netBalance   || '0.00'
             });
-            if (vehicles && vehicles.length > 0) setVehicleData(vehicles[0]);
-        } catch (e) { console.error(e); }
+            if (vehicle) {
+                setVehicleData(vehicle);
+            } else {
+                setVehicleData(null);
+            }
+        } catch (e) {
+            console.error('Dashboard fetchData error:', e);
+        }
     };
 
     return (
