@@ -99,13 +99,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             return;
         }
         setFetchingMobiles(true);
+        setApiMessage('');
         try {
             const serverMobiles = await AuthService.getMobileListByPan(cleanPan);
-            setLinkedMobiles(serverMobiles.length > 0 ? serverMobiles : ['9443534646', '9876543210', '9043211234']);
-            setMobile(serverMobiles[0] || '9443534646');
-        } catch (error) {
-            setLinkedMobiles(['9443534646', '9876543210', '9043211234']);
-            setMobile('9443534646');
+            setLinkedMobiles(serverMobiles);
+            setMobile(serverMobiles[0]);
+        } catch (error: any) {
+            setApiMessage(error.message || 'Could not fetch linked mobiles. Please try again.');
         } finally {
             setFetchingMobiles(false);
         }
@@ -150,13 +150,25 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
     const handleVerifyOtp = async () => {
         const enteredOtp = otp.join('');
-        if (enteredOtp.length < OTP_LENGTH) return;
+        if (enteredOtp.length < OTP_LENGTH) {
+            Alert.alert('Error', 'Please Enter valid OTP');
+            return;
+        }
         setVerifying(true);
+        setApiMessage('');
         try {
-            await AuthService.verifyOtp(pan, mobile, enteredOtp);
-            navigation.navigate('Dashboard');
-        } catch (error) {
-            navigation.navigate('Dashboard'); // Bypass for dev as requested implicitly by screenshot flow
+            const verifyRes = await AuthService.verifyOtp(pan, mobile, enteredOtp);
+            const loginRes = await AuthService.checkLogin(pan, mobile, verifyRes.eid);
+
+            if (loginRes?.data?.message === "Login Successful") {
+                navigation.navigate('LoginResponse', { data: loginRes.data });
+            } else {
+                //Alert.alert('Login Check Failed', loginRes?.data?.Message || loginRes?.data?.message || 'Unexpected server response.');
+                setOtp(Array(OTP_LENGTH).fill(''));
+            }
+        } catch (error: any) {
+            Alert.alert('Error', error.message || 'Please Enter valid OTP');
+            setOtp(Array(OTP_LENGTH).fill('')); // Clear the OTP fields cleanly
         } finally {
             setVerifying(false);
         }
@@ -205,7 +217,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                             transform: [{ translateY: cardTranslateY }],
                         },
                     ]}>
-                        
+
                         {/* Custom Step Indicator matching screenshot */}
                         <View style={styles.stepIndicatorContainer}>
                             <View style={[styles.stepPill, step === 'pan' ? styles.stepPillActive : styles.stepPillInactive]}>
@@ -259,6 +271,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                     </View>
                                     <Text style={[styles.panHint, { color: colors.textMuted }]}>Format: AAAAA9999A</Text>
                                 </View>
+
+                                {apiMessage && linkedMobiles.length === 0 ? (
+                                    <View style={{ backgroundColor: '#FF4D4D15', padding: 10, borderRadius: 10, marginBottom: 12, borderWidth: 1, borderColor: '#FF4D4D40' }}>
+                                        <Text style={{ fontSize: 13, color: '#FF4D4D', fontWeight: '600', textAlign: 'center' }}>{apiMessage}</Text>
+                                    </View>
+                                ) : null}
 
                                 {linkedMobiles.length === 0 ? (
                                     <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
@@ -326,13 +344,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                             <Animated.View style={{ opacity: stepAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
                                 <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Verify OTP</Text>
                                 <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>Code sent to your mobile</Text>
-                                
+
                                 {apiMessage ? (
                                     <View style={{ backgroundColor: '#7B61FF15', padding: 8, borderRadius: 8, marginTop: -15, marginBottom: 15, borderStyle: 'dotted', borderWidth: 1, borderColor: '#7B61FF' }}>
                                         <Text style={{ fontSize: 13, color: '#7B61FF', fontWeight: 'bold', textAlign: 'center' }}>Test Code: {apiMessage}</Text>
                                     </View>
                                 ) : null}
-                                
+
                                 <View style={styles.maskedMobileBadge}>
                                     <Text style={styles.mobileIconSmall}>📱</Text>
                                     <Text style={[styles.maskedMobileText, { color: colors.textPrimary }]}>{maskedMobile}</Text>
@@ -367,9 +385,17 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                 </Animated.View>
 
                                 <View style={styles.resendTimerRow}>
-                                    <Text style={[styles.resendText, { color: colors.textSecondary }]}>
-                                        Resend OTP in <Text style={{ color: colors.textLink }}>{resendTimer > 0 ? `${resendTimer}s` : 'Now'}</Text>
-                                    </Text>
+                                    {resendTimer > 0 ? (
+                                        <Text style={[styles.resendText, { color: colors.textSecondary }]}>
+                                            Resend OTP in <Text style={{ color: colors.textLink }}>{resendTimer}s</Text>
+                                        </Text>
+                                    ) : (
+                                        <TouchableOpacity onPress={handleSendOtp} activeOpacity={0.7}>
+                                            <Text style={[styles.resendText, { color: colors.textSecondary }]}>
+                                                Didn't receive it? <Text style={{ color: colors.textLink, fontWeight: '800' }}>Resend Now</Text>
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                                 <TouchableOpacity onPress={() => setStep('pan')} style={styles.changeMobileBtn}>
                                     <Text style={[styles.changeMobileText, { color: colors.textSecondary }]}>← Change PAN Number</Text>
@@ -377,16 +403,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                             </Animated.View>
                         )}
 
-                        <View style={styles.dividerRow}>
-                            <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-                            <Text style={[styles.dividerText, { color: colors.textMuted }]}>or</Text>
-                            <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
-                        </View>
 
-                        <TouchableOpacity style={styles.registerLinkContainer} activeOpacity={0.7} onPress={() => navigation.navigate('Registration')}>
-                            <Text style={[styles.regText, { color: colors.textSecondary }]}>New distributor? </Text>
-                            <Text style={[styles.regLink, { color: '#7B61FF' }]}>Register Here</Text>
-                        </TouchableOpacity>
                     </Animated.View>
 
                     <View style={styles.footerWrap}>

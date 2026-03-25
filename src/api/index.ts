@@ -1,20 +1,34 @@
 /**
- * api/index.ts — Mock API service functions for Idhayam Distributor App
+ * api/index.ts — API service functions for Idhayam Distributor App
  */
 
 import {
     BASE_URL,
-    DEMO_CUSTOMER_ID,
-    DEMO_CUST_TYPE,
+    FALLBACK_CUSTOMER_ID,
+    FALLBACK_BRANCH_ID,
+    FALLBACK_CUST_TYPE,
     API_TOKEN
 } from './config';
-import { encode as btoa } from 'base-64';
 
-/** Mock delay simulator */
+/** Mock delay simulator (used for not-yet-integrated endpoints) */
 const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
+/** Reusable deep-parser: handles multi-layer JSON-encoded strings from server */
+const deepParse = (val: any): any => {
+    if (typeof val === 'string') {
+        try { return deepParse(JSON.parse(val)); } catch { return val; }
+    }
+    return val;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
-//  AUTH
+//  AUTH — delegate to auth.ts (canonical implementation)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export { AuthService } from './auth';
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  APP VERSION CHECK
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function checkAppVersion(): Promise<any> {
@@ -22,90 +36,39 @@ export async function checkAppVersion(): Promise<any> {
     const appVersion = pkg?.version || '0.0.1';
 
     const payload = {
-        "mobilenumber": appVersion,
-        "otp": "",
-        "frm_dt": "",
-        "to_dt": ""
+        mobilenumber: appVersion,
+        otp: '',
+        frm_dt: '',
+        to_dt: '',
     };
-    
-    // Strict Minification (removing spaces/newlines)
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
-    
+
     try {
-        const response = await fetch('http://117.232.71.91:2101/MOB/APPEAL_UAT', {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
             method: 'POST',
             headers: {
                 'F': 'CLOUDAPP_KEY',
                 'MODE': 'MOBILE',
                 'P': '',
                 'J': minifiedJson,
-                'M': 'POST'
-            }
+                'M': 'POST',
+            },
         });
-        
-        // Handling both text and json response gracefully
         const textData = await response.text();
-        console.log("CLOUDAPP_KEY Response:", textData);
+        console.log('CLOUDAPP_KEY Response:', textData);
         return textData ? JSON.parse(textData) : { success: true };
     } catch (e) {
-        console.error("CLOUDAPP_KEY Error:", e);
+        console.error('CLOUDAPP_KEY Error:', e);
         return { success: false };
     }
-}
-
-export async function getMobileListByPan(pan: string): Promise<string[]> {
-    try {
-        const base64Pan = btoa(pan);
-        const response = await fetch('http://117.232.71.91:2101/MOB/APPEAL_UAT', {
-            method: 'GET',
-            headers: {
-                'F': 'GetmobileListByPan',
-                'MODE': 'MOBILE',
-                'P': `pan=${base64Pan}`,
-                'J': '',
-                'M': 'GET',
-                'Authorization': API_TOKEN
-            }
-        });
-        const textData = await response.text();
-        console.log("GetmobileListByPan Response:", textData);
-        // Safely parse array response or return mock on fail
-        const data = textData ? JSON.parse(textData) : null;
-        return Array.isArray(data) ? data : ['9443534646', '9876543210'];
-    } catch (e) {
-        console.error("GetmobileListByPan Error:", e);
-        return ['9443534646', '9876543210']; // fallback mock
-    }
-}
-
-export async function generateOtp(pan: string, mobile: string): Promise<any> {
-    await delay(400);
-    return { success: true, message: 'OTP Generated' };
-}
-
-export async function verifyOtp(pan: string, mobile: string, otp: string): Promise<any> {
-    await delay(600);
-    return { success: true, message: 'OTP Verified' };
-}
-
-export async function loginCheck(pan: string, mobile: string, deviceId: string): Promise<any> {
-    await delay(800);
-    return {
-        success: true,
-        data: {
-            custId: DEMO_CUSTOMER_ID,
-            custName: 'IDHAYAM DISTRIBUTORS',
-            token: 'mock-token-123',
-        }
-    };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DASHBOARD / HOME
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getCustomerBalance(custId = DEMO_CUSTOMER_ID): Promise<any> {
-    const payload = { A: custId, B: DEMO_CUST_TYPE };
+export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
+    const payload = { A: custId, B: FALLBACK_CUST_TYPE };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
 
     try {
@@ -124,37 +87,31 @@ export async function getCustomerBalance(custId = DEMO_CUSTOMER_ID): Promise<any
         const textData = await response.text();
         console.log('CUST_BALANCE_CHK Raw Response:', textData);
 
-        // Helper: keep parsing as long as the value is a JSON string
-        const deepParse = (val: any): any => {
-            if (typeof val === 'string') {
-                try { return deepParse(JSON.parse(val)); } catch { return val; }
-            }
-            return val;
-        };
-
-        // Fully unwrap all encoding layers
         const outer = deepParse(textData);
-        console.log('CUST_BALANCE_CHK Outer:', JSON.stringify(outer));
 
         if (outer?.success && outer?.result) {
             const inner = deepParse(outer.result);
             console.log('CUST_BALANCE_CHK Inner:', JSON.stringify(inner));
 
+            const balance      = parseFloat(inner.DMOBNO ?? '0') || 0;
+            const pendingOrder = parseFloat(inner.NAME   ?? '0') || 0;
+            const netCalc      = balance - pendingOrder;
+            const netBalance   = netCalc < 0 ? 0 : netCalc;
+
             return {
-                balance:      inner.DMOBNO ?? '0.00',   // Outstanding amount
-                pendingOrder: inner.MOBNO  ?? '0.00',   // Orders in queue
-                netBalance:   inner.NAME   ?? '0.00',   // Net payable
+                balance:      balance.toFixed(2),
+                pendingOrder: pendingOrder.toFixed(2),
+                netBalance:   netBalance.toFixed(2),
             };
         }
     } catch (e) {
         console.error('CUST_BALANCE_CHK Error:', e);
     }
 
-    // Fallback so UI never breaks
     return { balance: '0.00', pendingOrder: '0.00', netBalance: '0.00' };
 }
 
-export async function getInvoicedVehicleList(custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(500);
     return [
         { vehicleNo: 'TN67BH5688', tripRefNo: 'TJ-1870', branchId: '92', tripId: '79' }
@@ -171,7 +128,7 @@ export async function getVehicleTracking(branchId: string, tripId: string, tripR
     };
 }
 
-export async function getTripStopList(tripTransId: string, tripRefNo: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getTripStopList(tripTransId: string, tripRefNo: string, custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(600);
     return [
         { id: '1', name: 'Virudhunagar Hub', reached: true },
@@ -184,22 +141,14 @@ export async function getTripStopList(tripTransId: string, tripRefNo: string, cu
 //  DISCOUNT
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getDiscountSummary(custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getDiscountSummary(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     const payload = {
         A: custId,
-        B: DEMO_CUST_TYPE,
+        B: FALLBACK_CUST_TYPE,
         C: 'DISCOUNT_NAME',
         D: '',
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
-
-    // Reusable deep-parse helper (handles multi-encoded JSON strings)
-    const deepParse = (val: any): any => {
-        if (typeof val === 'string') {
-            try { return deepParse(JSON.parse(val)); } catch { return val; }
-        }
-        return val;
-    };
 
     try {
         const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
@@ -218,25 +167,20 @@ export async function getDiscountSummary(custId = DEMO_CUSTOMER_ID): Promise<any
         console.log('CUST_DISCOUNT_SUM Raw Response:', textData);
 
         const outer = deepParse(textData);
-        console.log('CUST_DISCOUNT_SUM Outer:', JSON.stringify(outer));
 
         if (outer?.success && outer?.result) {
             const inner = deepParse(outer.result);
             console.log('CUST_DISCOUNT_SUM Inner:', JSON.stringify(inner));
-
-            // Result may be an array or a single object — normalise to array
-            const rows = Array.isArray(inner) ? inner : [inner];
-            return rows;
+            return Array.isArray(inner) ? inner : [inner];
         }
     } catch (e) {
         console.error('CUST_DISCOUNT_SUM Error:', e);
     }
 
-    // Fallback so UI never breaks
     return [];
 }
 
-export async function getDiscountDetail(discountIds: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getDiscountDetail(discountIds: string, custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(600);
     return [
         { id: '101', slab: 'Slab 1', disc: '5%', min: '100', max: '500' },
@@ -248,7 +192,7 @@ export async function getDiscountDetail(discountIds: string, custId = DEMO_CUSTO
 //  PRICE DETAILS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getPriceList(custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getPriceList(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(600);
     return [
         { id: '1', name: 'H.Refined Groundnut Oil 1L', price: '195.00', unit: 'Bottle' },
@@ -262,7 +206,7 @@ export async function getPriceList(custId = DEMO_CUSTOMER_ID): Promise<any> {
 //  ORDERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getOrderItems(custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     return getPriceList(custId);
 }
 
@@ -279,7 +223,7 @@ export async function submitOrder(custId: string, orderDetails: any[]): Promise<
 //  REPORTS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getOrderList(fromDate: string, toDate: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getOrderList(fromDate: string, toDate: string, custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(700);
     return [
         { id: 'ORD-12345', date: '2026-03-15', amount: '5840.00', status: 'Delivered' },
@@ -287,7 +231,7 @@ export async function getOrderList(fromDate: string, toDate: string, custId = DE
     ];
 }
 
-export async function getInvoiceList(fromDate: string, toDate: string, type: 'SI' | 'CNDN' = 'SI', custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getInvoiceList(fromDate: string, toDate: string, type: 'SI' | 'CNDN' = 'SI', custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(700);
     return [
         { id: 'INV-7890', date: '2026-03-10', amount: '12400.00' },
@@ -300,7 +244,7 @@ export async function downloadBillPdf(type: 'SI' | 'CNDN', billIds: string): Pro
     return { success: true, url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' };
 }
 
-export async function getTransactionList(fromDate: string, toDate: string, custId = DEMO_CUSTOMER_ID): Promise<any> {
+export async function getTransactionList(fromDate: string, toDate: string, custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     await delay(700);
     return [
         { id: 'T1', date: '2026-03-01', type: 'Payment', credit: '10000.00', debit: '0.00', balance: '10000.00' },
@@ -308,36 +252,95 @@ export async function getTransactionList(fromDate: string, toDate: string, custI
     ];
 }
 
-export function getTransactionPdfUrl(custId = DEMO_CUSTOMER_ID): string {
+export function getTransactionPdfUrl(custId = FALLBACK_CUSTOMER_ID): string {
     return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  CONTACT US
+//  CONTACT US  →  APP_Contact
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getContactInfo(custId = DEMO_CUSTOMER_ID): Promise<any> {
-    await delay(400);
-    return {
-        company: 'IDHAYAM DISTRIBUTOR HEAD OFFICE',
-        address: 'Virudhunagar, Tamil Nadu',
-        phone: '+91 4562 252 252',
-        email: 'info@idhayam.com'
+// Raw token (without "Bearer " prefix) — required by the APP_Contact payload
+const RAW_TOKEN = '5HNdr62cpgiZ/Op3AU/uuUXRpkUVurMbVZPrUE+nOF1iHgazGrL8iWUU2jRuPPbU';
+
+export async function getContactInfo(
+    custId   = FALLBACK_CUSTOMER_ID,
+    branchId = FALLBACK_BRANCH_ID,
+    custType = FALLBACK_CUST_TYPE,
+): Promise<any> {
+    const payload = {
+        otp:          branchId,   // Branch ID
+        mobilenumber: RAW_TOKEN,  // API token (raw, without "Bearer ")
+        frm_dt:       custId,     // Customer ID
+        to_dt:        custType,   // Customer type e.g. "CM"
     };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'APP_Contact',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('APP_Contact Raw Response:', textData);
+
+        const outer = deepParse(textData);
+        console.log('APP_Contact Outer:', JSON.stringify(outer));
+
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            console.log('APP_Contact Inner:', JSON.stringify(inner));
+            return Array.isArray(inner) ? inner : [inner];
+        }
+    } catch (e) {
+        console.error('APP_Contact Error:', e);
+    }
+
+    return [];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  BANK DETAILS
+//  BANK DETAILS  →  CUST_VitrualAcc_CHK
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getBankDetails(custId = DEMO_CUSTOMER_ID): Promise<any> {
-    await delay(400);
-    return {
-        accName: 'IDHAYAM G-NUT OIL PVT LTD',
-        accNo: '923020012345678',
-        ifsc: 'UTIB0000123',
-        bank: 'AXIS BANK LTD',
-        branch: 'VIRUDHUNAGAR'
-    };
-}
+export async function getBankDetails(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
+    const payload = { A: custId, B: FALLBACK_CUST_TYPE };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
 
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'CUST_VitrualAcc_CHK',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('CUST_VitrualAcc_CHK Raw Response:', textData);
+
+        const outer = deepParse(textData);
+
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            console.log('CUST_VitrualAcc_CHK Inner:', JSON.stringify(inner));
+            return Array.isArray(inner) ? inner : [inner];
+        }
+    } catch (e) {
+        console.error('CUST_VitrualAcc_CHK Error:', e);
+    }
+
+    return [];
+}

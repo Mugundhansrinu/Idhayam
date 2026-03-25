@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ThemeProvider } from './src/theme';
+import { SessionProvider } from './src/context/SessionContext';
 
 // ── Screens ──────────────────────────────────────────────────────────────────
 import SplashScreen from './src/screens/SplashScreen';
@@ -17,6 +18,7 @@ import MiniStatementScreen from './src/screens/MiniStatementScreen';
 import BankDetailsScreen from './src/screens/BankDetailsScreen';
 import ContactUsScreen from './src/screens/ContactUsScreen';
 import VehicleTrackingScreen from './src/screens/VehicleTrackingScreen';
+import LoginResponseScreen from './src/screens/LoginResponseScreen';
 
 // ─────────────────────────────────────────
 //  Navigation types
@@ -35,6 +37,7 @@ export type RootStackParamList = {
   BankDetails: undefined;
   ContactUs: undefined;
   VehicleTracking: undefined;
+  LoginResponse: { data: any };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -45,28 +48,31 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function App(): React.JSX.Element {
   return (
     <ThemeProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Splash"
-          screenOptions={{
-            headerShown: false,
-            animation: 'slide_from_right',
-          }}>
-          <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Registration" component={RegistrationScreen} />
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
-          <Stack.Screen name="OrderEntry" component={OrderEntryScreen} />
-          <Stack.Screen name="Discount" component={DiscountScreen} />
-          <Stack.Screen name="PriceDetails" component={PriceDetailsScreen} />
-          <Stack.Screen name="Report" component={ReportScreen} />
-          <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
-          <Stack.Screen name="MiniStatement" component={MiniStatementScreen} />
-          <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
-          <Stack.Screen name="ContactUs" component={ContactUsScreen} />
-          <Stack.Screen name="VehicleTracking" component={VehicleTrackingScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SessionProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Splash"
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_right',
+            }}>
+            <Stack.Screen name="Splash" component={SplashScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Registration" component={RegistrationScreen} />
+            <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen name="OrderEntry" component={OrderEntryScreen} />
+            <Stack.Screen name="Discount" component={DiscountScreen} />
+            <Stack.Screen name="PriceDetails" component={PriceDetailsScreen} />
+            <Stack.Screen name="Report" component={ReportScreen} />
+            <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+            <Stack.Screen name="MiniStatement" component={MiniStatementScreen} />
+            <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
+            <Stack.Screen name="ContactUs" component={ContactUsScreen} />
+            <Stack.Screen name="VehicleTracking" component={VehicleTrackingScreen} />
+            <Stack.Screen name="LoginResponse" component={LoginResponseScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SessionProvider>
     </ThemeProvider>
   );
 }

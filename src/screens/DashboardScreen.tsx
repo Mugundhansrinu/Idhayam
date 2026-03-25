@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getCustomerBalance, getInvoicedVehicleList } from '../api';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSession } from '../context/SessionContext';
 
 const { width } = Dimensions.get('window');
 const FEATURE_CARD_WIDTH = (width - 50) / 2;
@@ -37,7 +38,8 @@ const FEATURES = [
 
 const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
-    const [balanceData, setBalanceData] = useState<any>({ balance: '19,562.66', pendingOrder: '0.00', netBalance: '19,562.66' });
+    const { session, clearSession } = useSession();
+    const [balanceData, setBalanceData] = useState<any>({ balance: '0.00', pendingOrder: '0.00', netBalance: '0.00' });
     const [vehicleData, setVehicleData] = useState<any>(null);
 
     const [isBalExpanded, setIsBalExpanded] = useState(false);
@@ -68,14 +70,15 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
     const fetchData = async () => {
         try {
+            const custId = session?.custId || undefined;
             const [bal, vehicles] = await Promise.all([
-                getCustomerBalance(),
-                getInvoicedVehicleList()
+                getCustomerBalance(custId),
+                getInvoicedVehicleList(custId)
             ]);
             setBalanceData({
-                balance: bal.balance || '19,562.66',
+                balance: bal.balance || '0.00',
                 pendingOrder: bal.pendingOrder || '0.00',
-                netBalance: bal.netBalance || bal.balance || '19,562.66'
+                netBalance: bal.netBalance || bal.balance || '0.00'
             });
             if (vehicles && vehicles.length > 0) setVehicleData(vehicles[0]);
         } catch (e) { console.error(e); }
@@ -100,9 +103,14 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                             </View>
                             <View style={styles.nameContainer}>
                                 <Text style={styles.brandName}>IDHAYAM</Text>
-                                <Text style={styles.distributorName}>RAGHAVENDRA TRADERS</Text>
+                                <Text style={styles.distributorName}>
+                                    {session?.custName || 'DISTRIBUTOR'}
+                                </Text>
                             </View>
-                            <TouchableOpacity style={styles.powerBtn} onPress={() => navigation.replace('Login')}>
+                            <TouchableOpacity style={styles.powerBtn} onPress={async () => {
+                                await clearSession();
+                                navigation.replace('Login');
+                            }}>
                                 <Icon name="logout" size={22} color="#fff" />
                             </TouchableOpacity>
                         </View>
@@ -144,15 +152,15 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                         }}>
                             <View style={styles.expandContent}>
                                 <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>Outstanding</Text>
+                                    <Text style={styles.detailLabel}>BALANCE</Text>
                                     <Text style={styles.detailVal}>₹ {balanceData.balance}</Text>
                                 </View>
                                 <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>Orders in Queue</Text>
+                                    <Text style={styles.detailLabel}>PENDING ORDER</Text>
                                     <Text style={styles.detailVal}>₹ {balanceData.pendingOrder}</Text>
                                 </View>
                                 <View style={[styles.detailRow, styles.totalRow]}>
-                                    <Text style={styles.totalLabel}>NET PAYABLE</Text>
+                                    <Text style={styles.totalLabel}>NET BALANCE</Text>
                                     <Text style={styles.totalVal}>₹ {balanceData.netBalance}</Text>
                                 </View>
                             </View>
