@@ -19,6 +19,8 @@ import BankDetailsScreen from './src/screens/BankDetailsScreen';
 import ContactUsScreen from './src/screens/ContactUsScreen';
 import VehicleTrackingScreen from './src/screens/VehicleTrackingScreen';
 import LoginResponseScreen from './src/screens/LoginResponseScreen';
+import OrderEntryReportScreen from './src/screens/OrderEntryReportScreen';
+import CreditDebitNoteScreen from './src/screens/CreditDebitNoteScreen';
 
 // ─────────────────────────────────────────
 //  Navigation types
@@ -38,6 +40,8 @@ export type RootStackParamList = {
   ContactUs: undefined;
   VehicleTracking: undefined;
   LoginResponse: { data: any };
+  OrderEntryReport: undefined;
+  CreditDebitNote: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -70,6 +74,8 @@ function App(): React.JSX.Element {
             <Stack.Screen name="ContactUs" component={ContactUsScreen} />
             <Stack.Screen name="VehicleTracking" component={VehicleTrackingScreen} />
             <Stack.Screen name="LoginResponse" component={LoginResponseScreen} />
+            <Stack.Screen name="OrderEntryReport" component={OrderEntryReportScreen} />
+            <Stack.Screen name="CreditDebitNote" component={CreditDebitNoteScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </SessionProvider>

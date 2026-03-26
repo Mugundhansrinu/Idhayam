@@ -38,8 +38,8 @@ const ReportScreen: React.FC<Props> = ({ navigation }) => {
     const handleReport = (id: string) => {
         if (id === 'MiniStatement') navigation.navigate('MiniStatement');
         else if (id === 'InvoiceDetail') navigation.navigate('InvoiceDetail');
-        else if (id === 'OrderEntry') navigation.navigate('OrderEntry');
-        else Alert.alert('Credit/Debit Note', 'Opening Credit/Debit note ledger...');
+        else if (id === 'OrderEntry') navigation.navigate('OrderEntryReport');
+        else if (id === 'CreditDebit') navigation.navigate('CreditDebitNote');
     };
 
     return (
