@@ -205,7 +205,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     showsVerticalScrollIndicator={false}>
 
                     <View style={styles.welcomeContainer}>
-                        <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>Welcome Back! 👋</Text>
+                        <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>Welcome Back!</Text>
                         <Text style={[styles.welcomeSubtitle, { color: colors.textSecondary }]}>Sign in to your Idhayam account</Text>
                     </View>
 

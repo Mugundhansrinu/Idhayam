@@ -306,7 +306,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                 {/* ── Filter Card ── */}
                 <View style={styles.card}>
                     <View style={styles.cardHeader}>
-                        <Ionicons name="search-outline" size={20} color={BrandColors.primaryGradientStart} />
+                        <Ionicons name="search-outline" size={24} color={BrandColors.primaryGradientStart} />
                         <Text style={styles.cardTitle}>Filter Records</Text>
                     </View>
 
@@ -323,7 +323,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                                     keyboardType="numeric"
                                     maxLength={10}
                                 />
-                                <Ionicons name="calendar-outline" size={14} color={BrandColors.primaryGradientStart} />
+                                <Ionicons name="calendar-outline" size={18} color={BrandColors.primaryGradientStart} />
                             </View>
                             {fromError ? <Text style={styles.errorText}>{fromError}</Text> : null}
                         </View>
@@ -340,7 +340,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                                     keyboardType="numeric"
                                     maxLength={10}
                                 />
-                                <Ionicons name="calendar-outline" size={14} color={BrandColors.primaryGradientStart} />
+                                <Ionicons name="calendar-outline" size={18} color={BrandColors.primaryGradientStart} />
                             </View>
                             {toError ? <Text style={styles.errorText}>{toError}</Text> : null}
                         </View>
@@ -369,14 +369,14 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                         <View style={styles.tableHeader}>
                             <View style={styles.tableHeaderLeft}>
                                 <View style={styles.tableHeaderIcon}>
-                                    <Ionicons name="receipt-outline" size={16} color="#FFF" />
+                                    <Ionicons name="receipt-outline" size={20} color="#FFF" />
                                 </View>
                                 <Text style={[styles.resultsTitle, { color: colors.textPrimary }]}>BILL RECORDS</Text>
                             </View>
                             <TouchableOpacity onPress={toggleSelectAll} style={styles.selectAllBtn}>
                                 <Ionicons
                                     name={selectedIds.length > 0 && selectedIds.length === invoices.length ? "checkmark-done" : "ellipse-outline"}
-                                    size={14} color={BrandColors.primaryGradientStart}
+                                    size={18} color={BrandColors.primaryGradientStart}
                                 />
                                 <Text style={styles.selectAllText}>
                                     {selectedIds.length === invoices.length ? 'Deselect All' : 'Select All'}
@@ -414,7 +414,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                                         {/* Checkbox */}
                                         <View style={styles.checkCol}>
                                             <View style={[styles.checkbox, selected && styles.checkboxActive]}>
-                                                {selected && <Ionicons name="checkmark" size={13} color="#FFF" />}
+                                                {selected && <Ionicons name="checkmark" size={15} color="#FFF" />}
                                             </View>
                                         </View>
 
@@ -452,7 +452,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                         {loading ? (
                             <ActivityIndicator color="#FFF" size="small" />
                         ) : (
-                            <Ionicons name="document-text" size={20} color="#FFF" />
+                            <Ionicons name="document-text" size={24} color="#FFF" />
                         )}
                         <Text style={styles.fabText}>
                             {loading ? 'FETCHING...' : `GET INVOICES (${selectedIds.length})`}
@@ -479,7 +479,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                         colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
                         style={styles.viewerHeader}>
                         <TouchableOpacity onPress={() => setViewerVisible(false)} style={styles.viewerIconBtn}>
-                            <Ionicons name="close" size={24} color="#FFF" />
+                            <Ionicons name="close" size={30} color="#FFF" />
                         </TouchableOpacity>
                         <Text style={styles.viewerTitle}>Invoice Preview</Text>
                         <TouchableOpacity
@@ -488,7 +488,7 @@ const InvoiceDetailScreen: React.FC<Props> = ({ navigation }) => {
                             style={styles.viewerIconBtn}>
                             {downloading
                                 ? <ActivityIndicator color="#FFF" size="small" />
-                                : <Ionicons name="cloud-download" size={24} color="#FFF" />}
+                                : <Ionicons name="cloud-download" size={30} color="#FFF" />}
                         </TouchableOpacity>
                     </LinearGradient>
 

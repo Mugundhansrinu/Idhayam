@@ -151,7 +151,7 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
                                     activeOpacity={0.8}
                                     style={styles.contactCard}>
                                     <View style={[styles.iconBox, { backgroundColor: row.color + '15' }]}>
-                                        <Icon name={row.iconName} size={26} color={row.color} />
+                                        <Icon name={row.iconName} size={32} color={row.color} />
                                     </View>
                                     <View style={styles.contactInfo}>
                                         <View style={[styles.roleBadge, { backgroundColor: row.color + '18' }]}>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     sectionLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10, marginTop: 5 },
 
     contactCard: { backgroundColor: '#fff', borderRadius: 24, padding: 18, marginBottom: 15, flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-    iconBox: { width: 50, height: 50, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    iconBox: { width: 60, height: 60, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
     icon: { fontSize: 22 },
     contactInfo: { flex: 1 },
     contactName: { fontSize: 18, fontWeight: '800', marginBottom: 4 },

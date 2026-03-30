@@ -22,6 +22,7 @@ import { BrandColors } from '../theme/Colors';
 import GlassHeader from '../components/GlassHeader';
 import { getOrderItems, submitOrder } from '../api';
 import { useSession } from '../context/SessionContext';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { height } = Dimensions.get('window');
 
@@ -40,36 +41,41 @@ interface Product {
 }
 
 const ItemRow = React.memo(({ item, qty, onUpdate, onStep }: any) => {
+    const [focused, setFocused] = useState<'box' | 'pcs' | null>(null);
     const hasQty = (qty?.box && qty.box !== '0' && qty.box !== '') || (qty?.pcs && qty.pcs !== '0' && qty.pcs !== '');
     const priceText = item?.price ? parseFloat(item.price).toFixed(2) : '0.00';
 
     return (
-        <View style={[styles.itemRow, hasQty && styles.itemRowActive]}>
+        <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
             <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item?.name || 'Unknown Item'}</Text>
                 <View style={styles.itemPriceRow}>
-                    <Text style={styles.itemPriceMain}>₹{priceText}</Text>
                     <Text style={styles.itemMRP}>MRP: ₹{item?.mrp}</Text>
+                    <Text style={styles.itemPriceMain}>APP: ₹{priceText}</Text>
                 </View>
-                <Text style={styles.itemUnit}>Unit: {item?.unit || 'Pcs'}</Text>
             </View>
             
             <View style={styles.qtyContainer}>
                 {/* BOX STEPPER */}
                 <View style={styles.stepperWrap}>
                     <Text style={styles.stepperLabel}>BOX</Text>
-                    <View style={[styles.stepper, qty?.box && qty.box !== '' && styles.stepperActive]}>
+                    <View style={[
+                        styles.stepper, 
+                        (qty?.box && qty.box !== '' && qty.box !== '0') && styles.stepperActive,
+                        focused === 'box' && styles.stepperActive
+                    ]}>
                         <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'box', -1)}>
                             <Text style={styles.stepSymbol}>−</Text>
                         </TouchableOpacity>
                         <TextInput
                             style={styles.stepInput}
-                            keyboardType="numeric"
+                            keyboardType="number-pad"
                             value={String(qty?.box || '')}
                             onChangeText={v => onUpdate(item?.id, 'box', v)}
                             placeholder="0"
                             placeholderTextColor="#A0A3BD"
-                            selectTextOnFocus
+                            onFocus={() => setFocused('box')}
+                            onBlur={() => setFocused(null)}
                         />
                         <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'box', 1)}>
                             <Text style={styles.stepSymbol}>+</Text>
@@ -80,18 +86,23 @@ const ItemRow = React.memo(({ item, qty, onUpdate, onStep }: any) => {
                 {/* PCS STEPPER */}
                 <View style={styles.stepperWrap}>
                     <Text style={styles.stepperLabel}>PCS</Text>
-                    <View style={[styles.stepper, qty?.pcs && qty.pcs !== '' && styles.stepperActive]}>
+                    <View style={[
+                        styles.stepper, 
+                        (qty?.pcs && qty.pcs !== '' && qty.pcs !== '0') && styles.stepperActive,
+                        focused === 'pcs' && styles.stepperActive
+                    ]}>
                         <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'pcs', -1)}>
                             <Text style={styles.stepSymbol}>−</Text>
                         </TouchableOpacity>
                         <TextInput
                             style={styles.stepInput}
-                            keyboardType="numeric"
+                            keyboardType="number-pad"
                             value={String(qty?.pcs || '')}
                             onChangeText={v => onUpdate(item?.id, 'pcs', v)}
                             placeholder="0"
                             placeholderTextColor="#A0A3BD"
-                            selectTextOnFocus
+                            onFocus={() => setFocused('pcs')}
+                            onBlur={() => setFocused(null)}
                         />
                         <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'pcs', 1)}>
                             <Text style={styles.stepSymbol}>+</Text>
@@ -187,7 +198,11 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const executeSubmit = async () => {
         setLoading(true);
         try {
-            const res = await submitOrder(session?.custId || '', activeOrders);
+            const res = await submitOrder(
+                session?.custId || '', 
+                activeOrders, 
+                session?.branchId || undefined
+            );
             if (res.success) {
                 Alert.alert('✓ Order Placed', `Order #${res.orderId} recorded.`);
                 navigation.goBack();
@@ -289,10 +304,15 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                             </View>
                         )}
                     />
-                    <View style={styles.placeBtnWrapper}>
+                    <View style={styles.footerRow}>
+                        <TouchableOpacity style={[styles.reviewBackBtn, { borderColor: BrandColors.primaryGradientStart }]} onPress={() => setPage(1)} activeOpacity={0.7}>
+                            <Ionicons name="arrow-back" size={24} color={BrandColors.primaryGradientStart} style={{ marginRight: 6 }} />
+                            <Text style={[styles.reviewBackBtnText, { color: BrandColors.primaryGradientStart }]}>Back</Text>
+                        </TouchableOpacity>
+                        
                         <TouchableOpacity style={styles.placeBtn} onPress={executeSubmit} activeOpacity={0.9} disabled={loading}>
                             <LinearGradient colors={[BrandColors.verifyGradientStart, BrandColors.verifyGradientEnd]} start={{x:0, y:0}} end={{x:1, y:0}} style={styles.placeBtnInner}>
-                                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.placeBtnText}>CONFIRM & SUBMIT ORDER</Text>}
+                                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.placeBtnText}>SUBMIT ORDER</Text>}
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -322,34 +342,77 @@ const styles = StyleSheet.create({
     centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     controls: { flexDirection: 'row', padding: 15, paddingBottom: 10 },
     searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, elevation: 2, height: 46, marginRight: 10, shadowColor: '#000', shadowOffset: {width:0, height:2}, shadowOpacity: 0.05, shadowRadius: 5 },
-    searchIcon: { fontSize: 13, marginRight: 8 },
+    searchIcon: { fontSize: 18, marginRight: 8 },
     searchInput: { flex: 1, fontSize: 14, fontWeight: '700', color: '#1F1F39', padding: 0 },
     dropBtn: { width: 130, height: 46, backgroundColor: '#fff', borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, elevation: 2, shadowColor: '#000', shadowOffset: {width:0, height:2}, shadowOpacity: 0.05, shadowRadius: 5 },
     dropText: { flex: 1, fontSize: 11, fontWeight: '800', color: BrandColors.primaryGradientStart, textTransform: 'uppercase' },
-    dropIcon: { fontSize: 8, color: '#BDBDBD', marginLeft: 5 },
+    dropIcon: { fontSize: 12, color: '#BDBDBD', marginLeft: 5 },
     
     scrollContent: { padding: 15, paddingBottom: 120 },
     catHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
     catTitle: { paddingRight: 12, fontSize: 12, fontWeight: '900', color: '#1F1F39', textTransform: 'uppercase', letterSpacing: 1 },
     catLine: { flex: 1, height: 2, backgroundColor: BrandColors.primaryGradientStart + '15', borderRadius: 1 },
 
-    itemRow: { backgroundColor: '#fff', borderRadius: 24, padding: 18, marginBottom: 12, elevation: 2, shadowColor: '#000', shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.05, shadowRadius: 10 },
-    itemRowActive: { borderColor: BrandColors.primaryGradientStart + '40', borderWidth: 2, shadowOpacity: 0.1 },
-    itemInfo: { marginBottom: 15 },
-    itemName: { fontSize: 16, fontWeight: '800', color: '#1F1F39', marginBottom: 5 },
-    itemPriceRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 3 },
-    itemPriceMain: { color: BrandColors.primaryGradientStart, fontSize: 13, fontWeight: '900', marginRight: 10 },
-    itemMRP: { fontSize: 10, color: '#BDBDBD', textDecorationLine: 'line-through' },
-    itemUnit: { fontSize: 10, fontWeight: '700', color: '#858597' },
+    itemRow: { 
+        backgroundColor: '#fff', 
+        borderRadius: 20, 
+        padding: 16, 
+        marginBottom: 12, 
+        elevation: 4, 
+        shadowColor: '#000', 
+        shadowOffset: {width: 0, height: 4}, 
+        shadowOpacity: 0.08, 
+        shadowRadius: 8,
+        borderWidth: 1.2,
+        borderColor: '#F0F0FA'
+    },
+    itemRowActive: { 
+        borderColor: BrandColors.primaryGradientStart, 
+        backgroundColor: '#FCFCFF',
+        shadowOpacity: 0.15,
+        shadowColor: BrandColors.primaryGradientStart,
+    },
+    itemInfo: { marginBottom: 12 },
+    itemName: { fontSize: 16, fontWeight: '700', color: '#1F1F39', marginBottom: 4 },
+    itemPriceRow: { flexDirection: 'row', alignItems: 'center' },
+    itemPriceMain: { color: BrandColors.primaryGradientStart, fontSize: 13, fontWeight: '800', marginLeft: 12 },
+    itemMRP: { fontSize: 13, color: '#858597', fontWeight: '500' },
 
-    qtyContainer: { flexDirection: 'row', justifyContent: 'space-between' },
+    qtyContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
     stepperWrap: { flex: 0.48 },
-    stepperLabel: { fontSize: 8, fontWeight: '900', color: '#BDBDBD', marginBottom: 6, letterSpacing: 1, textAlign: 'center' },
-    stepper: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F4F5F9', borderRadius: 16, height: 48, overflow: 'hidden', borderWidth: 1, borderColor: '#ECEDF3' },
-    stepperActive: { backgroundColor: '#fff', borderColor: BrandColors.primaryGradientStart + '40', elevation: 2 },
-    stepBtn: { width: 44, height: 48, alignItems: 'center', justifyContent: 'center' },
-    stepSymbol: { fontSize: 22, fontWeight: '600', color: BrandColors.primaryGradientStart },
-    stepInput: { flex: 1, height: 48, textAlign: 'center', fontSize: 17, fontWeight: '900', color: '#1F1F39', padding: 0 },
+    stepperLabel: { fontSize: 10, fontWeight: '800', color: '#8F93B8', marginBottom: 6, textAlign: 'center', opacity: 0.7 },
+    stepper: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        backgroundColor: '#F5F6FA', 
+        borderRadius: 12, 
+        height: 44, 
+        paddingHorizontal: 4,
+        borderWidth: 1.2, 
+        borderColor: 'transparent'
+    },
+    stepperActive: { 
+        backgroundColor: '#fff', 
+        borderColor: BrandColors.primaryGradientStart + '30', 
+        elevation: 2,
+        shadowColor: BrandColors.primaryGradientStart,
+        shadowOpacity: 0.1,
+    },
+    stepBtn: { 
+        width: 36, 
+        height: 36, 
+        borderRadius: 12, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        backgroundColor: '#fff',
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2
+    },
+    stepSymbol: { fontSize: 24, fontWeight: '400', color: BrandColors.primaryGradientStart },
+    stepInput: { flex: 1, height: 44, textAlign: 'center', fontSize: 16, fontWeight: '800', color: '#1F1F39', padding: 0 },
 
     summaryBar: { position: 'absolute', bottom: 25, left: 15, right: 15, elevation: 12, shadowColor: '#000', shadowOffset: {width:0, height:10}, shadowOpacity: 0.2 },
     summaryInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 28, paddingHorizontal: 25, paddingVertical: 18 },
@@ -364,7 +427,7 @@ const styles = StyleSheet.create({
     modalOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingVertical: 18, borderBottomWidth: 1, borderBottomColor: '#F4F5F9' },
     modalOptionActive: { backgroundColor: BrandColors.primaryGradientStart + '05' },
     modalOptionText: { fontSize: 16, fontWeight: '700', color: '#4F4F6B' },
-    checkIcon: { fontSize: 18, color: BrandColors.primaryGradientStart, fontWeight: '900' },
+    checkIcon: { fontSize: 22, color: BrandColors.primaryGradientStart, fontWeight: '900' },
     
     reviewTitle: { fontSize: 26, fontWeight: '900', color: '#1F1F39', marginBottom: 25, marginLeft: 5 },
     reviewRow: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 26, padding: 22, marginBottom: 12, alignItems: 'center', elevation: 2 },
@@ -377,10 +440,14 @@ const styles = StyleSheet.create({
     billLine: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     billLabelLarge: { fontSize: 18, fontWeight: '900', color: '#1F1F39' },
     billValLarge: { fontSize: 28, fontWeight: '900', color: BrandColors.verifyGradientStart },
-    placeBtnWrapper: { padding: 20, paddingBottom: 40 },
-    placeBtn: { borderRadius: 28, overflow: 'hidden', elevation: 10 },
-    placeBtnInner: { height: 70, alignItems: 'center', justifyContent: 'center' },
-    placeBtnText: { color: '#fff', fontSize: 15, fontWeight: '900', letterSpacing: 2 },
+    
+    footerRow: { flexDirection: 'row', padding: 20, paddingBottom: 40, alignItems: 'center' },
+    reviewBackBtn: { flex: 0.35, height: 60, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 20, marginRight: 15, borderWidth: 1.5 },
+    reviewBackBtnText: { fontWeight: '900', fontSize: 13, letterSpacing: 0.5 },
+    
+    placeBtn: { flex: 1, borderRadius: 28, overflow: 'hidden', elevation: 10, shadowColor: BrandColors.verifyGradientStart, shadowOpacity: 0.2, shadowRadius: 10, shadowOffset: { width: 0, height: 5 } },
+    placeBtnInner: { height: 64, alignItems: 'center', justifyContent: 'center' },
+    placeBtnText: { color: '#fff', fontSize: 14, fontWeight: '900', letterSpacing: 1.5 },
 });
 
 export default OrderEntryScreen;

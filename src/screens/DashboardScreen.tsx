@@ -118,7 +118,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                 await clearSession();
                                 navigation.replace('Login');
                             }}>
-                                <Icon name="logout" size={22} color="#fff" />
+                                <Icon name="logout" size={26} color="#fff" />
                             </TouchableOpacity>
                         </View>
 
@@ -136,8 +136,8 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                 colors={isBalExpanded ? [BrandColors.primaryGradientStart + '15', '#fff'] : ['#fff', '#fff']}
                                 style={styles.cardInner}>
                                 <View style={styles.cardLeft}>
-                                    <View style={[styles.iconCircle, { backgroundColor: '#F0F4FF' }]}>
-                                        <Text style={{ fontSize: 20 }}>💎</Text>
+                                    <View style={[styles.iconCircle, { backgroundColor: '#FFF9E6' }]}>
+                                        <Text style={{ fontSize: 26 }}>💰</Text>
                                     </View>
                                     <View>
                                         <Text style={styles.cardTitle}>Account Balance</Text>
@@ -182,7 +182,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                 style={styles.cardInner}>
                                 <View style={styles.cardLeft}>
                                     <View style={[styles.iconCircle, { backgroundColor: '#E8FDF0' }]}>
-                                        <Text style={{ fontSize: 20 }}>🚚</Text>
+                                        <Text style={{ fontSize: 26 }}>🚚</Text>
                                     </View>
                                     <View>
                                         <Text style={styles.cardTitle}>Live Tracking</Text>
@@ -247,7 +247,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                 activeOpacity={0.8}
                                 onPress={() => navigation.navigate(f.id as any)}>
                                 <View style={[styles.featIconBox, { backgroundColor: f.color + '20' }]}>
-                                    <Text style={{ fontSize: 24 }}>{f.icon}</Text>
+                                    <Text style={{ fontSize: 48 }}>{f.icon}</Text>
                                 </View>
                                 <Text style={styles.featLabel}>{f.label}</Text>
                                 <Icon name="chevron-right" size={16} color="#D1D1E0" />
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     cardLeft: { flexDirection: 'row', alignItems: 'center' },
-    iconCircle: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    iconCircle: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
     cardTitle: { fontSize: 16, fontWeight: '900', color: '#1F1F39' },
     cardSub: { fontSize: 12, color: '#858597', marginTop: 2, fontWeight: '600' },
 
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         alignItems: 'center',
     },
-    featIconBox: { width: 60, height: 60, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+    featIconBox: { width: 85, height: 85, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginBottom: 15 },
     featLabel: { fontSize: 13, fontWeight: '900', color: '#1F1F39', marginBottom: 8, textAlign: 'center' },
 
     footer: { alignItems: 'center', marginTop: 30, paddingBottom: 20 },

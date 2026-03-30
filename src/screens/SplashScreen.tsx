@@ -67,50 +67,44 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+            {/* Background Image */}
+            <Image
+                source={require('../assets/idhayam.png')}
+                style={styles.backgroundImage}
+                resizeMode="cover"
+            />
+
+            {/* Blue Overlay Gradient */}
+            <LinearGradient
+                colors={['rgba(26, 35, 126, 0.4)', 'rgba(26, 35, 126, 0.7)']}
+                style={StyleSheet.absoluteFillObject}
+            />
 
             <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
-                {/* Logo Card */}
-                <View style={styles.logoCard}>
-                    <Image
-                        source={require('../assets/idhayam.png')}
-                        style={styles.image}
-                        resizeMode="contain"
-                    />
-                </View>
-
-                {/* Branding text */}
+                {/* Branding text - Styled like screenshot */}
                 <View style={styles.textWrapper}>
-                    <Text style={styles.brandTitle}>IDHAYAM</Text>
+                    <Text style={styles.brandTitleHeadline}>IDHAYAM</Text>
                     <View style={styles.taglineRow}>
-                        <Text style={styles.brandSubtitle}>Say Idhayam </Text>
-                        <Text style={styles.heart}>❤️</Text>
-                        <Text style={styles.brandSubtitle}> Spell Health</Text>
+                        <Text style={styles.taglineText}>SAY IDHAYAM</Text>
+                        <View style={styles.dot} />
+                        <Text style={styles.taglineText}>SPELL HEALTH</Text>
                     </View>
                 </View>
 
-                {/* Portal Button */}
-                <View style={styles.buttonWrapper}>
-                    <LinearGradient
-                        colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
-                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                        style={styles.portalButton}>
-                        <Text style={styles.portalButtonText}>DISTRIBUTOR PORTAL</Text>
-                    </LinearGradient>
-                </View>
-
-                {/* Loading Bar */}
-                <View style={styles.loadingContainer}>
+                {/* Progress Indicators */}
+                <View style={[styles.loadingContainer, { marginTop: 'auto', marginBottom: 40 }]}>
                     <View style={styles.loadingBarBackground}>
                         <Animated.View style={[
-                            styles.loadingBarFill, 
-                            { 
+                            styles.loadingBarFill,
+                            {
                                 width: progressWidth,
-                                backgroundColor: BrandColors.primaryGradientStart 
+                                backgroundColor: BrandColors.idhayamYellow
                             }
                         ]} />
                     </View>
-                    <Text style={styles.loadingText}>Loading...</Text>
+                    <Text style={styles.loadingTextLight}>Loading...</Text>
                 </View>
             </Animated.View>
         </View>
@@ -127,21 +121,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 30,
+        backgroundColor: 'transparent',
+    },
+    backgroundImage: {
+        ...StyleSheet.absoluteFillObject,
+        width: '100%',
+        height: '100%',
     },
     logoCard: {
-        width: width * 0.7,
-        height: width * 0.7,
+        width: width * 0.65,
+        height: width * 0.65,
         backgroundColor: '#FFFFFF',
-        borderRadius: 40,
+        borderRadius: 45,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#6C5CE7',
-        shadowOffset: { width: 0, height: 20 },
-        shadowOpacity: 0.15,
-        shadowRadius: 30,
-        elevation: 10,
-        marginBottom: 40,
-        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 15 },
+        shadowOpacity: 0.12,
+        shadowRadius: 25,
+        elevation: 12,
+        marginBottom: 50,
+        padding: 35,
     },
     image: {
         width: '100%',
@@ -149,44 +149,34 @@ const styles = StyleSheet.create({
     },
     textWrapper: {
         alignItems: 'center',
-        marginBottom: 40,
+        marginTop: 60,
     },
-    brandTitle: {
-        fontSize: 48,
-        fontWeight: '900',
-        color: '#4F4F4F',
-        letterSpacing: 4,
-        marginBottom: 10,
+    brandTitleHeadline: {
+        fontSize: 52,
+        fontWeight: 'bold',
+        color: BrandColors.idhayamYellow,
+        letterSpacing: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.4)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
     },
     taglineRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop: -5,
     },
-    brandSubtitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#BDBDBD',
-        letterSpacing: 0.5,
-    },
-    heart: {
+    taglineText: {
         fontSize: 14,
-        marginHorizontal: 4,
-    },
-    buttonWrapper: {
-        width: '100%',
-        marginBottom: 50,
-    },
-    portalButton: {
-        borderRadius: 25,
-        paddingVertical: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    portalButtonText: {
+        fontWeight: '700',
         color: '#FFFFFF',
-        fontSize: 14,
-        fontWeight: '800',
         letterSpacing: 1,
+    },
+    dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: BrandColors.idhayamYellow,
+        marginHorizontal: 12,
     },
     loadingContainer: {
         width: '80%',
@@ -194,22 +184,22 @@ const styles = StyleSheet.create({
     },
     loadingBarBackground: {
         width: '100%',
-        height: 4,
-        backgroundColor: '#F2F2F2',
-        borderRadius: 2,
-        marginBottom: 12,
+        height: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 3,
+        marginBottom: 15,
         overflow: 'hidden',
     },
     loadingBarFill: {
         height: '100%',
-        backgroundColor: '#E0E0E0',
-        borderRadius: 2,
+        borderRadius: 3,
     },
-    loadingText: {
-        color: '#828282',
-        fontSize: 13,
-        fontWeight: '600',
-        letterSpacing: 1,
+    loadingTextLight: {
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontSize: 12,
+        fontWeight: '700',
+        letterSpacing: 2,
+        textTransform: 'uppercase',
     }
 });
 

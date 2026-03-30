@@ -11,8 +11,6 @@ import {
     API_TOKEN
 } from './config';
 
-/** Mock delay simulator (used for not-yet-integrated endpoints) */
-const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 /** Reusable deep-parser: handles multi-layer JSON-encoded strings from server */
 const deepParse = (val: any): any => {
@@ -162,22 +160,84 @@ export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, bran
 }
 
 export async function getVehicleTracking(branchId: string, tripId: string, tripRefNo: string): Promise<any> {
-    await delay(800);
-    return {
-        latitude: 9.3622,
-        longitude: 77.9404,
-        status: 'On the way',
-        lastUpdated: new Date().toISOString()
+    const payload = {
+        A: branchId,
+        B: tripId,
+        C: 'GetVehicleTrackingStatus',
+        D: '',
+        E: 'No',
+        F: tripRefNo,
+        G: 'PARTY'
     };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'GetVehicleTrackingStatus',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+        const textData = await response.text();
+        const outer = deepParse(textData);
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            return {
+                latitude: parseFloat(inner.LATITUDE || inner.A || '9.3622'),
+                longitude: parseFloat(inner.LONGITUDE || inner.B || '77.9404'),
+                status: inner.STATUS || inner.C || 'Moving',
+                lastUpdated: new Date().toISOString()
+            };
+        }
+    } catch (e) {
+        console.error('getVehicleTracking Error:', e);
+    }
+    return null;
 }
 
-export async function getTripStopList(tripTransId: string, tripRefNo: string, custId = FALLBACK_CUSTOMER_ID): Promise<any> {
-    await delay(600);
-    return [
-        { id: '1', name: 'Virudhunagar Hub', reached: true },
-        { id: '2', name: 'Sivakasi Point', reached: false },
-        { id: '3', name: 'Madurai Depot', reached: false },
-    ];
+export async function getTripStopList(tripTransId: string, tripRefNo: string, custId = FALLBACK_CUSTOMER_ID, branchId = FALLBACK_BRANCH_ID): Promise<any> {
+    const payload = {
+        A: branchId,
+        B: tripTransId,
+        C: custId,
+        D: tripRefNo,
+        E: 'Yes',
+        F: ''
+    };
+    const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'GetStopList',
+                'MODE': 'MOBILE',
+                'P': '',
+                'J': minifiedJson,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+        const textData = await response.text();
+        const outer = deepParse(textData);
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            const rows = Array.isArray(inner) ? inner : [inner];
+            return rows.map((r: any, i: number) => ({
+                id: String(i + 1),
+                name: r.STOP_NAME || r.A || 'Unknown Stop',
+                reached: !!(r.IS_REACHED || r.B === 'Yes')
+            }));
+        }
+    } catch (e) {
+        console.error('getTripStopList Error:', e);
+    }
+    return [];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -299,7 +359,8 @@ export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any>
                 unit: item.SALES_UOM || 'Pcs',
                 category: item.ITEM_GRP_NAME,
                 mrp: parseFloat(item.APP_MRP || '0').toFixed(2),
-                tax: item.TAX_PER ? `${item.TAX_PER}%` : '0%'
+                tax: item.TAX_PER ? `${item.TAX_PER}%` : '0%',
+                raw: item // Keep raw data for order submission
             }));
         }
     } catch (e) {
@@ -312,13 +373,100 @@ export async function getPriceList(custId = FALLBACK_CUSTOMER_ID): Promise<any> 
     return getOrderItems(custId);
 }
 
-export async function submitOrder(custId: string, orderDetails: any[]): Promise<any> {
-    await delay(1000);
-    return {
-        success: true,
-        orderId: 'ORD-' + Math.floor(Math.random() * 90000 + 10000),
-        message: 'Order placed successfully'
+export async function submitOrder(custId: string, orderDetails: any[], branchId = FALLBACK_BRANCH_ID): Promise<any> {
+    const items = orderDetails.map(o => {
+        const raw = o.raw || {};
+        const price = parseFloat(o.price || '0');
+        const box = parseFloat(o.box || '0');
+        const pcs = parseFloat(o.pcs || '0');
+        const convFactor = parseFloat(raw.CONV_FACTOR || '1');
+        const totalPcs = (box * convFactor) + pcs;
+        const lineAmt = totalPcs * price;
+
+        // Tax percentage (from raw response)
+        const taxRate = parseFloat(raw.TAX_PER || '0'); // e.g. 5.0
+        const taxAmt = (lineAmt * taxRate) / 100;
+        const totalAmt = lineAmt + taxAmt;
+
+        return {
+            ITEM_ID: String(raw.ID || raw.ITEM_ID || ''),
+            ITEM_GROUP_ID: String(raw.ITEM_GROUP_ID || ''),
+            ITEM_GRP_NAME: raw.ITEM_GRP_NAME || '',
+            ITEM_DESC: raw.ITEM_DESC || '',
+            DISPLAY_NAME: raw.DISPLAY_NAME || null,
+            SALES_UOM: raw.SALES_UOM || 'Pcs',
+            UOM: raw.UOM || '',
+            CONV_FACTOR: convFactor,
+            PACKING_FACTOR: parseFloat(raw.PACKING_FACTOR || '0'),
+            SO_ID: raw.SO_ID || null,
+            ORDER_NO: raw.ORDER_NO || null,
+            ORDER_DATE: raw.ORDER_DATE || null,
+            ORD_QTY: raw.ORD_QTY || null,
+            TOTAL_BOX: raw.TOTAL_BOX || null,
+            TOTAL_AMOUNT: raw.TOTAL_AMOUNT || null,
+            ORD_PCS: totalPcs,
+            APP_PRICE: price,
+            PLUS_TAX: raw.PLUS_TAX || null,
+            APP_MRP: parseFloat(o.mrp || '0'),
+            TAX_PER: taxAmt, // The server expects the calculated Tax Amount here based on user example
+            APP_LINE_AMT: lineAmt,
+            APP_ORDER_AMT: totalAmt,
+            ORDER_NO_STR: raw.ORDER_NO_STR || null,
+            ID: 0,
+            IG_SORT: 0,
+            APP_PCS: null,
+            APP_QTY: null,
+            USR_ID: 2937, // Hardcoded user ID from providing example
+            STATUS: null,
+            BOX_QTY: box,
+            PCS_QTY: pcs,
+            PRICETAG: true,
+            IsRefreshing: false,
+            RefreshCommand: null
+        };
+    });
+
+    const payload = {
+        A: custId,
+        B: JSON.stringify(items), // Server expects stringified array of items
+        C: branchId,
+        D: null, E: null, F: null, G: null, H: null, I: null, J: null
     };
+
+    const minifiedJson = JSON.stringify(payload);
+    console.log('OrderCreation Payload Body:', minifiedJson);
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'F': 'OrderCreation',
+                'MODE': 'MOBILE',
+                'P': '',
+                // Omitting 'J' because data is sent via body
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+            body: minifiedJson,
+        });
+
+        const textData = await response.text();
+        console.log('OrderCreation Raw Response:', textData);
+        const outer = deepParse(textData);
+
+        if (outer?.success) {
+            return {
+                success: true,
+                orderId: outer.result || 'SUCCESS',
+                message: outer.message || 'Order placed successfully'
+            };
+        }
+        return { success: false, message: outer.message || 'Server error' };
+    } catch (e) {
+        console.error('submitOrder Error:', e);
+        return { success: false, message: 'Network request failed' };
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -589,7 +737,7 @@ export async function getTransactionPdf(fromDate: string, toDate: string, custId
 }
 
 export function getTransactionPdfUrl(custId = FALLBACK_CUSTOMER_ID): string {
-    return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    return '';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

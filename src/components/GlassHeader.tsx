@@ -48,7 +48,7 @@ const GlassHeader: React.FC<GlassHeaderProps> = ({
                         }
                     ]}
                     activeOpacity={0.7}>
-                    <Icon name="arrow-back" size={24} color={gradientColors ? '#FFFFFF' : colors.textPrimary} />
+                    <Icon name="arrow-back" size={28} color={gradientColors ? '#FFFFFF' : colors.textPrimary} />
                 </TouchableOpacity>
             ) : (
                 <View style={styles.placeholder} />
@@ -122,15 +122,15 @@ const styles = StyleSheet.create({
         paddingBottom: 12,
     },
     backBtn: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
     placeholder: {
-        width: 40,
+        width: 44,
     },
     titleContainer: {
         flex: 1,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     rightArea: {
-        width: 40,
+        width: 44,
         alignItems: 'flex-end',
     },
     accentLine: {
