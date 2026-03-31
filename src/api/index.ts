@@ -354,7 +354,7 @@ export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any>
             // Normalize server fields to app format
             return rows.map(item => ({
                 id: String(item.ID || item.ITEM_ID),
-                name: `${item.ITEM_GRP_NAME} - ${item.ITEM_DESC}`,
+                name: item.ITEM_DESC || 'Unknown Item',
                 price: parseFloat(item.PLUS_TAX || item.APP_PRICE || '0').toFixed(2),
                 unit: item.SALES_UOM || 'Pcs',
                 category: item.ITEM_GRP_NAME,

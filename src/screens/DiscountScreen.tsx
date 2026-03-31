@@ -1,19 +1,17 @@
-/**
- * DiscountScreen
- */
 import React, { useState, useEffect } from 'react';
 import {
     View, Text, TouchableOpacity, StyleSheet, StatusBar,
-    ScrollView, ActivityIndicator,
+    ScrollView, ActivityIndicator, Dimensions, Platform, LayoutAnimation,
 } from 'react-native';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import GlassCard from '../components/GlassCard';
-import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getDiscountSummary, getDiscountDetail } from '../api';
 import { useSession } from '../context/SessionContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+const { width } = Dimensions.get('window');
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Discount'> };
 
@@ -22,8 +20,6 @@ const DiscountScreen: React.FC<Props> = ({ navigation }) => {
     const { session } = useSession();
     const [schemeData, setSchemeData] = useState<any[]>([]);
     const [loadingDiscount, setLoadingDiscount] = useState(true);
-
-    // Track fetched details for each card
     const [slabData, setSlabData] = useState<Record<number, any[]>>({});
     const [loadingSlabs, setLoadingSlabs] = useState<Record<number, boolean>>({});
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -39,22 +35,17 @@ const DiscountScreen: React.FC<Props> = ({ navigation }) => {
                 }));
                 setSchemeData(mapped);
             })
-            .catch(err => {
-                console.warn('Discount Fetch Error:', err);
-                setSchemeData([]);
-            })
+            .catch(() => setSchemeData([]))
             .finally(() => setLoadingDiscount(false));
     }, [session?.custId]);
 
     const toggleScheme = async (index: number) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         if (expandedIndex === index) {
             setExpandedIndex(null);
             return;
         }
-
         setExpandedIndex(index);
-        
-        // Fetch details if not already loaded
         if (!slabData[index]) {
             setLoadingSlabs(prev => ({ ...prev, [index]: true }));
             try {
@@ -72,231 +63,123 @@ const DiscountScreen: React.FC<Props> = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
-            <GlassHeader 
-                title="Discount Details" 
-                subtitle="Your current discount schemes" 
-                onBack={() => navigation.goBack()} 
-                gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} 
-            />
+            
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+                    <Icon name="arrow-back" size={20} color="#3861FB" />
+                </TouchableOpacity>
+                <View style={styles.headerTitles}>
+                    <Text style={styles.headerTitle}>Discount Details</Text>
+                    <Text style={styles.headerSub}>Active schemes & offers</Text>
+                </View>
+            </View>
 
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-                <View style={{ height: 20 }} />
+                <View style={styles.noticeBox}>
+                    <Icon name="stars" size={20} color="#3861FB" style={{ marginRight: 12 }} />
+                    <Text style={styles.noticeText}>
+                        Tap on a scheme to view detailed slab information and eligibility.
+                    </Text>
+                </View>
+
                 {loadingDiscount ? (
-                    <ActivityIndicator 
-                        color={BrandColors.primaryGradientStart} 
-                        size="large" 
-                        style={{ marginTop: 40 }} 
-                    />
+                    <View style={styles.centerBox}><ActivityIndicator color="#3861FB" size="large" /></View>
                 ) : schemeData.length === 0 ? (
                     <View style={styles.emptyState}>
-                        <Text style={styles.emptyIcon}>🏷️</Text>
-                        <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                            No discount schemes found.
-                        </Text>
+                        <Icon name="label-off" size={60} color="#CBD5E0" />
+                        <Text style={styles.emptyText}>No active discounts found</Text>
                     </View>
                 ) : (
-                    schemeData.map((s, i) => {
-                        const isExpanded = expandedIndex === i;
-                        const slabs = slabData[i] || [];
-                        const loadingThis = loadingSlabs[i];
-
-                        return (
-                            <TouchableOpacity activeOpacity={0.9} key={i} onPress={() => toggleScheme(i)}>
-                                <GlassCard style={styles.card} accentLine={isExpanded}>
-                                    <View style={styles.schemeHeader}>
-                                        <Text style={[styles.schemeProd, { color: colors.textPrimary }]}>
-                                            {String(s.type === 'SD' ? 'Scheme Discount' : s.type === 'TD' ? 'Target Discount' : (s.type || 'Unnamed Scheme'))}
-                                        </Text>
-                                        <View style={[
-                                            styles.badge, 
-                                            { 
-                                                backgroundColor: isExpanded ? BrandColors.primaryGradientStart : BrandColors.primaryGradientEnd + '33', 
-                                                borderColor: isExpanded ? BrandColors.primaryGradientStart : BrandColors.primaryGradientEnd 
-                                            }
-                                        ]}>
-                                            <Text style={[styles.badgeText, { color: isExpanded ? '#FFF' : BrandColors.primaryGradientEnd }]}>
-                                                {String(s.type || 'N/A')}
-                                            </Text>
-                                        </View>
+                    schemeData.map((s, i) => (
+                        <TouchableOpacity activeOpacity={0.9} key={i} onPress={() => toggleScheme(i)} style={[styles.card, expandedIndex === i && styles.cardExpanded]}>
+                            <View style={styles.schemeHeader}>
+                                <View style={styles.schemeInfo}>
+                                    <View style={styles.typeBadge}>
+                                        <Text style={styles.typeText}>{s.type}</Text>
                                     </View>
-                                    
-                                    {!!s.custType && (
-                                        <Text style={[styles.validity, { color: colors.textMuted, marginTop: 4 }]}>
-                                            Customer Type: {String(s.custType)}
-                                        </Text>
+                                    <Text style={styles.schemeName}>{s.type === 'SD' ? 'Scheme Discount' : s.type === 'TD' ? 'Target Discount' : s.type === 'QD' ? 'Quantity Discount' : (s.type || 'Standard Scheme')}</Text>
+                                </View>
+                                <Icon name={expandedIndex === i ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={24} color={expandedIndex === i ? "#3861FB" : "#CBD5E0"} />
+                            </View>
+                            
+                            {!!s.custType && <Text style={styles.custType}>Applicable for: {s.custType}</Text>}
+
+                            {expandedIndex === i && (
+                                <View style={styles.detailArea}>
+                                    <View style={styles.cardDivider} />
+                                    {loadingSlabs[i] ? (
+                                        <ActivityIndicator color="#3861FB" style={{ padding: 20 }} />
+                                    ) : (
+                                        (slabData[i] || []).map((slab, sIdx) => (
+                                            <View key={sIdx} style={styles.slabBox}>
+                                                <Text style={styles.slabTitle}>{slab?.IG_DISP || 'Product Scheme'}</Text>
+                                                <View style={styles.infoGrid}>
+                                                    <InfoItem label="VALID FROM" value={slab?.VALID_FROM?.split('T')[0] || 'N/A'} />
+                                                    <InfoItem label="VALID TO" value={slab?.VALID_TO?.split('T')[0] || 'N/A'} />
+                                                    <InfoItem label="TARGET" value={`${slab?.LTR || '0'} LT`} />
+                                                    <InfoItem label="SALE" value={`${slab?.PERIOD_SALE || '0'} LT`} />
+                                                </View>
+                                                {slab?.DISCOUNT_DETAIL && (
+                                                    <View style={styles.detailBadge}>
+                                                        <Text style={styles.detailBadgeText}>{slab.DISCOUNT_DETAIL.replace(/#/g, ' → ')}</Text>
+                                                    </View>
+                                                )}
+                                            </View>
+                                        ))
                                     )}
-
-                                    {isExpanded && (
-                                        <View style={styles.detailContainer}>
-                                            <View style={styles.divider} />
-                                            {loadingThis ? (
-                                                <ActivityIndicator color={BrandColors.primaryGradientStart} style={{ marginVertical: 20 }} />
-                                            ) : slabs.length > 0 ? (
-                                                slabs.map((slab, sIdx) => {
-                                                    const title = slab?.IG_DISP || "Unnamed Product";
-                                                    const validFrom = slab?.VALID_FROM ? String(slab.VALID_FROM).split('T')[0] : '';
-                                                    const validTo = slab?.VALID_TO ? String(slab.VALID_TO).split('T')[0] : '';
-                                                    const validity = validFrom && validTo ? `${validFrom} TO ${validTo}` : 'N/A';
-                                                    
-                                                    // Parse custom `#` separated strings in DISCOUNT_DETAIL
-                                                    const detailString = String(slab?.DISCOUNT_DETAIL || '');
-                                                    const detailRows = detailString.includes('#') 
-                                                        ? detailString.split(',').filter(Boolean).map(row => {
-                                                            const parts = row.split('#');
-                                                            return {
-                                                                from: parts[0] || '-',
-                                                                to: parts[1] || '-',
-                                                                rate: parts[2] || '-',
-                                                                achieved: parts[4] || '0',
-                                                            };
-                                                        })
-                                                        : [];
-
-                                                    return (
-                                                        <View key={sIdx} style={styles.slabProductContainer}>
-                                                            <Text style={styles.slabProductTitle}>{title}</Text>
-                                                            
-                                                            {s.type === 'TD' && (
-                                                                <View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>VALIDITY</Text><Text style={styles.infoValue}>{validity}</Text></View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>TARGET</Text><Text style={styles.infoValue}>{slab?.LTR || '0'} LT</Text></View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>SALE</Text><Text style={styles.infoValue}>{slab?.PERIOD_SALE || '0'} LT</Text></View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>ADJUSTMENT</Text><Text style={styles.infoValue}>{slab?.ADJUSTMENT || '0'} LT</Text></View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>ADDITIONAL</Text><Text style={styles.infoValue}>{slab?.ADDITIONAL || slab?.SLAB_ADD || '0'} LT</Text></View>
-
-                                                                    {detailRows.length > 0 && (
-                                                                        <View style={styles.table}>
-                                                                            <View style={styles.tableHeader}>
-                                                                                <Text style={[styles.tableColHeader, { flex: 2 }]}>ALLOCATION</Text>
-                                                                                <Text style={[styles.tableColHeader, { flex: 1.5 }]}>ACHIEVED</Text>
-                                                                            </View>
-                                                                            <View style={styles.tableSubHeader}>
-                                                                                <Text style={[styles.tableColSubHeader, { flex: 1 }]}>FROM</Text>
-                                                                                <Text style={[styles.tableColSubHeader, { flex: 1 }]}>TO</Text>
-                                                                                <Text style={[styles.tableColSubHeader, { flex: 1 }]}>RATE</Text>
-                                                                                <Text style={[styles.tableColSubHeader, { flex: 1.5 }]}> </Text>
-                                                                            </View>
-                                                                            {detailRows.map((r, rIdx) => (
-                                                                                <View key={rIdx} style={styles.tableRow}>
-                                                                                    <Text style={[styles.tableCell, { flex: 1 }]}>{r.from}</Text>
-                                                                                    <Text style={[styles.tableCell, { flex: 1 }]}>{r.to}</Text>
-                                                                                    <Text style={[styles.tableCell, { flex: 1 }]}>{r.rate}</Text>
-                                                                                    <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '800' }]}>{r.achieved}</Text>
-                                                                                </View>
-                                                                            ))}
-                                                                        </View>
-                                                                    )}
-                                                                </View>
-                                                            )}
-
-                                                            {s.type === 'SD' && (
-                                                                <View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>QUOTA</Text><Text style={styles.infoValue}>{slab?.SCHEME_TYPE || 'N/A'}</Text></View>
-                                                                    <View style={styles.infoRow}><Text style={styles.infoLabel}>VALIDITY</Text><Text style={styles.infoValue}>{validity}</Text></View>
-                                                                    
-                                                                    <View style={styles.table}>
-                                                                        <View style={styles.tableHeader}>
-                                                                            <Text style={[styles.tableColHeader, { flex: 1 }]}>SALES QUOTA</Text>
-                                                                            <Text style={[styles.tableColHeader, { flex: 1 }]}>UTILIZED</Text>
-                                                                            <Text style={[styles.tableColHeader, { flex: 1 }]}>UN UTILIZED</Text>
-                                                                        </View>
-                                                                        <View style={styles.tableRow}>
-                                                                            <Text style={[styles.tableCell, { flex: 1 }]}>{slab?.LTR || '0'}LT</Text>
-                                                                            <Text style={[styles.tableCell, { flex: 1 }]}>{slab?.UTILIZED || '0'}LT</Text>
-                                                                            <Text style={[styles.tableCell, { flex: 1 }]}>{slab?.UN_UTILIZED || '0'}LT</Text>
-                                                                        </View>
-                                                                    </View>
-                                                                </View>
-                                                            )}
-
-                                                            {s.type !== 'TD' && s.type !== 'SD' && (
-                                                                <View style={styles.genericSlabRow}>
-                                                                    <View style={styles.slabBullet} />
-                                                                    <View style={{ flex: 1 }}>
-                                                                        <Text style={styles.slabText}>{title}</Text>
-                                                                        <Text style={styles.slabValue}>{validity}</Text>
-                                                                    </View>
-                                                                </View>
-                                                            )}
-
-                                                            {(slab?.ORDER_ITEMS || s.items) && (
-                                                                <View style={[styles.applicableSection, { marginBottom: 20 }]}>
-                                                                    <View style={styles.applicableHeader}>
-                                                                        <Text style={styles.applicableTitle}>APPLICABLE ITEM</Text>
-                                                                    </View>
-                                                                    <Text style={styles.applicableText}>{slab?.ORDER_ITEMS || s.items}</Text>
-                                                                </View>
-                                                            )}
-                                                            <View style={styles.divider} />
-                                                        </View>
-                                                    );
-                                                })
-                                            ) : (
-                                                <Text style={styles.noSlabs}>No detailed slabs available.</Text>
-                                            )}
-                                        </View>
-                                    )}
-
-                                    <View style={{ marginTop: 12, alignItems: 'flex-end' }}>
-                                        <Text style={{ color: BrandColors.primaryGradientStart, fontSize: 11, fontWeight: '800' }}>
-                                            {isExpanded ? 'CLOSE DETAILS [^]' : 'VIEW DETAILS [v]'}
-                                        </Text>
-                                    </View>
-                                </GlassCard>
-                            </TouchableOpacity>
-                        );
-                    })
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                    ))
                 )}
             </ScrollView>
         </View>
     );
 };
 
+const InfoItem = ({ label, value }: any) => (
+    <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>{label}</Text>
+        <Text style={styles.infoValue}>{value}</Text>
+    </View>
+);
+
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    scroll: { paddingHorizontal: 20, paddingBottom: 40 },
-    card: { marginBottom: 12, padding: 18 },
-    schemeHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-    schemeProd: { fontSize: 18, fontWeight: '800', flex: 1 },
-    badge: { borderRadius: 20, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 4 },
-    badgeText: { fontSize: 13, fontWeight: '900' },
-    validity: { fontSize: 14, fontStyle: 'italic' },
-    emptyState: { alignItems: 'center', marginTop: 60 },
-    emptyIcon: { fontSize: 48, marginBottom: 12 },
-    emptyText: { fontSize: 16, fontWeight: '600' },
-    
-    // Details
-    detailContainer: { marginTop: 15 },
-    divider: { height: 1, backgroundColor: '#ECEDF3', marginBottom: 15 },
-    slabRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-    slabBullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: BrandColors.primaryGradientStart, marginRight: 12 },
-    slabText: { fontSize: 15, fontWeight: '600' },
-    slabValue: { fontSize: 16, fontWeight: '900', marginTop: 2 },
-    noSlabs: { fontSize: 14, color: '#BDBDBD', textAlign: 'center', paddingVertical: 10 },
-    
-    // Info rows
-    infoRow: { flexDirection: 'row', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#F5F5FA' },
-    infoLabel: { width: 110, fontSize: 13, fontWeight: '800', color: '#64748B' },
-    infoValue: { flex: 1, fontSize: 14, fontWeight: '700', color: '#1F1F39' },
+    container: { flex: 1, backgroundColor: '#F8F9FD' },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 25, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 20 },
+    backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
+    headerTitles: { flex: 1, marginLeft: 15 },
+    headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
+    headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
+    helpBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
 
-    table: { borderWidth: 1, borderColor: '#EBEEF2', marginTop: 15, borderRadius: 8, overflow: 'hidden' },
-    tableHeader: { flexDirection: 'row', backgroundColor: '#F8F9FD', borderBottomWidth: 1, borderBottomColor: '#EBEEF2' },
-    tableColHeader: { padding: 10, fontSize: 12, fontWeight: '900', color: '#1F1F39', textAlign: 'center', borderRightWidth: 1, borderRightColor: '#EBEEF2' },
-    tableSubHeader: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#EBEEF2' },
-    tableColSubHeader: { padding: 8, fontSize: 11, fontWeight: '800', color: '#64748B', textAlign: 'center', borderRightWidth: 1, borderRightColor: '#EBEEF2' },
-    tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#F5F5FA' },
-    tableCell: { padding: 10, fontSize: 13, fontWeight: '600', color: '#E3001B', textAlign: 'center', borderRightWidth: 1, borderRightColor: '#EBEEF2' },
+    scroll: { paddingHorizontal: 25, paddingBottom: 40 },
+    noticeBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F4FF', borderRadius: 20, padding: 18, marginBottom: 25 },
+    noticeText: { flex: 1, fontSize: 12, lineHeight: 18, color: '#3861FB', fontWeight: '800' },
 
-    genericSlabRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+    card: { backgroundColor: '#fff', borderRadius: 28, padding: 22, marginBottom: 15, elevation: 3, shadowColor: '#304FFE', shadowOpacity: 0.05, shadowRadius: 15, borderWidth: 1.5, borderColor: 'transparent' },
+    cardExpanded: { borderColor: '#3861FB', elevation: 12, shadowOpacity: 0.15 },
+    schemeHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    schemeInfo: { flex: 1 },
+    typeBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, alignSelf: 'flex-start', marginBottom: 8 },
+    typeText: { fontSize: 10, fontWeight: '900', color: '#64748B' },
+    schemeName: { fontSize: 17, fontWeight: '900', color: '#1A1A1A' },
+    custType: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 5 },
 
-    applicableSection: { marginTop: 20, borderWidth: 1, borderColor: '#F5C800', borderRadius: 8, overflow: 'hidden' },
-    applicableHeader: { backgroundColor: '#F5C800', paddingVertical: 8, alignItems: 'center' },
-    applicableTitle: { fontSize: 13, fontWeight: '900', color: '#1F1F39' },
-    applicableText: { padding: 14, fontSize: 14, color: '#1F1F39', lineHeight: 22, fontWeight: '600' },
+    detailArea: { marginTop: 20 },
+    cardDivider: { height: 1.5, backgroundColor: '#F1F5F9', marginBottom: 20 },
+    slabBox: { marginBottom: 20 },
+    slabTitle: { fontSize: 14, fontWeight: '900', color: '#3861FB', textTransform: 'uppercase', marginBottom: 12 },
+    infoGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+    infoItem: { width: '50%', marginBottom: 15 },
+    infoLabel: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', letterSpacing: 0.5, marginBottom: 4 },
+    infoValue: { fontSize: 14, fontWeight: '800', color: '#1A1A1A' },
+    detailBadge: { backgroundColor: '#F8F9FD', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#EDF2F7' },
+    detailBadgeText: { fontSize: 11, color: '#718096', fontWeight: '700', lineHeight: 16 },
 
-    slabProductContainer: { marginBottom: 15 },
-    slabProductTitle: { fontSize: 15, fontWeight: '900', color: BrandColors.primaryGradientStart, marginBottom: 8, textTransform: 'uppercase' },
+    emptyState: { alignItems: 'center', marginTop: 80 },
+    emptyText: { fontSize: 15, fontWeight: '700', color: '#A0AEC0', marginTop: 15 },
+    centerBox: { paddingTop: 60, alignItems: 'center' },
 });
 
 export default DiscountScreen;

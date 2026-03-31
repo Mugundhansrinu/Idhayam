@@ -8,6 +8,8 @@ import {
     Dimensions,
     StatusBar,
     Animated,
+    Image,
+    Platform,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -15,6 +17,7 @@ import { RootStackParamList } from '../../App';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSession } from '../context/SessionContext';
 import { BrandColors } from '../theme/Colors';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'LoginResponse'>;
@@ -22,9 +25,6 @@ type Props = {
 };
 
 const { width, height } = Dimensions.get('window');
-
-// Accent colours cycle for each branch card
-const CARD_ACCENTS = ['#7B61FF', '#0984E3', '#00B894', '#FD79A8', '#FDCB6E', '#E17055'];
 
 const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
     const { setSession } = useSession();
@@ -48,19 +48,18 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
     }
 
     // ── Entrance animations ────────────────────────────────────────────────────
-    const headerAnim = useRef(new Animated.Value(0)).current;
+    const fadeAnim = useRef(new Animated.Value(0)).current;
     const cardAnims = useRef(branches.map(() => new Animated.Value(0))).current;
 
     useEffect(() => {
-        Animated.timing(headerAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
-        Animated.stagger(100,
+        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+        Animated.stagger(80,
             cardAnims.map(a =>
-                Animated.spring(a, { toValue: 1, friction: 7, tension: 50, useNativeDriver: true })
+                Animated.spring(a, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true })
             )
         ).start();
     }, []);
 
-    // ── Select branch & go to Dashboard ───────────────────────────────────────
     const handleSelectBranch = async (branch: any) => {
         await setSession({
             custId:        String(branch.CUST_ID        ?? branch.custId   ?? ''),
@@ -73,6 +72,7 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
             gstNo:         String(branch.GST_NO         ?? ''),
             pan:           String(data.pan              ?? ''),
             mobile:        String(data.mobile           ?? ''),
+            branchName:    String(branch.CUST_NAME_DISPLAY ?? branch.HUB_NAME ?? 'MAIN BRANCH'),
         });
         navigation.replace('Dashboard');
     };
@@ -81,109 +81,86 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-            {/* ── Hero Background ── */}
+            {/* ── Premium Header ── */}
             <LinearGradient
-                colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd, '#0984E3']}
+                colors={['#3861FB', '#2752E7']}
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                style={styles.heroBg}
+                style={styles.header}
             >
-                {/* Decorative circles */}
-                <View style={[styles.circle, styles.circleTopRight]} />
-                <View style={[styles.circle, styles.circleBottomLeft]} />
-
-                <Animated.View style={{
-                    opacity: headerAnim,
-                    transform: [{ translateY: headerAnim.interpolate({ inputRange: [0, 1], outputRange: [-30, 0] }) }],
-                }}>
-                    {/* Logo / Icon Badge */}
-                    <View style={styles.logoBadge}>
-                        <Text style={styles.logoIcon}>🏢</Text>
+                <View style={styles.headerContent}>
+                    <View style={styles.logoRow}>
+                        <Image source={require('../assets/papa 1.png')} style={styles.logoImg} />
+                        <View style={styles.badgeLine}>
+                            <Text style={styles.badgeText}>IDHAYAM DISTRIBUTOR</Text>
+                        </View>
                     </View>
-                    <Text style={styles.heroTitle}>Select Branch</Text>
-                    <Text style={styles.heroSub}>
-                        {branches.length > 0
-                            ? `You have ${branches.length} branch${branches.length > 1 ? 'es' : ''} — tap one to continue`
-                            : 'Choose your operating branch to continue'}
-                    </Text>
-                </Animated.View>
+                    <Text style={styles.welcomeText}>Select Your Branch</Text>
+                    <Text style={styles.subText}>Choose an operating unit to access the dashboard</Text>
+                </View>
             </LinearGradient>
 
-            {/* ── Branch Cards ── */}
-            <View style={styles.cardsWrapper}>
-                <ScrollView
+            {/* ── Branch List ── */}
+            <View style={styles.listWrapper}>
+                <ScrollView 
                     contentContainerStyle={styles.scroll}
                     showsVerticalScrollIndicator={false}
                 >
                     {branches.length > 0 ? (
-                        branches.map((branch: any, index: number) => {
-                            const accent = CARD_ACCENTS[index % CARD_ACCENTS.length];
-                            return (
-                                <Animated.View
-                                    key={String(index)}
-                                    style={{
-                                        opacity: cardAnims[index] ?? 1,
-                                        transform: [{
-                                            translateX: (cardAnims[index] ?? new Animated.Value(1)).interpolate({
-                                                inputRange: [0, 1], outputRange: [60, 0],
-                                            }),
-                                        }],
-                                    }}
+                        branches.map((branch: any, index: number) => (
+                            <Animated.View
+                                key={String(index)}
+                                style={{
+                                    opacity: cardAnims[index] ?? 1,
+                                    transform: [{
+                                        translateY: (cardAnims[index] ?? new Animated.Value(1)).interpolate({
+                                            inputRange: [0, 1], outputRange: [40, 0],
+                                        }),
+                                    }],
+                                }}
+                            >
+                                <TouchableOpacity
+                                    activeOpacity={0.9}
+                                    onPress={() => handleSelectBranch(branch)}
+                                    style={styles.branchCard}
                                 >
-                                    <TouchableOpacity
-                                        activeOpacity={0.88}
-                                        onPress={() => handleSelectBranch(branch)}
-                                        style={styles.branchCard}
-                                    >
-                                        {/* Left accent bar */}
-                                        <View style={[styles.accentBar, { backgroundColor: accent }]} />
-
-                                        {/* Number badge */}
-                                        <View style={[styles.numBadge, { backgroundColor: accent + '18' }]}>
-                                            <Text style={[styles.numText, { color: accent }]}>
-                                                {String(index + 1).padStart(2, '0')}
-                                            </Text>
+                                    <View style={styles.cardHeader}>
+                                        <View style={styles.iconBox}>
+                                            <Icon name="storefront" size={24} color="#3861FB" />
                                         </View>
-
-                                        {/* Content */}
-                                        <View style={styles.cardContent}>
-                                            <Text style={styles.branchName} numberOfLines={2}>
-                                                {branch.CUST_NAME_DISPLAY || 'Branch ' + (index + 1)}
+                                        <View style={styles.branchDetails}>
+                                            <Text style={styles.branchName} numberOfLines={1}>
+                                                {branch.CUST_NAME_DISPLAY || 'Standard Branch'}
                                             </Text>
+                                            <Text style={styles.branchId}>BRANCH ID: {branch.BRANCH_ID || 'BR-001'}</Text>
+                                        </View>
+                                        <View style={styles.arrowBox}>
+                                            <Icon name="keyboard-arrow-right" size={24} color="#CBD5E0" />
+                                        </View>
+                                    </View>
 
-                                            <View style={styles.tagsRow}>
-                                                {!!branch.HUB_NAME && (
-                                                    <View style={[styles.tag, { backgroundColor: accent + '15', borderColor: accent + '40' }]}>
-                                                        <Text style={[styles.tagText, { color: accent }]}>📍 {branch.HUB_NAME}</Text>
-                                                    </View>
-                                                )}
-                                                {!!branch.TERRITORY_NAME && (
-                                                    <View style={[styles.tag, { backgroundColor: '#64748B15', borderColor: '#64748B30' }]}>
-                                                        <Text style={[styles.tagText, { color: '#64748B' }]}>🗺 {branch.TERRITORY_NAME}</Text>
-                                                    </View>
-                                                )}
+                                    <View style={styles.divider} />
+
+                                    <View style={styles.cardFooter}>
+                                        <View style={styles.infoCol}>
+                                            <Text style={styles.infoLabel}>LOCATION</Text>
+                                            <Text style={styles.infoValue}>{branch.HUB_NAME || 'Main HQ'}</Text>
+                                        </View>
+                                        <View style={styles.infoCol}>
+                                            <Text style={styles.infoLabel}>STATUS</Text>
+                                            <View style={styles.statusBadge}>
+                                                <View style={styles.statusDot} />
+                                                <Text style={styles.statusText}>ACTIVE</Text>
                                             </View>
-
-                                            {!!branch.GST_NO && (
-                                                <Text style={styles.gstText}>GST: {branch.GST_NO}</Text>
-                                            )}
                                         </View>
-
-                                        {/* Arrow CTA */}
-                                        <View style={[styles.arrowBtn, { backgroundColor: accent }]}>
-                                            <Text style={styles.arrowIcon}>→</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </Animated.View>
-                            );
-                        })
+                                    </View>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        ))
                     ) : (
-                        /* Empty State */
-                        <View style={styles.emptyWrap}>
-                            <Text style={styles.emptyEmoji}>🏢</Text>
-                            <Text style={styles.emptyTitle}>No Branches Found</Text>
-                            <Text style={styles.emptySub}>
-                                Please contact your administrator to assign a branch.
-                            </Text>
+                        <View style={styles.emptyBox}>
+                            <Icon name="business-center" size={60} color="#CBD5E0" />
+                            <Text style={styles.emptyText}>No branches mapped</Text>
+                            <Text style={styles.emptySub}>Please contact Idhayam support to link a branch to your account.</Text>
                         </View>
                     )}
                 </ScrollView>
@@ -194,103 +171,57 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F8F9FD' },
+    
+    header: {
+        paddingTop: Platform.OS === 'ios' ? 80 : 60,
+        paddingBottom: 80,
+        paddingHorizontal: 30,
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40,
+    },
+    headerContent: { zIndex: 1 },
+    logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+    logoImg: { width: 50, height: 50, borderRadius: 15, backgroundColor: '#fff', padding: 5 },
+    badgeLine: { marginLeft: 15, backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+    badgeText: { fontSize: 9, fontWeight: '900', color: '#fff', letterSpacing: 1 },
+    welcomeText: { fontSize: 28, fontWeight: '900', color: '#fff' },
+    subText: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: 5, fontWeight: '600' },
 
-    // ── Hero ──────────────────────────────────────────────────────────────────
-    heroBg: {
-        paddingTop: 60,
-        paddingBottom: 70,
-        paddingHorizontal: 28,
-        overflow: 'hidden',
-    },
-    circle: {
-        position: 'absolute',
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: 'rgba(255,255,255,0.07)',
-    },
-    circleTopRight: { top: -60, right: -60 },
-    circleBottomLeft: { bottom: -80, left: -40, width: 250, height: 250, borderRadius: 125 },
-
-    logoBadge: {
-        width: 60,
-        height: 60,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 18,
-    },
-    logoIcon: { fontSize: 28 },
-    heroTitle: { fontSize: 28, fontWeight: '900', color: '#FFF', lineHeight: 34 },
-    heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: 8, fontWeight: '500', lineHeight: 20 },
-
-    // ── Cards ─────────────────────────────────────────────────────────────────
-    cardsWrapper: {
-        flex: 1,
-        marginTop: -28,
-        borderTopLeftRadius: 28,
-        borderTopRightRadius: 28,
-        backgroundColor: '#F8F9FD',
-        overflow: 'hidden',
-    },
-    scroll: { padding: 20, paddingTop: 24, paddingBottom: 60 },
+    listWrapper: { flex: 1, marginTop: -40 },
+    scroll: { paddingHorizontal: 25, paddingBottom: 50 },
 
     branchCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
-        marginBottom: 14,
-        overflow: 'hidden',
-        shadowColor: '#7B61FF',
-        shadowOffset: { width: 0, height: 4 },
+        backgroundColor: '#fff',
+        borderRadius: 32,
+        padding: 24,
+        marginBottom: 16,
+        elevation: 6,
+        shadowColor: '#3861FB',
         shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 4,
+        shadowRadius: 15,
+        shadowOffset: { width: 0, height: 8 },
     },
-    accentBar: { width: 5, alignSelf: 'stretch' },
-    numBadge: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginHorizontal: 14,
-    },
-    numText: { fontSize: 14, fontWeight: '900' },
+    cardHeader: { flexDirection: 'row', alignItems: 'center' },
+    iconBox: { width: 56, height: 56, borderRadius: 20, backgroundColor: '#F0F4FF', alignItems: 'center', justifyContent: 'center' },
+    branchDetails: { flex: 1, marginLeft: 15, justifyContent: 'center' },
+    branchName: { fontSize: 16, fontWeight: '900', color: '#1A1A1A' },
+    branchId: { fontSize: 11, fontWeight: '700', color: '#3861FB', marginTop: 2 },
+    arrowBox: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#F8F9FD', alignItems: 'center', justifyContent: 'center' },
 
-    cardContent: { flex: 1, paddingVertical: 18, paddingRight: 8 },
-    branchName: { fontSize: 15, fontWeight: '900', color: '#1E293B', marginBottom: 10, lineHeight: 20 },
+    divider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 20 },
 
-    tagsRow: { flexDirection: 'row', flexWrap: 'wrap' },
-    tag: {
-        borderRadius: 8,
-        borderWidth: 1,
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        marginRight: 6,
-        marginBottom: 4,
-    },
-    tagText: { fontSize: 10, fontWeight: '700' },
+    cardFooter: { flexDirection: 'row', justifyContent: 'space-between' },
+    infoCol: { flex: 1 },
+    infoLabel: { fontSize: 8, fontWeight: '900', color: '#CBD5E0', letterSpacing: 0.5 },
+    infoValue: { fontSize: 13, fontWeight: '800', color: '#475569', marginTop: 4 },
 
-    gstText: { fontSize: 10, fontWeight: '600', color: '#94A3B8', marginTop: 4 },
+    statusBadge: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, marginTop: 4 },
+    statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981', marginRight: 6 },
+    statusText: { fontSize: 9, fontWeight: '900', color: '#10B981' },
 
-    arrowBtn: {
-        width: 38,
-        height: 38,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 16,
-    },
-    arrowIcon: { color: '#FFF', fontSize: 16, fontWeight: '900' },
-
-    // ── Empty ─────────────────────────────────────────────────────────────────
-    emptyWrap: { alignItems: 'center', paddingTop: 60, paddingHorizontal: 40 },
-    emptyEmoji: { fontSize: 56, marginBottom: 20 },
-    emptyTitle: { fontSize: 20, fontWeight: '900', color: '#1E293B', marginBottom: 10 },
-    emptySub: { fontSize: 13, color: '#94A3B8', textAlign: 'center', lineHeight: 20, fontWeight: '500' },
+    emptyBox: { alignItems: 'center', justifyContent: 'center', marginTop: 60, paddingHorizontal: 40 },
+    emptyText: { fontSize: 18, fontWeight: '900', color: '#1A1A1A', marginTop: 20 },
+    emptySub: { fontSize: 13, color: '#A0AEC0', textAlign: 'center', marginTop: 8, lineHeight: 20 },
 });
 
 export default LoginResponseScreen;

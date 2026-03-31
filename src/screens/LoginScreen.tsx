@@ -20,6 +20,7 @@ import { BrandColors } from '../theme/Colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { AuthService } from '../api/auth';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { width } = Dimensions.get('window');
 
@@ -31,7 +32,7 @@ const OTP_LENGTH = 6;
 const RESEND_TIMER = 30;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-    const { colors, toggleTheme } = useTheme();
+    const { colors } = useTheme();
 
     /* ── Step state ── */
     const [step, setStep] = useState<'pan' | 'otp'>('pan');
@@ -95,7 +96,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const handleFetchMobiles = async () => {
         const cleanPan = pan.trim().toUpperCase();
         if (!isPanValid(cleanPan)) {
-            setApiMessage('Invalid PAN: Please enter a valid 10-character PAN number.');
+            setApiMessage('Invalid PAN format.');
             return;
         }
         setFetchingMobiles(true);
@@ -105,7 +106,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             setLinkedMobiles(serverMobiles);
             setMobile(serverMobiles[0]);
         } catch (error: any) {
-            setApiMessage(error.message || 'Could not fetch linked mobiles. Please try again.');
+            setApiMessage(error.message || 'Error fetching mobiles.');
         } finally {
             setFetchingMobiles(false);
         }
@@ -117,12 +118,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         try {
             const response = await AuthService.generateOtp(pan, mobile);
             if (response && response.message) {
-                const msg = typeof response.message === 'string' ? response.message : JSON.stringify(response.message);
-                setApiMessage(msg);
+                setApiMessage(String(response.message));
             }
         } catch (error: any) {
-            const errMsg = error.message || "Failed to send OTP";
-            setApiMessage(errMsg);
+            setApiMessage(error.message || "Failed to send OTP");
             return;
         } finally {
             setSendingOtp(false);
@@ -151,7 +150,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const handleVerifyOtp = async () => {
         const enteredOtp = otp.join('');
         if (enteredOtp.length < OTP_LENGTH) {
-            Alert.alert('Error', 'Please Enter valid OTP');
+            Alert.alert('Error', 'Please enter valid OTP');
             return;
         }
         setVerifying(true);
@@ -163,12 +162,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             if (loginRes?.data?.message === "Login Successful") {
                 navigation.navigate('LoginResponse', { data: loginRes.data });
             } else {
-                //Alert.alert('Login Check Failed', loginRes?.data?.Message || loginRes?.data?.message || 'Unexpected server response.');
                 setOtp(Array(OTP_LENGTH).fill(''));
             }
         } catch (error: any) {
-            Alert.alert('Error', error.message || 'Please Enter valid OTP');
-            setOtp(Array(OTP_LENGTH).fill('')); // Clear the OTP fields cleanly
+            Alert.alert('Error', error.message || 'Invalid OTP');
+            setOtp(Array(OTP_LENGTH).fill(''));
         } finally {
             setVerifying(false);
         }
@@ -178,25 +176,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const handlePressOut = () => Animated.spring(buttonScale, { toValue: 1, friction: 5, useNativeDriver: true }).start();
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-
-            {/* Header Badge & Theme Toggle */}
-            <View style={styles.headerRow}>
-                <LinearGradient
-                    colors={[BrandColors.primaryGradientStart + '22', BrandColors.primaryGradientEnd + '22']}
-                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                    style={styles.distributorBadge}>
-                    <Text style={styles.badgeIcon}>🏢</Text>
-                    <Text style={[styles.badgeText, { color: BrandColors.primaryGradientStart }]}>Distributor Portal</Text>
-                </LinearGradient>
-
-                <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme} activeOpacity={0.8}>
-                    <View style={styles.themeToggleInner}>
-                        <Text style={styles.themeIcon}>🌙</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
 
             <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <ScrollView
@@ -204,14 +185,16 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}>
 
+
+
                     <View style={styles.welcomeContainer}>
-                        <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>Welcome Back!</Text>
-                        <Text style={[styles.welcomeSubtitle, { color: colors.textSecondary }]}>Sign in to your Idhayam account</Text>
+                        <Text style={styles.welcomeTitle}>Welcome Back!</Text>
+                        <Text style={styles.welcomeSubtitle}>Sign in to your Idhayam account</Text>
                     </View>
 
-                    {/* Login Card */}
+                    {/* Step Card */}
                     <Animated.View style={[
-                        styles.loginCard,
+                        styles.formCard,
                         {
                             opacity: cardOpacity,
                             transform: [{ translateY: cardTranslateY }],
@@ -219,201 +202,165 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     ]}>
 
                         {/* Custom Step Indicator matching screenshot */}
-                        <View style={styles.stepIndicatorContainer}>
-                            <View style={[styles.stepPill, step === 'pan' ? styles.stepPillActive : styles.stepPillInactive]}>
-                                <Text style={[styles.stepPillText, step === 'pan' ? styles.stepPillTextActive : styles.stepPillTextInactive]}>1  PAN</Text>
+                        <View style={styles.stepIndicator}>
+                            <View style={[styles.stepItem, step === 'pan' ? styles.stepItemActive : styles.stepItemInactive]}>
+                                <Text style={[styles.stepItemText, step === 'pan' ? styles.stepItemTextActive : styles.stepItemTextInactive]}>1 PAN</Text>
                             </View>
-                            <View style={[styles.stepLine, { backgroundColor: colors.divider }]} />
-                            <View style={[styles.stepPill, step === 'otp' ? styles.stepPillActive : styles.stepPillInactive]}>
-                                <Text style={[styles.stepPillText, step === 'otp' ? styles.stepPillTextActive : styles.stepPillTextInactive]}>2  OTP</Text>
+                            <View style={styles.stepConnector} />
+                            <View style={[styles.stepItem, step === 'otp' ? styles.stepItemActive : styles.stepItemInactive]}>
+                                <Text style={[styles.stepItemText, step === 'otp' ? styles.stepItemTextActive : styles.stepItemTextInactive]}>2 OTP</Text>
                             </View>
                         </View>
 
-                        {/* STEP 1: PAN */}
-                        {step === 'pan' && (
-                            <Animated.View style={{ opacity: stepAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
-                                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Enter PAN</Text>
-                                <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-                                    Your Permanent Account Number
-                                </Text>
-
-                                <View style={styles.inputWrapper}>
-                                    <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>PAN NUMBER</Text>
-                                    <View style={[
-                                        styles.inputContainer,
-                                        {
-                                            backgroundColor: colors.inputBackground,
-                                            borderColor: panFocused ? colors.inputFocusBorder : colors.inputBorder,
-                                        },
-                                    ]}>
-                                        <View style={styles.iconBox}>
-                                            <Text style={styles.inputIcon}>🪪</Text>
-                                        </View>
+                        {/* Current Form Section */}
+                        {step === 'pan' ? (
+                            <View>
+                                <Text style={styles.formSectionTitle}>Enter PAN</Text>
+                                <Text style={styles.formSectionSub}>Your Permanent Account Number</Text>
+                                
+                                <View style={styles.inputGroup}>
+                                    <Text style={styles.inputLabel}>PAN NUMBER</Text>
+                                    <View style={[styles.inputBox, panFocused && styles.inputBoxFocused]}>
+                                        <Icon name="badge" size={18} color="#A0AEC0" style={{ marginRight: 10 }} />
                                         <TextInput
-                                            style={[styles.input, { color: colors.inputText }]}
+                                            style={styles.textInputMain}
                                             value={pan}
                                             onChangeText={t => setPan(t.toUpperCase())}
-                                            placeholder="e.g. ABCDE1234F"
-                                            placeholderTextColor={colors.inputPlaceholder}
-                                            maxLength={10}
+                                            placeholder="e.g. S1A2B3Z4Y6"
+                                            placeholderTextColor="#A0AEC0"
                                             onFocus={() => setPanFocused(true)}
                                             onBlur={() => setPanFocused(false)}
-                                            editable={linkedMobiles.length === 0}
-                                            keyboardType={pan.length >= 5 && pan.length <= 8 ? 'number-pad' : 'default'}
                                             autoCapitalize="characters"
-                                            autoCorrect={false}
+                                            maxLength={10}
                                         />
                                         {linkedMobiles.length > 0 && (
-                                            <TouchableOpacity onPress={() => setLinkedMobiles([])} style={styles.editBtn}>
-                                                <Text style={{ color: colors.textLink, fontSize: 13, fontWeight: '700' }}>Edit</Text>
+                                            <TouchableOpacity onPress={() => setLinkedMobiles([])}>
+                                                <Text style={styles.editText}>Edit</Text>
                                             </TouchableOpacity>
                                         )}
                                     </View>
-                                    <Text style={[styles.panHint, { color: colors.textMuted }]}>Format: AAAAA9999A</Text>
+                                    <Text style={styles.formatHint}>Format: AAAAA9999A</Text>
                                 </View>
 
-                                {apiMessage && linkedMobiles.length === 0 ? (
-                                    <View style={{ backgroundColor: '#FF4D4D15', padding: 10, borderRadius: 10, marginBottom: 12, borderWidth: 1, borderColor: '#FF4D4D40' }}>
-                                        <Text style={{ fontSize: 13, color: '#FF4D4D', fontWeight: '600', textAlign: 'center' }}>{apiMessage}</Text>
-                                    </View>
-                                ) : null}
-
-                                {linkedMobiles.length === 0 ? (
-                                    <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-                                        <TouchableOpacity
-                                            onPressIn={handlePressIn} onPressOut={handlePressOut}
-                                            onPress={handleFetchMobiles} activeOpacity={0.9} disabled={fetchingMobiles}>
-                                            <LinearGradient
-                                                colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
-                                                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                                style={styles.loginButton}>
-                                                {fetchingMobiles
-                                                    ? <ActivityIndicator color="#FFFFFF" size="small" />
-                                                    : <Text style={styles.loginButtonText}>Find Linked Mobiles  →</Text>
-                                                }
-                                            </LinearGradient>
-                                        </TouchableOpacity>
-                                    </Animated.View>
-                                ) : (
-                                    <>
-                                        <View style={styles.inputWrapper}>
-                                            <Text style={[styles.inputLabel, { color: colors.textPrimary, marginBottom: 12 }]}>SELECT MOBILE NUMBER</Text>
-                                            <View style={styles.mobileList}>
-                                                {linkedMobiles.map((num, idx) => (
-                                                    <TouchableOpacity
-                                                        key={idx}
-                                                        style={[
-                                                            styles.mobileOption,
-                                                            { borderColor: mobile === num ? '#7B61FF' : colors.divider }
-                                                        ]}
-                                                        onPress={() => setMobile(num)}
-                                                        activeOpacity={0.7}
-                                                    >
-                                                        <View style={[styles.radioOuter, { borderColor: mobile === num ? '#7B61FF' : colors.divider }]}>
-                                                            {mobile === num && <View style={[styles.radioInner, { backgroundColor: '#7B61FF' }]} />}
-                                                        </View>
-                                                        <Text style={styles.inputIcon}>📱</Text>
-                                                        <Text style={[styles.mobileOptionText, { color: colors.textPrimary }]}>{num}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-
-                                        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-                                            <TouchableOpacity
-                                                onPressIn={handlePressIn} onPressOut={handlePressOut}
-                                                onPress={handleSendOtp} activeOpacity={0.9} disabled={sendingOtp}>
-                                                <LinearGradient
-                                                    colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
-                                                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                                    style={styles.loginButton}>
-                                                    {sendingOtp
-                                                        ? <ActivityIndicator color="#FFFFFF" size="small" />
-                                                        : <Text style={styles.loginButtonText}>Send OTP  →</Text>
-                                                    }
-                                                </LinearGradient>
+                                {linkedMobiles.length > 0 && (
+                                    <View style={styles.inputGroup}>
+                                        <Text style={styles.inputLabel}>SELECT MOBILE NUMBER</Text>
+                                        {linkedMobiles.map((num, i) => (
+                                            <TouchableOpacity 
+                                                key={i} 
+                                                style={[styles.phoneOption, mobile === num && styles.phoneOptionActive]} 
+                                                onPress={() => setMobile(num)}
+                                            >
+                                                <View style={[styles.rOuter, mobile === num && styles.rOuterActive]}>
+                                                    {mobile === num && <View style={styles.rInner} />}
+                                                </View>
+                                                <Text style={[styles.phoneText, mobile === num && styles.phoneTextActive]}>{num}</Text>
                                             </TouchableOpacity>
-                                        </Animated.View>
-                                    </>
+                                        ))}
+                                    </View>
                                 )}
-                            </Animated.View>
-                        )}
 
-                        {/* STEP 2: OTP */}
-                        {step === 'otp' && (
-                            <Animated.View style={{ opacity: stepAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
-                                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Verify OTP</Text>
-                                <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>Code sent to your mobile</Text>
-
+                                <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                                    <TouchableOpacity
+                                        activeOpacity={0.9}
+                                        onPressIn={handlePressIn}
+                                        onPressOut={handlePressOut}
+                                        onPress={linkedMobiles.length === 0 ? handleFetchMobiles : handleSendOtp}
+                                    >
+                                        <LinearGradient
+                                            colors={['#3861FB', '#2752E7']}
+                                            start={{ x: 0, y: 0 }}
+                                            end={{ x: 1, y: 0 }}
+                                            style={styles.mainBtn}
+                                        >
+                                            {fetchingMobiles || sendingOtp ? (
+                                                <ActivityIndicator color="#fff" />
+                                            ) : (
+                                                <Text style={styles.mainBtnText}>
+                                                    {linkedMobiles.length === 0 ? 'Find Linked Mobiles →' : 'Send OTP →'}
+                                                </Text>
+                                            )}
+                                        </LinearGradient>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                            </View>
+                        ) : (
+                            <View>
+                                <Text style={styles.formSectionTitle}>Verify OTP</Text>
+                                <Text style={styles.formSectionSub}>Code sent to your mobile</Text>
+                                
                                 {apiMessage ? (
-                                    <View style={{ backgroundColor: '#7B61FF15', padding: 8, borderRadius: 8, marginTop: -15, marginBottom: 15, borderStyle: 'dotted', borderWidth: 1, borderColor: '#7B61FF' }}>
-                                        <Text style={{ fontSize: 13, color: '#7B61FF', fontWeight: 'bold', textAlign: 'center' }}>Test Code: {apiMessage}</Text>
+                                    <View style={styles.testOtpBadge}>
+                                        <Text style={styles.testOtpText}>TEST OTP: <Text style={{ color: '#3861FB', fontWeight: '900' }}>{apiMessage}</Text></Text>
                                     </View>
                                 ) : null}
 
-                                <View style={styles.maskedMobileBadge}>
-                                    <Text style={styles.mobileIconSmall}>📱</Text>
-                                    <Text style={[styles.maskedMobileText, { color: colors.textPrimary }]}>{maskedMobile}</Text>
+                                <View style={styles.otpSentBadge}>
+                                    <Icon name="phone-iphone" size={16} color="#3861FB" style={{ marginRight: 8 }} />
+                                    <Text style={styles.otpSentText}>{maskedMobile}</Text>
                                 </View>
 
                                 <View style={styles.otpRow}>
-                                    {otp.map((digit, i) => (
+                                    {otp.map((d, idx) => (
                                         <TextInput
-                                            key={i} ref={r => { otpRefs.current[i] = r; }}
-                                            style={[styles.otpBox, { backgroundColor: colors.inputBackground, borderColor: digit ? '#7B61FF' : colors.divider }]}
-                                            value={digit} onChangeText={t => handleOtpChange(t, i)}
-                                            onKeyPress={({ nativeEvent }) => handleOtpKeyPress(nativeEvent.key, i)}
-                                            keyboardType="number-pad" maxLength={1}
+                                            key={idx}
+                                            ref={r => { otpRefs.current[idx] = r; }}
+                                            style={[styles.otpInput, !!d && styles.otpInputActive]}
+                                            keyboardType="number-pad"
+                                            maxLength={1}
+                                            value={d}
+                                            onChangeText={t => handleOtpChange(t, idx)}
+                                            onKeyPress={({ nativeEvent }) => handleOtpKeyPress(nativeEvent.key, idx)}
                                         />
                                     ))}
                                 </View>
 
                                 <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
                                     <TouchableOpacity
-                                        onPressIn={handlePressIn} onPressOut={handlePressOut}
-                                        onPress={handleVerifyOtp} activeOpacity={0.9} disabled={verifying}>
+                                        activeOpacity={0.9}
+                                        onPressIn={handlePressIn}
+                                        onPressOut={handlePressOut}
+                                        onPress={handleVerifyOtp}
+                                    >
                                         <LinearGradient
-                                            colors={[BrandColors.verifyGradientStart, BrandColors.verifyGradientEnd]}
-                                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                            style={styles.loginButton}>
-                                            {verifying
-                                                ? <ActivityIndicator color="#FFFFFF" size="small" />
-                                                : <Text style={styles.loginButtonText}>✓  Verify & Login</Text>
-                                            }
+                                            colors={['#3861FB', '#2752E7']}
+                                            start={{ x: 0, y: 0 }}
+                                            end={{ x: 1, y: 0 }}
+                                            style={styles.mainBtn}
+                                        >
+                                            {verifying ? <ActivityIndicator color="#fff" /> : <Text style={styles.mainBtnText}>Verify & Login →</Text>}
                                         </LinearGradient>
                                     </TouchableOpacity>
                                 </Animated.View>
 
-                                <View style={styles.resendTimerRow}>
+                                <View style={styles.bottomLinkRow}>
                                     {resendTimer > 0 ? (
-                                        <Text style={[styles.resendText, { color: colors.textSecondary }]}>
-                                            Resend OTP in <Text style={{ color: colors.textLink }}>{resendTimer}s</Text>
-                                        </Text>
+                                        <Text style={styles.resendInfo}>Resend OTP in <Text style={{ color: '#3861FB' }}>{resendTimer}s</Text></Text>
                                     ) : (
-                                        <TouchableOpacity onPress={handleSendOtp} activeOpacity={0.7}>
-                                            <Text style={[styles.resendText, { color: colors.textSecondary }]}>
-                                                Didn't receive it? <Text style={{ color: colors.textLink, fontWeight: '800' }}>Resend Now</Text>
-                                            </Text>
+                                        <TouchableOpacity onPress={handleSendOtp}>
+                                            <Text style={styles.resendInfo}>Didn't receive it? <Text style={styles.resendLink}>Resend Now</Text></Text>
                                         </TouchableOpacity>
                                     )}
                                 </View>
-                                <TouchableOpacity onPress={() => setStep('pan')} style={styles.changeMobileBtn}>
-                                    <Text style={[styles.changeMobileText, { color: colors.textSecondary }]}>← Change PAN Number</Text>
+
+                                <TouchableOpacity onPress={() => setStep('pan')} style={styles.backBtn}>
+                                    <Text style={styles.backBtnText}>← Change PAN Number</Text>
                                 </TouchableOpacity>
-                            </Animated.View>
+                            </View>
                         )}
-
-
                     </Animated.View>
 
-                    <View style={styles.footerWrap}>
-                        <LinearGradient
-                            colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
-                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                            style={styles.bottomDash}
-                        />
-                        <Text style={[styles.footerText, { color: colors.textMuted }]}>v6.7 • Idhayam Distributor</Text>
+                    <View style={styles.trustFooter}>
+                        <View style={styles.secureBadge}>
+                            <Icon name="verified-user" size={18} color="#3861FB" />
+                            <View style={{ marginLeft: 10 }}>
+                                <Text style={styles.secureTitle}>100% Secure Login</Text>
+                                <Text style={styles.secureSub}>Bank-level encryption</Text>
+                            </View>
+                        </View>
+                        <Text style={styles.versionText}>v6.7 • Idhayam Distributor</Text>
                     </View>
+
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>
@@ -421,100 +368,102 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#F8F9FD' },
     flex: { flex: 1 },
-    container: { flex: 1 },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: Platform.OS === 'ios' ? 60 : 40,
-        paddingHorizontal: 20,
-    },
-    distributorBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    badgeIcon: { fontSize: 14, marginRight: 6 },
-    badgeText: { fontSize: 12, fontWeight: '800' },
-    themeToggle: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 },
-    themeToggleInner: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
-    themeIcon: { fontSize: 18 },
-
     scrollContent: { paddingBottom: 40, alignItems: 'center' },
-    welcomeContainer: { width: '100%', paddingHorizontal: 25, marginTop: 30, marginBottom: 30 },
-    welcomeTitle: { fontSize: 36, fontWeight: '900', marginBottom: 10 },
-    welcomeSubtitle: { fontSize: 16, fontWeight: '500' },
 
-    loginCard: {
-        width: width * 0.92,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 32,
-        padding: 24,
-        shadowColor: '#6C5CE7',
-        shadowOffset: { width: 0, height: 25 },
+    topBadgeWrapper: { paddingTop: Platform.OS === 'ios' ? 70 : 50, marginBottom: 20 },
+    distributorBadge: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        backgroundColor: '#fff', 
+        paddingHorizontal: 15, 
+        paddingVertical: 10, 
+        borderRadius: 25,
+        shadowColor: '#3861FB',
+        shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.1,
-        shadowRadius: 35,
+        shadowRadius: 15,
+        elevation: 5
+    },
+    badgeText: { fontSize: 13, fontWeight: '800', color: '#3861FB' },
+
+    welcomeContainer: { width: '100%', paddingHorizontal: 30, marginBottom: 35, alignItems: 'center' },
+    welcomeTitle: { fontSize: 32, fontWeight: '900', color: '#1A1A1A', marginBottom: 10 },
+    welcomeSubtitle: { fontSize: 15, color: '#718096', fontWeight: '500' },
+
+    formCard: { 
+        width: width * 0.9, 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 35, 
+        padding: 28,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 0.05,
+        shadowRadius: 30,
         elevation: 10,
-        marginBottom: 30,
+        marginBottom: 30
     },
 
-    stepIndicatorContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 35 },
-    stepPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, minWidth: 80, alignItems: 'center' },
-    stepPillActive: { backgroundColor: '#7B61FF' },
-    stepPillInactive: { backgroundColor: '#F0F0F5' },
-    stepPillText: { fontSize: 13, fontWeight: '800' },
-    stepPillTextActive: { color: '#FFFFFF' },
-    stepPillTextInactive: { color: '#BDBDBD' },
-    stepLine: { flex: 1, height: 2, marginHorizontal: 12 },
+    stepIndicator: { flexDirection: 'row', alignItems: 'center', marginBottom: 35 },
+    stepItem: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 20 },
+    stepItemActive: { backgroundColor: '#3861FB' },
+    stepItemInactive: { backgroundColor: '#F1F5F9' },
+    stepItemText: { fontSize: 13, fontWeight: '900' },
+    stepItemTextActive: { color: '#fff' },
+    stepItemTextInactive: { color: '#94A3B8' },
+    stepConnector: { flex: 1, height: 1.5, backgroundColor: '#E2E8F0', marginHorizontal: 10 },
 
-    cardTitle: { fontSize: 24, fontWeight: '800', marginBottom: 6 },
-    cardSubtitle: { fontSize: 14, fontWeight: '500', marginBottom: 24 },
+    formSectionTitle: { fontSize: 24, fontWeight: '900', color: '#1A1A1A', marginBottom: 8 },
+    formSectionSub: { fontSize: 14, color: '#718096', marginBottom: 25, fontWeight: '500' },
 
-    inputWrapper: { marginBottom: 20 },
-    inputLabel: { fontSize: 12, fontWeight: '800', marginBottom: 10, letterSpacing: 0.5 },
-    inputContainer: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: Platform.OS === 'ios' ? 14 : 2 },
-    iconBox: { width: 32, height: 32, borderRadius: 8, backgroundColor: '#7B61FF10', alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-    inputIcon: { fontSize: 16 },
-    input: { flex: 1, fontSize: 15, fontWeight: '600' },
-    editBtn: { paddingLeft: 10 },
-    panHint: { fontSize: 11, marginTop: 8, fontWeight: '600' },
-
-    loginButton: {
-        borderRadius: 18, paddingVertical: 18, alignItems: 'center', justifyContent: 'center',
-        shadowColor: '#FD79A8', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8,
+    inputGroup: { marginBottom: 20 },
+    inputLabel: { fontSize: 11, fontWeight: '900', color: '#1A1A1A', marginBottom: 12, letterSpacing: 1 },
+    inputBox: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        backgroundColor: '#F8F9FD', 
+        borderWidth: 1.5, 
+        borderColor: '#EDF2F7', 
+        borderRadius: 18, 
+        paddingHorizontal: 15, 
+        paddingVertical: Platform.OS === 'ios' ? 16 : 4
     },
-    loginButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
+    inputBoxFocused: { borderColor: '#3861FB', backgroundColor: '#fff' },
+    textInputMain: { flex: 1, fontSize: 16, fontWeight: '700', color: '#1A1A1A' },
+    formatHint: { fontSize: 11, color: '#A0AEC0', marginTop: 10, fontWeight: '600' },
+    editText: { color: '#3861FB', fontSize: 13, fontWeight: '800' },
 
-    mobileList: { marginBottom: 20 },
-    mobileOption: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, borderWidth: 1.5, marginBottom: 10 },
-    radioOuter: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-    radioInner: { width: 10, height: 10, borderRadius: 5 },
-    mobileOptionText: { fontSize: 16, fontWeight: '700', marginLeft: 8 },
+    phoneOption: { flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
+    phoneOptionActive: { backgroundColor: '#F0F4FF', borderRadius: 12 },
+    rOuter: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#CBD5E0', alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    rOuterActive: { borderColor: '#3861FB' },
+    rInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#3861FB' },
+    phoneText: { fontSize: 16, fontWeight: '600', color: '#718096' },
+    phoneTextActive: { color: '#1A1A1A', fontWeight: '800' },
 
-    maskedMobileBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#7B61FF10', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, marginBottom: 24 },
-    mobileIconSmall: { fontSize: 16, marginRight: 10 },
-    maskedMobileText: { fontSize: 16, fontWeight: '700' },
-    otpRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 },
-    otpBox: { width: width * 0.12, height: 56, borderRadius: 12, borderWidth: 1.5, fontSize: 20, fontWeight: '800', textAlign: 'center' },
-    resendTimerRow: { width: '100%', alignItems: 'center', marginTop: 20 },
-    resendText: { fontSize: 14, fontWeight: '600' },
-    changeMobileBtn: { width: '100%', alignItems: 'center', marginTop: 15 },
-    changeMobileText: { fontSize: 13, fontWeight: '600' },
+    mainBtn: { borderRadius: 20, paddingVertical: 18, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#3861FB', shadowOpacity: 0.3, shadowRadius: 15, shadowOffset: { width: 0, height: 10 } },
+    mainBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 0.5 },
 
-    dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 30 },
-    dividerLine: { flex: 1, height: 1.5 },
-    dividerText: { marginHorizontal: 15, fontSize: 13, fontWeight: '700' },
+    otpSentBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F4FF', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 15, marginBottom: 25 },
+    testOtpBadge: { backgroundColor: '#F0F4FF', padding: 12, borderRadius: 15, marginBottom: 15, borderStyle: 'dashed', borderWidth: 1.5, borderColor: '#3861FB' },
+    testOtpText: { fontSize: 13, fontWeight: '700', color: '#718096', textAlign: 'center' },
+    otpSentText: { fontSize: 15, fontWeight: '700', color: '#1A1A1A' },
+    otpRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 35 },
+    otpInput: { width: width * 0.11, height: 55, borderRadius: 12, backgroundColor: '#F8F9FD', borderWidth: 1.5, borderColor: '#EDF2F7', fontSize: 20, fontWeight: '900', color: '#1A1A1A', textAlign: 'center' },
+    otpInputActive: { borderColor: '#3861FB', backgroundColor: '#fff' },
 
-    registerLinkContainer: { flexDirection: 'row', justifyContent: 'center' },
-    regText: { fontSize: 14, fontWeight: '600' },
-    regLink: { fontSize: 14, fontWeight: '800' },
+    bottomLinkRow: { width: '100%', alignItems: 'center', marginTop: 25 },
+    resendInfo: { fontSize: 13, fontWeight: '600', color: '#718096' },
+    resendLink: { color: '#1A1A1A', fontWeight: '800' },
+    backBtn: { marginTop: 20 },
+    backBtnText: { fontSize: 13, color: '#718096', fontWeight: '700' },
 
-    footerWrap: { width: '100%', alignItems: 'center', marginTop: 20 },
-    bottomDash: { width: 40, height: 4, borderRadius: 2, marginBottom: 15 },
-    footerText: { fontSize: 12, fontWeight: '600' },
+    trustFooter: { width: '100%', alignItems: 'center', marginTop: 15 },
+    secureBadge: { flexDirection: 'row', alignItems: 'center', padding: 15 },
+    secureTitle: { fontSize: 14, fontWeight: '900', color: '#1A1A1A' },
+    secureSub: { fontSize: 11, color: '#718096', fontWeight: '600' },
+    versionText: { fontSize: 11, color: '#CBD5E0', fontWeight: '700', marginTop: 20 },
 });
 
 export default LoginScreen;

@@ -11,134 +11,108 @@ import {
     Platform,
     ActivityIndicator,
     KeyboardAvoidingView,
-    Modal,
     Dimensions,
+    ScrollView,
+    Keyboard,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../theme';
-import { BrandColors } from '../theme/Colors';
-import GlassHeader from '../components/GlassHeader';
 import { getOrderItems, submitOrder } from '../api';
 import { useSession } from '../context/SessionContext';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const { height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'OrderEntry'>;
 };
 
-interface Product {
-    id: string;
-    category: string;
-    name: string;
-    price: string;
-    unit: string;
-    mrp: string;
-    tax: string;
-}
-
-const ItemRow = React.memo(({ item, qty, onUpdate, onStep }: any) => {
+const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
     const [focused, setFocused] = useState<'box' | 'pcs' | null>(null);
     const hasQty = (qty?.box && qty.box !== '0' && qty.box !== '') || (qty?.pcs && qty.pcs !== '0' && qty.pcs !== '');
     const priceText = item?.price ? parseFloat(item.price).toFixed(2) : '0.00';
 
     return (
         <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
-            <View style={styles.itemInfo}>
-                <Text style={styles.itemName}>{item?.name || 'Unknown Item'}</Text>
-                <View style={styles.itemPriceRow}>
-                    <Text style={styles.itemMRP}>MRP: ₹{item?.mrp}</Text>
-                    <Text style={styles.itemPriceMain}>APP: ₹{priceText}</Text>
-                </View>
-            </View>
-            
-            <View style={styles.qtyContainer}>
-                {/* BOX STEPPER */}
-                <View style={styles.stepperWrap}>
-                    <Text style={styles.stepperLabel}>BOX</Text>
-                    <View style={[
-                        styles.stepper, 
-                        (qty?.box && qty.box !== '' && qty.box !== '0') && styles.stepperActive,
-                        focused === 'box' && styles.stepperActive
-                    ]}>
-                        <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'box', -1)}>
-                            <Text style={styles.stepSymbol}>−</Text>
-                        </TouchableOpacity>
-                        <TextInput
-                            style={styles.stepInput}
-                            keyboardType="number-pad"
-                            value={String(qty?.box || '')}
-                            onChangeText={v => onUpdate(item?.id, 'box', v)}
-                            placeholder="0"
-                            placeholderTextColor="#A0A3BD"
-                            onFocus={() => setFocused('box')}
-                            onBlur={() => setFocused(null)}
-                        />
-                        <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'box', 1)}>
-                            <Text style={styles.stepSymbol}>+</Text>
-                        </TouchableOpacity>
-                    </View>
+            <View style={styles.itemMainContent}>
+                {/* 1. MRP */}
+                <View style={{ flex: 1.3, alignItems: 'center' }}>
+                    <Text style={styles.prodMrp}>₹{item.mrp}</Text>
                 </View>
 
-                {/* PCS STEPPER */}
-                <View style={styles.stepperWrap}>
-                    <Text style={styles.stepperLabel}>PCS</Text>
-                    <View style={[
-                        styles.stepper, 
-                        (qty?.pcs && qty.pcs !== '' && qty.pcs !== '0') && styles.stepperActive,
-                        focused === 'pcs' && styles.stepperActive
-                    ]}>
-                        <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'pcs', -1)}>
-                            <Text style={styles.stepSymbol}>−</Text>
-                        </TouchableOpacity>
-                        <TextInput
-                            style={styles.stepInput}
-                            keyboardType="number-pad"
-                            value={String(qty?.pcs || '')}
-                            onChangeText={v => onUpdate(item?.id, 'pcs', v)}
-                            placeholder="0"
-                            placeholderTextColor="#A0A3BD"
-                            onFocus={() => setFocused('pcs')}
-                            onBlur={() => setFocused(null)}
-                        />
-                        <TouchableOpacity style={styles.stepBtn} onPress={() => onStep(item?.id, 'pcs', 1)}>
-                            <Text style={styles.stepSymbol}>+</Text>
-                        </TouchableOpacity>
-                    </View>
+                {/* 2. ITEM */}
+                <View style={{ flex: 2.5, alignItems: 'center' }}>
+                    <Text style={[styles.prodName, { textAlign: 'center' }]} numberOfLines={2}>{item.name}</Text>
+                    <Text style={styles.prodSub}>{item.unit}</Text>
+                </View>
+
+                {/* 3. PRICE */}
+                <View style={{ flex: 1.3, alignItems: 'flex-start', paddingLeft: 5 }}>
+                    <Text style={styles.prodVal}>₹{priceText}</Text>
+                </View>
+
+                {/* 4. BOX Input */}
+                <View style={{ flex: 0.8, paddingHorizontal: 1 }}>
+                    <TextInput
+                        style={[styles.miniInput, focused === 'box' && styles.manualInputFocused]}
+                        keyboardType="number-pad"
+                        value={String(qty?.box || '')}
+                        onChangeText={v => onUpdate(item?.id, 'box', v)}
+                        placeholder="0"
+                        onFocus={() => setFocused('box')}
+                        onBlur={() => setFocused(null)}
+                    />
+                </View>
+
+                {/* 5. PCS Input */}
+                <View style={{ flex: 0.8, paddingHorizontal: 1 }}>
+                    <TextInput
+                        style={[styles.miniInput, focused === 'pcs' && styles.manualInputFocused]}
+                        keyboardType="number-pad"
+                        value={String(qty?.pcs || '')}
+                        onChangeText={v => onUpdate(item?.id, 'pcs', v)}
+                        placeholder="0"
+                        onFocus={() => setFocused('pcs')}
+                        onBlur={() => setFocused(null)}
+                    />
                 </View>
             </View>
         </View>
     );
-}, (prev, next) => (
-    prev.qty?.box === next.qty?.box && 
-    prev.qty?.pcs === next.qty?.pcs && 
-    prev.item?.id === next.item?.id
-));
+});
 
 const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
-    const { colors } = useTheme();
     const { session } = useSession();
     const [page, setPage] = useState<1 | 2>(1);
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [selectedCat, setSelectedCat] = useState('All Products');
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedCat, setSelectedCat] = useState('');
     const [orders, setOrders] = useState<Record<string, { box: string, pcs: string }>>({});
-    const flatListRef = useRef<FlatList>(null);
 
-    useEffect(() => { fetchItems(); }, []);
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardVisible(true));
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardVisible(false));
+        fetchItems();
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        };
+    }, []);
 
     const fetchItems = async () => {
         setLoading(true);
         try {
             const data = await getOrderItems(session?.custId || undefined);
             setProducts(data || []);
+            if (data && data.length > 0) {
+                const cats = Array.from(new Set(data.map((p: any) => p.category))).filter(Boolean).sort() as string[];
+                if (cats.length > 0) setSelectedCat(cats[0]);
+            }
         } catch (e) {
-            console.error('FetchItems Error:', e);
             Alert.alert('Error', 'Failed to load menu items.');
         } finally {
             setLoading(false);
@@ -146,24 +120,13 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     const categories = useMemo(() => {
-        const cats = Array.from(new Set(products.map(p => p.category))).filter(Boolean).sort();
-        return ['All Products', ...cats as string[]];
+        return Array.from(new Set(products.map(p => p.category))).filter(Boolean).sort() as string[];
     }, [products]);
 
     const updateOrder = useCallback((id: string, field: 'box' | 'pcs', value: string) => {
         if (!id) return;
         const cleaned = value.replace(/[^0-9]/g, '');
         setOrders(prev => ({ ...prev, [id]: { ...(prev[id] || {box:'', pcs:''}), [field]: cleaned } }));
-    }, []);
-
-    const stepOrder = useCallback((id: string, field: 'box' | 'pcs', delta: number) => {
-        if (!id) return;
-        setOrders(prev => {
-            const cur = prev[id] || { box: '', pcs: '' };
-            const curValue = parseInt(cur[field] || '0', 10);
-            const nextVal = Math.max(0, curValue + delta);
-            return { ...prev, [id]: { ...cur, [field]: nextVal === 0 ? '' : String(nextVal) } };
-        });
     }, []);
 
     const activeOrders = useMemo(() => products.map(p => {
@@ -180,29 +143,18 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const totalAmount = useMemo(() => activeOrders.reduce((s, o: any) => s + (o.amount || 0), 0), [activeOrders]);
     const totalCount = useMemo(() => activeOrders.reduce((s, o: any) => s + (o.totalPcs || 0), 0), [activeOrders]);
 
-    const flatData = useMemo(() => {
-        const filtered = products.filter(p => 
-            (p?.name || '').toLowerCase().includes(search.toLowerCase()) &&
-            (selectedCat === 'All Products' || p?.category === selectedCat)
-        );
-        let res: any[] = [];
-        const catsInView = Array.from(new Set(filtered.map(p => p.category))).filter(Boolean);
-        catsInView.forEach(cat => {
-            res.push({ type: 'header', value: cat });
-            const catItems = filtered.filter(p => p.category === cat);
-            catItems.forEach(item => res.push({ type: 'item', value: item }));
+    const filteredData = useMemo(() => {
+        return products.filter(p => {
+            const matchesSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
+            const matchesCat = p.category === selectedCat;
+            return matchesSearch && matchesCat;
         });
-        return res;
     }, [products, search, selectedCat]);
 
     const executeSubmit = async () => {
         setLoading(true);
         try {
-            const res = await submitOrder(
-                session?.custId || '', 
-                activeOrders, 
-                session?.branchId || undefined
-            );
+            const res = await submitOrder(session?.custId || '', activeOrders, session?.branchId || undefined);
             if (res.success) {
                 Alert.alert('✓ Order Placed', `Order #${res.orderId} recorded.`);
                 navigation.goBack();
@@ -216,238 +168,192 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
         }
     };
 
-    const renderFlatItem = useCallback(({ item, index }: { item: any, index: number }) => {
-        if (item.type === 'header') {
-            return (
-                <View key={`header-${index}`} style={styles.catHeader}>
-                    <Text style={styles.catTitle}>{item.value}</Text>
-                    <View style={styles.catLine} />
-                </View>
-            );
-        }
-        const p = item.value;
-        const qty = orders[p.id] || { box: '', pcs: '' };
-        return <ItemRow key={`item-${p.id}`} item={p} qty={qty} onUpdate={updateOrder} onStep={stepOrder} />;
-    }, [orders, updateOrder, stepOrder]);
-
     return (
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-            <GlassHeader title={page === 1 ? "Order Entry" : "Review"} gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} onBack={() => { if (page === 2) setPage(1); else navigation.goBack(); }} />
+        <View style={styles.container}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.backBtn} onPress={() => { if (page === 2) setPage(1); else navigation.goBack(); }}>
+                    <Icon name="arrow-back" size={20} color="#3861FB" />
+                </TouchableOpacity>
+                <View style={styles.headerTitles}>
+                    <Text style={styles.headerTitle}>{page === 1 ? 'Order Entry' : 'Review Order'}</Text>
+                    <Text style={styles.headerSub}>{page === 1 ? 'Select products to order' : 'Verify your items'}</Text>
+                </View>
 
-            {loading && products.length === 0 ? (
-                <View style={styles.centerBox}><ActivityIndicator size="large" color={BrandColors.primaryGradientStart} /></View>
-            ) : page === 1 ? (
-                <View style={styles.flex1}>
-                    <View style={styles.controls}>
-                        <View style={styles.searchBar}>
-                            <Text style={styles.searchIcon}>🔍</Text>
-                            <TextInput style={styles.searchInput} placeholder="Search product..." placeholderTextColor="#A0A3BD" value={search} onChangeText={setSearch} />
-                        </View>
-                        <TouchableOpacity style={styles.dropBtn} onPress={() => setShowDropdown(true)}>
-                            <Text style={styles.dropText} numberOfLines={1}>{selectedCat}</Text>
-                            <Text style={styles.dropIcon}>▼</Text>
-                        </TouchableOpacity>
+            </View>
+
+            {page === 1 ? (
+                <KeyboardAvoidingView style={styles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+
+
+                    <View style={styles.catWrapper}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
+                            {categories.map(cat => {
+                                const hasAnyOrder = products.some(p => 
+                                    p.category === cat && 
+                                    ((orders[p.id]?.box && orders[p.id].box !== '0' && orders[p.id].box !== '') || 
+                                     (orders[p.id]?.pcs && orders[p.id].pcs !== '0' && orders[p.id].pcs !== ''))
+                                );
+                                return (
+                                    <TouchableOpacity 
+                                        key={cat} 
+                                        style={[styles.catChip, selectedCat === cat && styles.catChipActive]}
+                                        onPress={() => setSelectedCat(cat)}
+                                    >
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text style={[styles.catText, selectedCat === cat && styles.catTextActive]}>{cat}</Text>
+                                            {hasAnyOrder && <View style={styles.catDot} />}
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </ScrollView>
                     </View>
 
-                    <FlatList 
-                        ref={flatListRef} 
-                        data={flatData} 
-                        keyExtractor={(item, i) => `${item.type}-${item.value?.id || item.value || i}`} 
-                        renderItem={renderFlatItem}
-                        contentContainerStyle={styles.scrollContent} 
-                        initialNumToRender={10} 
-                        maxToRenderPerBatch={5} 
-                        windowSize={5} 
-                        removeClippedSubviews={Platform.OS === 'android'} 
-                        showsVerticalScrollIndicator={false}
-                        keyboardShouldPersistTaps="handled"
-                    />
+                    {/* NEW: Table Header Row from Price Details */}
+                    {/* Standardized Table Header (Financial-Focus Optimized) */}
+                    <View style={styles.tableHeader}>
+                        <Text style={[styles.colLabel, { flex: 1.3 }]}>MRP (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 2.5 }]}>ITEM</Text>
+                        <Text style={[styles.colLabel, { flex: 1.3, textAlign: 'left', paddingLeft: 5 }]}>PRICE (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 0.8 }]}>BOX</Text>
+                        <Text style={[styles.colLabel, { flex: 0.8 }]}>PCS</Text>
+                    </View>
 
-                    {totalCount > 0 && (
-                        <TouchableOpacity style={styles.summaryBar} onPress={() => setPage(2)} activeOpacity={0.95}>
-                            <LinearGradient colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} start={{x:0, y:0}} end={{x:1, y:0}} style={styles.summaryInner}>
+                    {loading ? (
+                        <View style={styles.centerBox}><ActivityIndicator size="large" color="#3861FB" /></View>
+                    ) : (
+                        <FlatList 
+                            data={filteredData}
+                            keyExtractor={p => p.id}
+                            renderItem={({ item }) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
+                            contentContainerStyle={styles.listContent}
+                            initialNumToRender={8}
+                            maxToRenderPerBatch={4}
+                            windowSize={5}
+                        />
+                    )}
+
+                    {totalAmount > 0 && !isKeyboardVisible && (
+                        <TouchableOpacity style={styles.summaryBar} onPress={() => setPage(2)}>
+                            <LinearGradient colors={['#3861FB', '#2752E7']} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.summaryInner}>
                                 <View>
-                                    <Text style={styles.summaryLabel}>Ordered Volume</Text>
+                                    <Text style={styles.summaryLabel}>Total Amount</Text>
                                     <Text style={styles.summaryAmount}>₹ {totalAmount.toLocaleString()}</Text>
                                 </View>
                                 <View style={styles.summaryBtn}>
-                                    <Text style={styles.summaryBtnText}>Review & Confirm ({totalCount})  →</Text>
+                                    <Text style={styles.summaryBtnText}>Review & Confirm →</Text>
                                 </View>
                             </LinearGradient>
                         </TouchableOpacity>
                     )}
-                </View>
+                </KeyboardAvoidingView>
             ) : (
                 <View style={styles.flex1}>
                     <FlatList 
-                        data={activeOrders} 
-                        keyExtractor={(o: any) => o.id} 
-                        ListHeaderComponent={() => <Text style={styles.reviewTitle}>Final Review</Text>} 
-                        contentContainerStyle={styles.scrollContent}
+                        data={activeOrders}
+                        keyExtractor={(o: any) => o.id}
+                        contentContainerStyle={styles.reviewList}
                         renderItem={({ item }: any) => (
-                            <View style={styles.reviewRow}>
-                                <View style={styles.reviewMain}>
-                                    <Text style={styles.reviewCat}>{item.category}</Text>
+                            <View style={styles.reviewCard}>
+                                <View style={{ flex: 1 }}>
                                     <Text style={styles.reviewName}>{item.name}</Text>
-                                    <Text style={styles.reviewTagText}>{item.box || 0} Box + {item.pcs || 0} Pcs</Text>
+                                    <Text style={styles.reviewDetails}>{item.box || 0} Box + {item.pcs || 0} Pcs</Text>
                                 </View>
-                                <View style={{alignItems:'flex-end'}}>
-                                    <Text style={styles.reviewTotalValue}>₹{item.amount.toLocaleString()}</Text>
-                                    <Text style={{fontSize: 10, color: '#BDBDBD'}}>{item.totalPcs} units</Text>
-                                </View>
+                                <Text style={styles.reviewPrice}>₹{item.amount.toLocaleString()}</Text>
                             </View>
                         )}
                         ListFooterComponent={() => (
-                            <View style={styles.billCard}>
-                                <View style={styles.billLine}><Text style={styles.billLabelLarge}>Total Order Value</Text><Text style={styles.billValLarge}>₹ {totalAmount.toLocaleString()}</Text></View>
+                            <View style={styles.totalCard}>
+                                <Text style={styles.totalLabel}>Grand Total</Text>
+                                <Text style={styles.totalValue}>₹ {totalAmount.toLocaleString()}</Text>
                             </View>
                         )}
                     />
-                    <View style={styles.footerRow}>
-                        <TouchableOpacity style={[styles.reviewBackBtn, { borderColor: BrandColors.primaryGradientStart }]} onPress={() => setPage(1)} activeOpacity={0.7}>
-                            <Ionicons name="arrow-back" size={24} color={BrandColors.primaryGradientStart} style={{ marginRight: 6 }} />
-                            <Text style={[styles.reviewBackBtnText, { color: BrandColors.primaryGradientStart }]}>Back</Text>
+                    <View style={styles.actionRow}>
+                        <TouchableOpacity style={styles.flex1} onPress={() => setPage(1)}>
+                            <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.submitBtnInner}>
+                                <Text style={styles.submitBtnText}>BACK</Text>
+                            </LinearGradient>
                         </TouchableOpacity>
                         
-                        <TouchableOpacity style={styles.placeBtn} onPress={executeSubmit} activeOpacity={0.9} disabled={loading}>
-                            <LinearGradient colors={[BrandColors.verifyGradientStart, BrandColors.verifyGradientEnd]} start={{x:0, y:0}} end={{x:1, y:0}} style={styles.placeBtnInner}>
-                                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.placeBtnText}>SUBMIT ORDER</Text>}
+                        <TouchableOpacity style={{ flex: 2 }} onPress={executeSubmit}>
+                            <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.submitBtnInner}>
+                                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>PLACE ORDER NOW</Text>}
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
                 </View>
             )}
-
-            <Modal visible={showDropdown} transparent animationType="fade" onRequestClose={() => setShowDropdown(false)}>
-                <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowDropdown(false)}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Select Category</Text>
-                        <FlatList data={categories} keyExtractor={c => c} style={{maxHeight: height * 0.6}} renderItem={({ item }) => (
-                            <TouchableOpacity style={[styles.modalOption, selectedCat === item && styles.modalOptionActive]} onPress={() => { setSelectedCat(item); setShowDropdown(false); flatListRef.current?.scrollToOffset({ offset: 0, animated: false }); }}>
-                                <Text style={[styles.modalOptionText, selectedCat === item && {color: BrandColors.primaryGradientStart}]}>{item}</Text>
-                                {selectedCat === item && <Text style={styles.checkIcon}>✓</Text>}
-                            </TouchableOpacity>
-                        )} />
-                    </View>
-                </TouchableOpacity>
-            </Modal>
-        </KeyboardAvoidingView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F8F9FD' },
     flex1: { flex: 1 },
-    centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    controls: { flexDirection: 'row', padding: 15, paddingBottom: 10 },
-    searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, elevation: 2, height: 46, marginRight: 10, shadowColor: '#000', shadowOffset: {width:0, height:2}, shadowOpacity: 0.05, shadowRadius: 5 },
-    searchIcon: { fontSize: 18, marginRight: 8 },
-    searchInput: { flex: 1, fontSize: 14, fontWeight: '700', color: '#1F1F39', padding: 0 },
-    dropBtn: { width: 130, height: 46, backgroundColor: '#fff', borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, elevation: 2, shadowColor: '#000', shadowOffset: {width:0, height:2}, shadowOpacity: 0.05, shadowRadius: 5 },
-    dropText: { flex: 1, fontSize: 11, fontWeight: '800', color: BrandColors.primaryGradientStart, textTransform: 'uppercase' },
-    dropIcon: { fontSize: 12, color: '#BDBDBD', marginLeft: 5 },
-    
-    scrollContent: { padding: 15, paddingBottom: 120 },
-    catHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
-    catTitle: { paddingRight: 12, fontSize: 12, fontWeight: '900', color: '#1F1F39', textTransform: 'uppercase', letterSpacing: 1 },
-    catLine: { flex: 1, height: 2, backgroundColor: BrandColors.primaryGradientStart + '15', borderRadius: 1 },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 25, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 20 },
+    backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
+    headerTitles: { flex: 1, marginLeft: 15 },
+    headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
+    headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
+    cartCount: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
+    countBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#E3001B', borderRadius: 10, minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
+    countText: { color: '#fff', fontSize: 10, fontWeight: '900' },
 
-    itemRow: { 
-        backgroundColor: '#fff', 
-        borderRadius: 20, 
-        padding: 16, 
-        marginBottom: 12, 
-        elevation: 4, 
-        shadowColor: '#000', 
-        shadowOffset: {width: 0, height: 4}, 
-        shadowOpacity: 0.08, 
-        shadowRadius: 8,
-        borderWidth: 1.2,
-        borderColor: '#F0F0FA'
-    },
-    itemRowActive: { 
-        borderColor: BrandColors.primaryGradientStart, 
-        backgroundColor: '#FCFCFF',
-        shadowOpacity: 0.15,
-        shadowColor: BrandColors.primaryGradientStart,
-    },
-    itemInfo: { marginBottom: 12 },
-    itemName: { fontSize: 16, fontWeight: '700', color: '#1F1F39', marginBottom: 4 },
-    itemPriceRow: { flexDirection: 'row', alignItems: 'center' },
-    itemPriceMain: { color: BrandColors.primaryGradientStart, fontSize: 13, fontWeight: '800', marginLeft: 12 },
-    itemMRP: { fontSize: 13, color: '#858597', fontWeight: '500' },
+    searchSection: { paddingHorizontal: 25, marginBottom: 20 },
+    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 15, paddingHorizontal: 15, height: 52 },
+    searchInput: { flex: 1, fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
 
-    qtyContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
-    stepperWrap: { flex: 0.48 },
-    stepperLabel: { fontSize: 10, fontWeight: '800', color: '#8F93B8', marginBottom: 6, textAlign: 'center', opacity: 0.7 },
-    stepper: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        backgroundColor: '#F5F6FA', 
-        borderRadius: 12, 
-        height: 44, 
-        paddingHorizontal: 4,
-        borderWidth: 1.2, 
-        borderColor: 'transparent'
-    },
-    stepperActive: { 
-        backgroundColor: '#fff', 
-        borderColor: BrandColors.primaryGradientStart + '30', 
-        elevation: 2,
-        shadowColor: BrandColors.primaryGradientStart,
-        shadowOpacity: 0.1,
-    },
-    stepBtn: { 
-        width: 36, 
-        height: 36, 
-        borderRadius: 12, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: '#fff',
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2
-    },
-    stepSymbol: { fontSize: 24, fontWeight: '400', color: BrandColors.primaryGradientStart },
-    stepInput: { flex: 1, height: 44, textAlign: 'center', fontSize: 16, fontWeight: '800', color: '#1F1F39', padding: 0 },
+    catWrapper: { marginBottom: 20 },
+    catScroll: { paddingHorizontal: 25 },
+    catChip: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: '#fff', marginRight: 10, borderWidth: 1, borderColor: '#EDF2F7' },
+    catChipActive: { backgroundColor: '#3861FB', borderColor: '#3861FB' },
+    catText: { fontSize: 12, fontWeight: '800', color: '#718096' },
+    catTextActive: { color: '#fff' },
 
-    summaryBar: { position: 'absolute', bottom: 25, left: 15, right: 15, elevation: 12, shadowColor: '#000', shadowOffset: {width:0, height:10}, shadowOpacity: 0.2 },
-    summaryInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 28, paddingHorizontal: 25, paddingVertical: 18 },
-    summaryLabel: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' },
-    summaryAmount: { fontSize: 26, fontWeight: '900', color: '#fff' },
-    summaryBtn: { backgroundColor: '#fff', paddingHorizontal: 15, paddingVertical: 12, borderRadius: 14 },
-    summaryBtnText: { color: BrandColors.primaryGradientStart, fontSize: 11, fontWeight: '900' },
+    tableHeader: { flexDirection: 'row', paddingHorizontal: 35, marginBottom: 15 },
+    colLabel: { flex: 1, fontSize: 10, fontWeight: '900', color: '#A0AEC0', textAlign: 'center' },
 
-    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center' },
-    modalContent: { backgroundColor: '#fff', width: '85%', borderRadius: 32, paddingVertical: 25, shadowColor: '#000', shadowOpacity: 0.2 },
-    modalTitle: { textAlign: 'center', fontSize: 20, fontWeight: '900', color: '#1F1F39', marginBottom: 20 },
-    modalOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30, paddingVertical: 18, borderBottomWidth: 1, borderBottomColor: '#F4F5F9' },
-    modalOptionActive: { backgroundColor: BrandColors.primaryGradientStart + '05' },
-    modalOptionText: { fontSize: 16, fontWeight: '700', color: '#4F4F6B' },
-    checkIcon: { fontSize: 22, color: BrandColors.primaryGradientStart, fontWeight: '900' },
-    
-    reviewTitle: { fontSize: 26, fontWeight: '900', color: '#1F1F39', marginBottom: 25, marginLeft: 5 },
-    reviewRow: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 26, padding: 22, marginBottom: 12, alignItems: 'center', elevation: 2 },
-    reviewMain: { flex: 1 },
-    reviewCat: { fontSize: 9, fontWeight: '900', color: BrandColors.primaryGradientStart, textTransform: 'uppercase', marginBottom: 4 },
-    reviewName: { fontSize: 17, fontWeight: '800', color: '#1F1F39', marginBottom: 6 },
-    reviewTagText: { fontSize: 13, fontWeight: '700', color: '#8F93B8' },
-    reviewTotalValue: { fontSize: 20, fontWeight: '900', color: '#1F1F39' },
-    billCard: { backgroundColor: '#fff', borderRadius: 30, padding: 30, marginTop: 15, elevation: 4 },
-    billLine: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    billLabelLarge: { fontSize: 18, fontWeight: '900', color: '#1F1F39' },
-    billValLarge: { fontSize: 28, fontWeight: '900', color: BrandColors.verifyGradientStart },
-    
-    footerRow: { flexDirection: 'row', padding: 20, paddingBottom: 40, alignItems: 'center' },
-    reviewBackBtn: { flex: 0.35, height: 60, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 20, marginRight: 15, borderWidth: 1.5 },
-    reviewBackBtnText: { fontWeight: '900', fontSize: 13, letterSpacing: 0.5 },
-    
-    placeBtn: { flex: 1, borderRadius: 28, overflow: 'hidden', elevation: 10, shadowColor: BrandColors.verifyGradientStart, shadowOpacity: 0.2, shadowRadius: 10, shadowOffset: { width: 0, height: 5 } },
-    placeBtnInner: { height: 64, alignItems: 'center', justifyContent: 'center' },
-    placeBtnText: { color: '#fff', fontSize: 14, fontWeight: '900', letterSpacing: 1.5 },
+    listContent: { paddingHorizontal: 10, paddingBottom: 150 },
+    itemRow: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 15, marginBottom: 10, elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8 },
+    itemRowActive: { borderColor: '#3861FB', borderWidth: 1.5 },
+    itemMainContent: { flexDirection: 'row', alignItems: 'center' },
+    prodName: { fontSize: 13, fontWeight: '800', color: '#1A1A1A' },
+    prodSub: { fontSize: 9, color: '#A0AEC0', fontWeight: '700' },
+    prodVal: { fontSize: 12, fontWeight: '900', color: '#718096' },
+    prodMrp: { fontSize: 13, fontWeight: '900', color: '#3861FB' },
+    miniInput: { height: 35, backgroundColor: '#F8F9FD', borderRadius: 8, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#E2E8F0', padding: 0 },
+
+    qtyRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 15 },
+    manualInputWrap: { flex: 1 },
+    manualLabel: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', textAlign: 'center', marginBottom: 8 },
+    manualInput: { height: 50, backgroundColor: '#F8F9FD', borderRadius: 12, textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#E2E8F0' },
+    manualInputFocused: { borderColor: '#3861FB', backgroundColor: '#fff' },
+    qtySpacing: { width: 15 },
+
+    summaryBar: { position: 'absolute', bottom: 30, left: 20, right: 20 },
+    summaryInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 25, paddingHorizontal: 25, paddingVertical: 18, elevation: 10 },
+    summaryLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: '800' },
+    summaryAmount: { color: '#fff', fontSize: 24, fontWeight: '900' },
+    summaryBtn: { backgroundColor: '#fff', paddingHorizontal: 15, paddingVertical: 10, borderRadius: 12 },
+    summaryBtnText: { color: '#3861FB', fontSize: 11, fontWeight: '900' },
+
+    reviewList: { padding: 25 },
+    reviewCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 20, borderRadius: 20, marginBottom: 12, elevation: 2 },
+    reviewName: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
+    reviewDetails: { fontSize: 12, color: '#A0AEC0', fontWeight: '600', marginTop: 4 },
+    reviewPrice: { fontSize: 17, fontWeight: '900', color: '#1A1A1A' },
+    totalCard: { backgroundColor: '#fff', borderRadius: 25, padding: 25, marginTop: 10, alignItems: 'center', borderStyle: 'dashed', borderWidth: 2, borderColor: '#E2E8F0' },
+    totalLabel: { fontSize: 14, fontWeight: '800', color: '#2D3748' },
+    totalValue: { fontSize: 32, fontWeight: '900', color: '#059669', marginTop: 5 },
+    catDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#00B894', marginLeft: 8 },
+    actionRow: { flexDirection: 'row', padding: 25, paddingBottom: 40, gap: 12 },
+    submitBtn: { padding: 25, paddingBottom: 40 },
+    submitBtnInner: { height: 60, borderRadius: 20, alignItems: 'center', justifyContent: 'center', elevation: 5 },
+    submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 1 },
+    centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 },
 });
 
 export default OrderEntryScreen;

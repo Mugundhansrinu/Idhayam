@@ -11,17 +11,15 @@ import {
     Dimensions,
     Platform,
     ActivityIndicator,
-    Modal,
     FlatList,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getPriceList } from '../api';
 import { useSession } from '../context/SessionContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { width } = Dimensions.get('window');
 
@@ -32,10 +30,8 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
     const { session } = useSession();
     const [search, setSearch] = useState('');
     const [products, setProducts] = useState<any[]>([]);
-    const [selectedCat, setSelectedCat] = useState('All Products');
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedCat, setSelectedCat] = useState('');
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
     const listAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -44,205 +40,166 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
     const fetchPrices = async () => {
         setLoading(true);
-        setError('');
         try {
             const custId = session?.custId || undefined;
             const data = await getPriceList(custId);
             setProducts(data || []);
+            if (data && data.length > 0) {
+                const cats = Array.from(new Set(data.map((p: any) => p.category))).filter(Boolean).sort() as string[];
+                if (cats.length > 0) setSelectedCat(cats[0]);
+            }
             Animated.timing(listAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
         } catch (e) {
             console.error('Price fetch error:', e);
-            setError('Failed to load price list.');
         } finally {
             setLoading(false);
         }
     };
 
     const categories = useMemo(() => {
-        const cats = Array.from(new Set(products.map(p => p.category))).filter(Boolean).sort();
-        return ['All Products', ...cats as string[]];
+        return Array.from(new Set(products.map(p => p.category))).filter(Boolean).sort() as string[];
     }, [products]);
 
     const filtered = products.filter(p => {
         const matchesSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
-        const matchesCat = selectedCat === 'All Products' || p.category === selectedCat;
+        const matchesCat = p.category === selectedCat;
         return matchesSearch && matchesCat;
     });
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            
-            <GlassHeader 
-                title="Price Details" 
-                subtitle="Current distributor prices" 
-                onBack={() => navigation.goBack()} 
-                gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} 
-            />
 
-            <View style={styles.searchWrapper}>
-                <View style={[styles.searchBox, { backgroundColor: colors.inputBackground, borderColor: colors.divider }]}>
-                    <Text style={styles.searchIcon}>🔍</Text>
-                    <TextInput
-                        style={[styles.searchInput, { color: colors.inputText }]}
-                        value={search}
-                        onChangeText={setSearch}
-                        placeholder="Search..."
-                        placeholderTextColor={colors.inputPlaceholder}
-                    />
-                </View>
-                <TouchableOpacity 
-                    style={[styles.filterBtn, { backgroundColor: BrandColors.primaryGradientStart }]}
-                    onPress={() => setShowDropdown(true)}
-                >
-                    <Text style={styles.filterBtnText}>{selectedCat === 'All Products' ? 'Filter' : selectedCat}</Text>
+            {/* Header matching screenshot */}
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+                    <Icon name="arrow-back" size={20} color="#3861FB" />
                 </TouchableOpacity>
+                <View style={styles.headerTitles}>
+                    <Text style={styles.headerTitle}>Price Details</Text>
+                    <Text style={styles.headerSub}>Search products / categories</Text>
+                </View>
             </View>
 
-            <View style={[styles.tableHeader, { borderBottomColor: colors.divider }]}>
-                <Text style={[styles.colProduct, styles.tableHeaderText, { color: colors.textSecondary }]}>PRODUCT</Text>
-                <Text style={[styles.colPrice, styles.tableHeaderText, { textAlign: 'right', color: colors.textSecondary }]}>PRICE</Text>
-                <Text style={[styles.colTax, styles.tableHeaderText, { textAlign: 'right', color: colors.textSecondary }]}>TAX</Text>
-                <Text style={[styles.colMrp, styles.tableHeaderText, { textAlign: 'right', color: colors.textSecondary }]}>MRP</Text>
+
+
+            {/* Category Chips */}
+            <View style={styles.catWrapper}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
+                    {categories.map(cat => (
+                        <TouchableOpacity
+                            key={cat}
+                            style={[styles.catChip, selectedCat === cat && styles.catChipActive]}
+                            onPress={() => setSelectedCat(cat)}
+                        >
+                            <Text style={[styles.catText, selectedCat === cat && styles.catTextActive]}>{cat}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Standardized Table Header */}
+            <View style={styles.tableHeader}>
+                <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>PRICE (₹)</Text>
+                <Text style={[styles.colLabel, { flex: 2, textAlign: 'center' }]}>ITEM</Text>
+                <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>TAX %</Text>
+                <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>MRP (₹)</Text>
             </View>
 
             {loading ? (
                 <View style={styles.centerBox}>
-                    <ActivityIndicator size="large" color={BrandColors.primaryGradientStart} />
-                    <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading prices...</Text>
-                </View>
-            ) : error ? (
-                <View style={styles.centerBox}>
-                    <Text style={[styles.errorText, { color: '#E3001B' }]}>{error}</Text>
-                    <TouchableOpacity onPress={fetchPrices} style={styles.retryBtn}>
-                        <Text style={styles.retryText}>Retry</Text>
-                    </TouchableOpacity>
+                    <ActivityIndicator size="large" color="#3861FB" />
                 </View>
             ) : (
-                <Animated.ScrollView 
-                    style={{ opacity: listAnim }} 
-                    contentContainerStyle={styles.scroll} 
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View style={[styles.tableBody, { backgroundColor: colors.surface, borderColor: colors.divider }]}>
-                        {filtered.map((item, i) => {
-                            const isLast = i === filtered.length - 1;
-                            const isEven = i % 2 === 0;
-                            
-                            return (
-                                <View 
-                                    key={i} 
-                                    style={[
-                                        styles.tableRow, 
-                                        { 
-                                            backgroundColor: isEven ? 'transparent' : (colors.background + '40'),
-                                            borderBottomWidth: isLast ? 0 : 1,
-                                            borderBottomColor: colors.divider + '40'
-                                        }
-                                    ]}
-                                >
-                                    <View style={styles.colProduct}>
-                                        <Text style={[styles.cellSubText, { color: colors.textSecondary }]}>{item.category}</Text>
-                                        <Text style={[styles.cellMainText, { color: colors.textPrimary }]}>{item.name}</Text>
-                                        <Text style={[styles.cellTinyText, { color: colors.textMuted }]}>UOM: {item.unit}</Text>
-                                    </View>
-                                    
-                                    <View style={styles.colPrice}>
-                                        <Text style={[styles.cellPriceText, { color: BrandColors.primaryGradientStart }]}>₹{item.price}</Text>
-                                    </View>
+                <FlatList
+                    data={filtered}
+                    keyExtractor={(item, index) => index.toString()}
+                    contentContainerStyle={styles.listContent}
+                    renderItem={({ item }) => (
+                        <View style={styles.priceCard}>
+                            {/* 1. PRICE */}
+                            <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]}>₹{item.price}</Text>
 
-                                    <View style={styles.colTax}>
-                                        <Text style={[styles.cellSubText, { color: colors.textSecondary, textAlign: 'right' }]}>{item.tax}</Text>
-                                    </View>
+                            {/* 2. ITEM */}
+                            <View style={{ flex: 2, alignItems: 'center' }}>
+                                <Text style={[styles.prodName, { textAlign: 'center' }]}>{item.name}</Text>
+                            </View>
 
-                                    <View style={styles.colMrp}>
-                                        <Text style={[styles.cellMrpText, { color: colors.textPrimary }]}>₹{item.mrp}</Text>
-                                    </View>
-                                </View>
-                            );
-                        })}
-                    </View>
-                    
-                    {filtered.length === 0 && (
-                        <View style={styles.empty}>
-                            <Text style={styles.emptyIcon}>🔍</Text>
-                            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No products found</Text>
+                            {/* 3. TAX */}
+                            <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]}>{item.tax}</Text>
+
+                            {/* 4. MRP */}
+                            <Text style={[styles.prodMrp, { flex: 1, textAlign: 'center' }]}>₹{item.mrp}</Text>
                         </View>
                     )}
-                </Animated.ScrollView>
+                />
             )}
 
-            <Modal visible={showDropdown} transparent animationType="fade" onRequestClose={() => setShowDropdown(false)}>
-                <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowDropdown(false)}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Select Category</Text>
-                        <FlatList 
-                            data={categories} 
-                            keyExtractor={c => c} 
-                            style={{maxHeight: 400}} 
-                            renderItem={({ item }) => (
-                                <TouchableOpacity 
-                                    style={[styles.modalOption, selectedCat === item && styles.modalOptionActive]} 
-                                    onPress={() => { setSelectedCat(item); setShowDropdown(false); }}
-                                >
-                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                                        <Text style={[styles.modalOptionText, selectedCat === item && {color: BrandColors.primaryGradientStart}]}>{item}</Text>
-                                        {selectedCat === item && <Text style={{color: BrandColors.primaryGradientStart, fontWeight: '900'}}>✓</Text>}
-                                    </View>
-                                </TouchableOpacity>
-                            )} 
-                        />
-                    </View>
-                </TouchableOpacity>
-            </Modal>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    searchWrapper: { paddingHorizontal: 20, paddingVertical: 15, flexDirection: 'row', alignItems: 'center' },
-    searchBox: { flex: 1, flexDirection: 'row', alignItems: 'center', borderRadius: 16, borderWidth: 1, paddingHorizontal: 15, paddingVertical: Platform.OS === 'ios' ? 14 : 8, marginRight: 10 },
-    searchIcon: { fontSize: 16, marginRight: 10 },
-    searchInput: { flex: 1, fontSize: 15, fontWeight: '600' },
-    
-    filterBtn: { paddingHorizontal: 15, height: 48, borderRadius: 14, justifyContent: 'center', alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
-    filterBtnText: { color: '#fff', fontSize: 11, fontWeight: '800', textTransform: 'uppercase' },
-    
-    tableHeader: { flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 15, borderBottomWidth: 1, marginHorizontal: 10 },
-    colProduct: { flex: 1.2, paddingRight: 5 },
-    colMrp: { width: 55, alignItems: 'flex-end', justifyContent: 'center' },
-    colTax: { width: 45, alignItems: 'flex-end', justifyContent: 'center' },
-    colPrice: { width: 85, alignItems: 'flex-end', justifyContent: 'center' },
-    
-    tableHeaderText: { fontSize: 11, fontWeight: '800', letterSpacing: 1 },
-    
-    scroll: { padding: 10, paddingBottom: 60 },
-    tableBody: { borderRadius: 20, overflow: 'hidden', borderWidth: 1, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8 },
-    tableRow: { flexDirection: 'row', paddingHorizontal: 15, paddingVertical: 12 },
-    
-    cellMainText: { fontSize: 13, fontWeight: '800', marginBottom: 2 },
-    cellSubText: { fontSize: 9, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
-    cellTinyText: { fontSize: 10, fontWeight: '600' },
-    cellMrpText: { fontSize: 13, fontWeight: '700' },
-    cellPriceText: { fontSize: 15, fontWeight: '900' },
+    container: { flex: 1, backgroundColor: '#F8F9FD' },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 25, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 20 },
+    backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
+    headerTitles: { flex: 1, marginLeft: 15 },
+    headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
+    headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
+    downloadBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
 
-    centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
-    loadingText: { marginTop: 15, fontWeight: '600' },
-    errorText: { textAlign: 'center', fontSize: 16, fontWeight: '700', marginBottom: 20 },
-    retryBtn: { paddingHorizontal: 30, paddingVertical: 12, borderRadius: 12, backgroundColor: BrandColors.primaryGradientStart },
-    retryText: { color: '#fff', fontWeight: '800' },
-    
-    empty: { alignItems: 'center', marginTop: 80 },
-    emptyIcon: { fontSize: 50, marginBottom: 15 },
-    emptyText: { fontSize: 16, fontWeight: '600' },
+    searchSection: { paddingHorizontal: 25, marginBottom: 20 },
+    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 15, paddingHorizontal: 15, height: 52 },
+    searchInput: { flex: 1, fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
 
-    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-    modalContent: { backgroundColor: '#fff', width: '85%', borderRadius: 24, paddingVertical: 20, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 10, elevation: 5 },
-    modalTitle: { textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1F1F39', marginBottom: 15 },
-    modalOption: { paddingHorizontal: 25, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#F5F5F5' },
-    modalOptionActive: { backgroundColor: BrandColors.primaryGradientStart + '10' },
-    modalOptionText: { fontSize: 15, fontWeight: '700', color: '#444' },
+    catWrapper: { marginBottom: 20 },
+    catScroll: { paddingHorizontal: 25 },
+    catChip: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: '#fff', marginRight: 10, borderWidth: 1, borderColor: '#EDF2F7' },
+    catChipActive: { backgroundColor: '#3861FB', borderColor: '#3861FB' },
+    catText: { fontSize: 12, fontWeight: '800', color: '#718096' },
+    catTextActive: { color: '#fff' },
+
+    tableHeader: { flexDirection: 'row', paddingHorizontal: 25, marginBottom: 15 },
+    colLabel: { flex: 1, fontSize: 10, fontWeight: '900', color: '#A0AEC0', textAlign: 'center' },
+
+    listContent: { paddingHorizontal: 20, paddingBottom: 50 },
+    priceCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 18,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOpacity: 0.03,
+        shadowRadius: 10,
+        elevation: 3
+    },
+    prodName: { fontSize: 13, fontWeight: '800', color: '#1A1A1A' },
+    prodSub: { fontSize: 10, color: '#A0AEC0', fontWeight: '700', marginTop: 2 },
+    prodVal: { flex: 1, textAlign: 'center', fontSize: 12, fontWeight: '900', color: '#718096' },
+    prodMrp: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#3861FB' },
+
+    centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 },
+
+    footerInfo: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#F8F9FD', padding: 25 },
+    footerInner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 24,
+        padding: 20,
+        shadowColor: '#3861FB',
+        shadowOpacity: 0.1,
+        shadowRadius: 20,
+        elevation: 5
+    },
+    updateIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F0F4FF', alignItems: 'center', justifyContent: 'center' },
+    updateLabel: { fontSize: 10, fontWeight: '800', color: '#A0AEC0' },
+    updateValue: { fontSize: 15, fontWeight: '900', color: '#1A1A1A', marginTop: 2 },
+    prodCountBadge: { backgroundColor: '#F0F4FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
+    prodCountText: { fontSize: 10, fontWeight: '900', color: '#3861FB' },
+    footerNote: { textAlign: 'center', fontSize: 11, color: '#A0AEC0', fontWeight: '700', marginTop: 15 },
 });
 
 export default PriceDetailsScreen;

@@ -19,6 +19,7 @@ export interface SessionData {
     gstNo: string;
     pan: string;
     mobile: string;
+    branchName: string;
 }
 
 interface SessionContextValue {
@@ -38,6 +39,7 @@ const DEFAULT_SESSION: SessionData = {
     gstNo: '',
     pan: '',
     mobile: '',
+    branchName: '',
 };
 
 const SessionContext = createContext<SessionContextValue>({

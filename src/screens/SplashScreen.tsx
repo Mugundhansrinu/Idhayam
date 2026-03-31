@@ -71,9 +71,9 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Background Image */}
             <Image
-                source={require('../assets/idhayam.png')}
+                source={require('../assets/papa 2.png')}
                 style={styles.backgroundImage}
-                resizeMode="cover"
+                resizeMode="stretch"
             />
 
             {/* Blue Overlay Gradient */}

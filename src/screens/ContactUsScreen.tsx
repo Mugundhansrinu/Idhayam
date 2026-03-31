@@ -9,16 +9,18 @@ import {
     Linking,
     Alert,
     ActivityIndicator,
+    Dimensions,
+    Platform,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
-import GlassHeader from '../components/GlassHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getContactInfo } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+const { width } = Dimensions.get('window');
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'ContactUs'> };
 
@@ -48,7 +50,7 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
             }
         } catch (e) {
             console.error('ContactUs fetch error:', e);
-            setError('Failed to load contact details. Please try again.');
+            setError('Failed to load contact details.');
         } finally {
             setLoading(false);
         }
@@ -67,14 +69,9 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
         }
     };
 
-    // APP_Contact returns: A=Name1, B=Phone1, C=Name2, D=Phone2, E-J=extra fields
     const buildRows = (c: any) => {
-        const rows: { iconName: string; label: string; value: string; sublabel: string; action: string; color: string }[] = [];
-
-        const COLORS    = ['#7B61FF', '#27AE60', '#FD79A8', '#0984E3', '#E3001B'];
-        const ROLES     = ['Technical Support', 'Office Support', 'Support', 'Support', 'Support'];
-        const ICONS     = ['headset-mic', 'work', 'call', 'call', 'call'];
-
+        const rows: any[] = [];
+        const ROLES     = ['Technical Support', 'Office Support', 'Field Support', 'Relationship Mgr', 'General Care'];
         const pairs = [
             { name: c.A, phone: c.B },
             { name: c.C, phone: c.D },
@@ -82,103 +79,84 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
             { name: c.G, phone: c.H },
             { name: c.I, phone: c.J },
         ];
-
         pairs.forEach(({ name, phone }, i) => {
             if (phone) {
                 rows.push({
-                    iconName: ICONS[i] || 'call',
-                    label:    name  || `Contact ${i + 1}`,
-                    sublabel: ROLES[i] || 'Support',
-                    value:    phone,
-                    action:   `tel:${String(phone).replace(/\s/g, '')}`,
-                    color:    COLORS[i % COLORS.length],
+                    role: ROLES[i] || 'Support',
+                    name: name || `Contact Person ${i + 1}`,
+                    phone: phone,
+                    action: `tel:${String(phone).replace(/\s/g, '')}`,
                 });
             }
         });
-
         return rows;
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-
-            <GlassHeader
-                title="Contact Us"
-                subtitle="We're here to help you"
-                onBack={() => navigation.goBack()}
-                gradientColors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]}
-            />
+        <View style={styles.container}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+                    <Icon name="arrow-back" size={20} color="#3861FB" />
+                </TouchableOpacity>
+                <View style={styles.headerTitles}>
+                    <Text style={styles.headerTitle}>Contact Us</Text>
+                    <Text style={styles.headerSub}>Help is just a call away</Text>
+                </View>
+                <View style={{ width: 44 }} />
+            </View>
 
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* Loading */}
-                {loading && (
-                    <View style={styles.centerBox}>
-                        <ActivityIndicator size="large" color={BrandColors.primaryGradientStart} />
-                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-                            Loading contact details...
-                        </Text>
-                    </View>
-                )}
 
-                {/* Error */}
-                {!loading && error !== '' && (
-                    <View style={[styles.errorBox, { backgroundColor: '#FF4D4D10', borderColor: '#FF4D4D30' }]}>
-                        <Text style={styles.errorIcon}>⚠️</Text>
+                {loading ? (
+                    <View style={styles.centerBox}><ActivityIndicator color="#3861FB" size="large" /></View>
+                ) : error ? (
+                    <View style={styles.errorBox}>
+                        <Icon name="error-outline" size={40} color="#E3001B" />
                         <Text style={styles.errorText}>{error}</Text>
                         <TouchableOpacity onPress={fetchContactInfo} style={styles.retryBtn}>
                             <Text style={styles.retryText}>Retry</Text>
                         </TouchableOpacity>
                     </View>
+                ) : (
+                    contacts.map((c, ci) => {
+                        const rows = buildRows(c);
+                        const sectionName = c.DEPT_NAME ?? c.HUB_NAME ?? c.SECTION ?? 'Helpdesk';
+                        return (
+                            <View key={ci} style={styles.section}>
+                                <View style={styles.sectionHeader}>
+                                    <View style={styles.sectionLine} />
+                                    <Text style={styles.sectionTitle}>{sectionName}</Text>
+                                    <View style={styles.sectionLine} />
+                                </View>
+                                {rows.map((row, ri) => (
+                                    <TouchableOpacity
+                                        key={ri}
+                                        onPress={() => handleOpen(row.action, row.name)}
+                                        activeOpacity={0.8}
+                                        style={styles.contactCard}>
+                                        <View style={styles.contactMain}>
+                                            <View style={styles.roleBadge}>
+                                                <Text style={styles.roleText}>{row.role}</Text>
+                                            </View>
+                                            <Text style={styles.contactName}>{row.name}</Text>
+                                            <Text style={styles.contactPhone}>{row.phone}</Text>
+                                        </View>
+                                        <View style={styles.callCircle}>
+                                            <Icon name="call" size={24} color="#fff" />
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        );
+                    })
                 )}
 
-                {/* Dynamic contact rows from API */}
-                {!loading && contacts.map((c, ci) => {
-                    const rows = buildRows(c);
-                    const sectionName = c.DEPT_NAME ?? c.HUB_NAME ?? c.SECTION ?? '';
-                    return (
-                        <View key={ci}>
-                            {sectionName ? (
-                                <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
-                                    {sectionName}
-                                </Text>
-                            ) : null}
-                            {rows.map((row, ri) => (
-                                <TouchableOpacity
-                                    key={ri}
-                                    onPress={() => handleOpen(row.action, row.label)}
-                                    activeOpacity={0.8}
-                                    style={styles.contactCard}>
-                                    <View style={[styles.iconBox, { backgroundColor: row.color + '15' }]}>
-                                        <Icon name={row.iconName} size={32} color={row.color} />
-                                    </View>
-                                    <View style={styles.contactInfo}>
-                                        <View style={[styles.roleBadge, { backgroundColor: row.color + '18' }]}>
-                                            <Text style={[styles.roleText, { color: row.color }]}>
-                                                {row.sublabel}
-                                            </Text>
-                                        </View>
-                                        <Text style={[styles.contactName, { color: colors.textPrimary }]}>
-                                            {row.label}
-                                        </Text>
-                                        <Text style={[styles.contactValue, { color: colors.textSecondary }]}>
-                                            {row.value}
-                                        </Text>
-                                    </View>
-                                    <View style={[styles.actionBtn, { backgroundColor: row.color + '10' }]}>
-                                        <Text style={[styles.actionBtnText, { color: row.color }]}>CALL</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    );
-                })}
-
-                <View style={styles.footer}>
-                    <Text style={[styles.footerText, { color: colors.textMuted }]}>
-                        v6.8 • Idhayam Distributor App
-                    </Text>
+                <View style={styles.footerNote}>
+                    <Text style={styles.verText}>Version 6.8 • Idhayam Distributor App</Text>
+                    <Text style={styles.copyrightText}>© 2026 MUTHURAJA FOOD PRODUCTS</Text>
                 </View>
             </ScrollView>
         </View>
@@ -186,39 +164,43 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    scroll: { padding: 20, paddingBottom: 60 },
+    container: { flex: 1, backgroundColor: '#F8F9FD' },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 25, paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 20 },
+    backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
+    headerTitles: { flex: 1, marginLeft: 15 },
+    headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
+    headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
+    helpBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
 
-    heroCard: { width: '100%', height: 140, borderRadius: 28, overflow: 'hidden', marginBottom: 25, elevation: 5, shadowColor: BrandColors.primaryGradientStart, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 20 },
-    heroGrad: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    heroTitle: { fontSize: 30, fontWeight: '900', color: '#fff', letterSpacing: 8 },
-    heroSub: { fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: '800', marginTop: 8, letterSpacing: 2 },
+    scroll: { paddingHorizontal: 25, paddingBottom: 60 },
+    heroBox: { backgroundColor: '#3861FB', borderRadius: 32, padding: 30, flexDirection: 'row', alignItems: 'center', marginBottom: 30, elevation: 10, shadowColor: '#3861FB', shadowOpacity: 0.2, shadowRadius: 15 },
+    heroIconBox: { width: 80, height: 80, borderRadius: 25, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
+    heroText: { flex: 1, marginLeft: 20 },
+    heroTitle: { fontSize: 22, fontWeight: '900', color: '#fff' },
+    heroSubText: { fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: '600', marginTop: 6, lineHeight: 18 },
 
-    centerBox: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
-    loadingText: { marginTop: 16, fontSize: 14, fontWeight: '600' },
+    section: { marginBottom: 25 },
+    sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+    sectionLine: { flex: 1, height: 1.5, backgroundColor: '#EDF2F7' },
+    sectionTitle: { paddingHorizontal: 15, fontSize: 11, fontWeight: '900', color: '#A0AEC0', textTransform: 'uppercase', letterSpacing: 1 },
 
-    errorBox: { borderRadius: 20, borderWidth: 1, padding: 25, alignItems: 'center', marginBottom: 20 },
-    errorIcon: { fontSize: 28, marginBottom: 10 },
-    errorText: { fontSize: 14, fontWeight: '600', color: '#FF4D4D', textAlign: 'center', marginBottom: 16 },
-    retryBtn: { backgroundColor: '#FF4D4D', paddingHorizontal: 24, paddingVertical: 10, borderRadius: 12 },
-    retryText: { color: '#fff', fontWeight: '800', fontSize: 13 },
+    contactCard: { backgroundColor: '#fff', borderRadius: 28, padding: 22, marginBottom: 15, flexDirection: 'row', alignItems: 'center', elevation: 3, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10 },
+    contactMain: { flex: 1 },
+    roleBadge: { backgroundColor: '#F0F4FF', alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, marginBottom: 10 },
+    roleText: { fontSize: 10, fontWeight: '900', color: '#3861FB', textTransform: 'uppercase' },
+    contactName: { fontSize: 18, fontWeight: '900', color: '#1A1A1A' },
+    contactPhone: { fontSize: 14, color: '#718096', fontWeight: '700', marginTop: 4 },
+    callCircle: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#00B894', alignItems: 'center', justifyContent: 'center', elevation: 5, shadowColor: '#00B894', shadowOpacity: 0.2, shadowRadius: 10 },
 
-    sectionLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10, marginTop: 5 },
+    centerBox: { paddingTop: 60, alignItems: 'center' },
+    errorBox: { alignItems: 'center', paddingVertical: 40 },
+    errorText: { marginTop: 15, fontSize: 14, color: '#E3001B', fontWeight: '700', marginBottom: 20 },
+    retryBtn: { backgroundColor: '#E3001B', paddingHorizontal: 30, paddingVertical: 12, borderRadius: 12 },
+    retryText: { color: '#fff', fontWeight: '900' },
 
-    contactCard: { backgroundColor: '#fff', borderRadius: 24, padding: 18, marginBottom: 15, flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-    iconBox: { width: 60, height: 60, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
-    icon: { fontSize: 22 },
-    contactInfo: { flex: 1 },
-    contactName: { fontSize: 18, fontWeight: '800', marginBottom: 4 },
-    roleBadge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginBottom: 4 },
-    roleText: { fontSize: 13, fontWeight: '800', letterSpacing: 0.5 },
-    contactLabel: { fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 },
-    contactValue: { fontSize: 16, fontWeight: '600' },
-    actionBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
-    actionBtnText: { fontSize: 11, fontWeight: '800' },
-
-    footer: { alignItems: 'center', marginTop: 40 },
-    footerText: { fontSize: 12, fontWeight: '700', letterSpacing: 1 },
+    footerNote: { alignItems: 'center', marginTop: 20 },
+    verText: { fontSize: 12, fontWeight: '900', color: '#CBD5E0' },
+    copyrightText: { fontSize: 10, fontWeight: '700', color: '#CBD5E0', marginTop: 5 },
 });
 
 export default ContactUsScreen;

@@ -175,7 +175,7 @@ const RegistrationScreen: React.FC<Props> = ({ navigation }) => {
                                     <Text style={{ fontSize: 40 }}>✅</Text>
                                 </View>
                                 <Text style={[styles.cardTitle, { color: colors.textPrimary, marginTop: 20 }]}>Registration Successful!</Text>
-                                <Text style={[styles.cardSub, { color: colors.textSecondary, textAlign: 'center' }]}>Welcome to the Idhayam Distributor Portal. Your account is now active.</Text>
+                                <Text style={[styles.cardSub, { color: colors.textSecondary, textAlign: 'center' }]}>Your account is now active. Welcome to Idhayam.</Text>
                                 
                                 <TouchableOpacity onPress={() => navigation.navigate('Dashboard')} activeOpacity={0.9} style={[styles.btnWrapper, { width: '100%', marginTop: 30 }]}>
                                     <LinearGradient colors={[BrandColors.primaryGradientStart, BrandColors.primaryGradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.primaryBtn}>
