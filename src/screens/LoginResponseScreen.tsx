@@ -64,6 +64,7 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
         await setSession({
             custId:        String(branch.CUST_ID        ?? branch.custId   ?? ''),
             branchId:      String(branch.BRANCH_ID      ?? branch.branchId ?? ''),
+            userId:        String(data.eid              ?? '2937'),
             custName:      String(branch.CUST_NAME_DISPLAY ?? branch.custName ?? 'Distributor'),
             custType:      String(branch.CUST_TYPE      ?? 'CM'),
             partyMudId:    String(branch.PARTY_MUD_ID   ?? ''),

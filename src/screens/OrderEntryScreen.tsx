@@ -37,23 +37,23 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
         <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
             <View style={styles.itemMainContent}>
                 {/* 1. MRP */}
-                <View style={{ flex: 1.3, alignItems: 'center' }}>
-                    <Text style={styles.prodMrp}>₹{item.mrp}</Text>
+                <View style={{ flex: 1.6, alignItems: 'center' }}>
+                    <Text style={styles.prodMrp} numberOfLines={1}>₹{item.mrp}</Text>
                 </View>
 
                 {/* 2. ITEM */}
-                <View style={{ flex: 2.5, alignItems: 'center' }}>
-                    <Text style={[styles.prodName, { textAlign: 'center' }]} numberOfLines={2}>{item.name}</Text>
+                <View style={{ flex: 1.7, alignItems: 'center' }}>
+                    <Text style={[styles.prodName, { textAlign: 'center' }]}>{item.name}</Text>
                     <Text style={styles.prodSub}>{item.unit}</Text>
                 </View>
 
                 {/* 3. PRICE */}
-                <View style={{ flex: 1.3, alignItems: 'flex-start', paddingLeft: 5 }}>
-                    <Text style={styles.prodVal}>₹{priceText}</Text>
+                <View style={{ flex: 1.6, alignItems: 'flex-start', paddingLeft: 2 }}>
+                    <Text style={styles.prodVal} numberOfLines={1}>₹{priceText}</Text>
                 </View>
 
                 {/* 4. BOX Input */}
-                <View style={{ flex: 0.8, paddingHorizontal: 1 }}>
+                <View style={{ flex: 0.8, paddingHorizontal: 3 }}>
                     <TextInput
                         style={[styles.miniInput, focused === 'box' && styles.manualInputFocused]}
                         keyboardType="number-pad"
@@ -66,7 +66,7 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
                 </View>
 
                 {/* 5. PCS Input */}
-                <View style={{ flex: 0.8, paddingHorizontal: 1 }}>
+                <View style={{ flex: 0.8, paddingHorizontal: 3 }}>
                     <TextInput
                         style={[styles.miniInput, focused === 'pcs' && styles.manualInputFocused]}
                         keyboardType="number-pad"
@@ -154,7 +154,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const executeSubmit = async () => {
         setLoading(true);
         try {
-            const res = await submitOrder(session?.custId || '', activeOrders, session?.branchId || undefined);
+            const res = await submitOrder(session?.custId || '', activeOrders, session?.branchId || undefined, session?.userId);
             if (res.success) {
                 Alert.alert('✓ Order Placed', `Order #${res.orderId} recorded.`);
                 navigation.goBack();
@@ -214,9 +214,9 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                     {/* NEW: Table Header Row from Price Details */}
                     {/* Standardized Table Header (Financial-Focus Optimized) */}
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.colLabel, { flex: 1.3 }]}>MRP (₹)</Text>
-                        <Text style={[styles.colLabel, { flex: 2.5 }]}>ITEM</Text>
-                        <Text style={[styles.colLabel, { flex: 1.3, textAlign: 'left', paddingLeft: 5 }]}>PRICE (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 1.6 }]}>MRP (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 1.7 }]}>ITEM</Text>
+                        <Text style={[styles.colLabel, { flex: 1.6, textAlign: 'left', paddingLeft: 2 }]}>PRICE (₹)</Text>
                         <Text style={[styles.colLabel, { flex: 0.8 }]}>BOX</Text>
                         <Text style={[styles.colLabel, { flex: 0.8 }]}>PCS</Text>
                     </View>
@@ -317,20 +317,20 @@ const styles = StyleSheet.create({
     colLabel: { flex: 1, fontSize: 10, fontWeight: '900', color: '#A0AEC0', textAlign: 'center' },
 
     listContent: { paddingHorizontal: 10, paddingBottom: 150 },
-    itemRow: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 15, marginBottom: 10, elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8 },
-    itemRowActive: { borderColor: '#3861FB', borderWidth: 1.5 },
+    itemRow: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 15, marginBottom: 10, elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8, borderWidth: 1.5, borderColor: 'transparent' },
+    itemRowActive: { borderColor: '#3861FB' },
     itemMainContent: { flexDirection: 'row', alignItems: 'center' },
     prodName: { fontSize: 13, fontWeight: '800', color: '#1A1A1A' },
     prodSub: { fontSize: 9, color: '#A0AEC0', fontWeight: '700' },
     prodVal: { fontSize: 12, fontWeight: '900', color: '#718096' },
     prodMrp: { fontSize: 13, fontWeight: '900', color: '#3861FB' },
-    miniInput: { height: 35, backgroundColor: '#F8F9FD', borderRadius: 8, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#E2E8F0', padding: 0 },
+    miniInput: { height: 35, backgroundColor: '#FFFFFF', borderRadius: 8, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#EDF2F7', padding: 0 },
 
     qtyRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 15 },
     manualInputWrap: { flex: 1 },
     manualLabel: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', textAlign: 'center', marginBottom: 8 },
-    manualInput: { height: 50, backgroundColor: '#F8F9FD', borderRadius: 12, textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#E2E8F0' },
-    manualInputFocused: { borderColor: '#3861FB', backgroundColor: '#fff' },
+    manualInput: { height: 50, backgroundColor: '#F8F9FD', borderRadius: 12, textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#EDF2F7' },
+    manualInputFocused: { borderColor: '#3861FB', backgroundColor: '#FFFFFF', elevation: 4, shadowColor: '#3861FB', shadowOpacity: 0.1, shadowRadius: 10 },
     qtySpacing: { width: 15 },
 
     summaryBar: { position: 'absolute', bottom: 30, left: 20, right: 20 },

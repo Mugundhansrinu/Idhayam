@@ -373,7 +373,7 @@ export async function getPriceList(custId = FALLBACK_CUSTOMER_ID): Promise<any> 
     return getOrderItems(custId);
 }
 
-export async function submitOrder(custId: string, orderDetails: any[], branchId = FALLBACK_BRANCH_ID): Promise<any> {
+export async function submitOrder(custId: string, orderDetails: any[], branchId = FALLBACK_BRANCH_ID, userId = '2937'): Promise<any> {
     const items = orderDetails.map(o => {
         const raw = o.raw || {};
         const price = parseFloat(o.price || '0');
@@ -389,37 +389,37 @@ export async function submitOrder(custId: string, orderDetails: any[], branchId 
         const totalAmt = lineAmt + taxAmt;
 
         return {
-            ITEM_ID: String(raw.ID || raw.ITEM_ID || ''),
-            ITEM_GROUP_ID: String(raw.ITEM_GROUP_ID || ''),
-            ITEM_GRP_NAME: raw.ITEM_GRP_NAME || '',
-            ITEM_DESC: raw.ITEM_DESC || '',
-            DISPLAY_NAME: raw.DISPLAY_NAME || null,
-            SALES_UOM: raw.SALES_UOM || 'Pcs',
-            UOM: raw.UOM || '',
-            CONV_FACTOR: convFactor,
-            PACKING_FACTOR: parseFloat(raw.PACKING_FACTOR || '0'),
-            SO_ID: raw.SO_ID || null,
-            ORDER_NO: raw.ORDER_NO || null,
-            ORDER_DATE: raw.ORDER_DATE || null,
-            ORD_QTY: raw.ORD_QTY || null,
-            TOTAL_BOX: raw.TOTAL_BOX || null,
-            TOTAL_AMOUNT: raw.TOTAL_AMOUNT || null,
-            ORD_PCS: totalPcs,
-            APP_PRICE: price,
-            PLUS_TAX: raw.PLUS_TAX || null,
-            APP_MRP: parseFloat(o.mrp || '0'),
-            TAX_PER: taxAmt, // The server expects the calculated Tax Amount here based on user example
-            APP_LINE_AMT: lineAmt,
-            APP_ORDER_AMT: totalAmt,
-            ORDER_NO_STR: raw.ORDER_NO_STR || null,
+            ITEM_ID: String(raw.ITEM_ID || raw.ID || '0'),
+            ITEM_GROUP_ID: String(raw.ITEM_GROUP_ID || '0'),
+            ITEM_GRP_NAME: String(raw.ITEM_GRP_NAME || ''),
+            ITEM_DESC: String(raw.ITEM_DESC || ''),
+            DISPLAY_NAME: String(raw.DISPLAY_NAME || ''),
+            SALES_UOM: String(raw.SALES_UOM || 'Pcs'),
+            UOM: String(raw.UOM || ''),
+            CONV_FACTOR: Number(convFactor) || 1,
+            PACKING_FACTOR: Number(raw.PACKING_FACTOR) || 0,
+            SO_ID: Number(raw.SO_ID) || 0,
+            ORDER_NO: Number(raw.ORDER_NO) || 0,
+            ORDER_DATE: String(raw.ORDER_DATE || ''),
+            ORD_QTY: Number(totalPcs) || 0,
+            TOTAL_BOX: Number(box) || 0,
+            TOTAL_AMOUNT: Number(totalAmt) || 0,
+            ORD_PCS: Number(totalPcs) || 0,
+            APP_PRICE: Number(price) || 0,
+            PLUS_TAX: Number(raw.PLUS_TAX) || 0,
+            APP_MRP: Number(o.mrp) || 0,
+            TAX_PER: Number(taxAmt) || 0,
+            APP_LINE_AMT: Number(lineAmt) || 0,
+            APP_ORDER_AMT: Number(totalAmt) || 0,
+            ORDER_NO_STR: String(raw.ORDER_NO_STR || ''),
             ID: 0,
             IG_SORT: 0,
-            APP_PCS: null,
-            APP_QTY: null,
-            USR_ID: 2937, // Hardcoded user ID from providing example
-            STATUS: null,
-            BOX_QTY: box,
-            PCS_QTY: pcs,
+            APP_PCS: 0,
+            APP_QTY: 0,
+            USR_ID: Number(userId) || 2937,
+            STATUS: '',
+            BOX_QTY: Number(box) || 0,
+            PCS_QTY: Number(pcs) || 0,
             PRICETAG: true,
             IsRefreshing: false,
             RefreshCommand: null
@@ -428,23 +428,22 @@ export async function submitOrder(custId: string, orderDetails: any[], branchId 
 
     const payload = {
         A: custId,
-        B: JSON.stringify(items), // Server expects stringified array of items
+        B: JSON.stringify(items),
         C: branchId,
-        D: null, E: null, F: null, G: null, H: null, I: null, J: null
+        D: '', E: '', F: '', G: '', H: '', I: '', J: ''
     };
 
     const minifiedJson = JSON.stringify(payload);
-    console.log('OrderCreation Payload Body:', minifiedJson);
+    console.log('OrderCreation Final Payload:', minifiedJson);
 
     try {
         const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'F': 'OrderCreation',
                 'MODE': 'MOBILE',
                 'P': '',
-                // Omitting 'J' because data is sent via body
+                'J': '',
                 'M': 'POST',
                 'Authorization': API_TOKEN,
             },

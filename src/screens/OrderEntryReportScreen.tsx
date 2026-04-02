@@ -7,7 +7,6 @@ import {
     StatusBar,
     ScrollView,
     Alert,
-    TextInput,
     ActivityIndicator,
     Platform,
 } from 'react-native';
@@ -19,7 +18,8 @@ import { RootStackParamList } from '../../App';
 import { getOrderList } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { autoFormatDate, formatForApi, validateDateRange } from '../utils/dateHelpers';
+import { formatForApi, validateDateRange } from '../utils/dateHelpers';
+import ReportDatePicker from '../components/ReportDatePicker';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'OrderEntryReport'> };
 
@@ -70,30 +70,18 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                 <View style={styles.filterCard}>
                     <View style={styles.filterInputs}>
-                        <View style={styles.inputBox}>
-                            <Text style={styles.label}>FROM</Text>
-                            <TextInput 
-                                style={styles.input} 
-                                value={fromDate} 
-                                onChangeText={t => setFromDate(autoFormatDate(t, fromDate))}
-                                placeholder="DD-MM-YYYY" 
-                                keyboardType="numeric"
-                                maxLength={10}
-                            />
-                        </View>
-                        <View style={styles.inputBox}>
-                            <Text style={styles.label}>TO</Text>
-                            <TextInput 
-                                style={styles.input} 
-                                value={toDate} 
-                                onChangeText={t => setToDate(autoFormatDate(t, toDate))}
-                                placeholder="DD-MM-YYYY" 
-                                keyboardType="numeric"
-                                maxLength={10}
-                            />
-                        </View>
+                        <ReportDatePicker 
+                            label="FROM" 
+                            value={fromDate} 
+                            onSelect={setFromDate} 
+                        />
+                        <ReportDatePicker 
+                            label="TO" 
+                            value={toDate} 
+                            onSelect={setToDate} 
+                        />
                         <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
-                            {loading ? <ActivityIndicator color="#fff" /> : <Icon name="search" size={26} color="#fff" />}
+                            {loading ? <ActivityIndicator color="#fff" /> : <Icon name="search" size={18} color="#fff" />}
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -152,11 +140,11 @@ const styles = StyleSheet.create({
 
     scroll: { padding: 25, paddingBottom: 150 },
     filterCard: { backgroundColor: '#fff', borderRadius: 25, padding: 15, marginBottom: 25, elevation: 3 },
-    filterInputs: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    filterInputs: { flexDirection: 'row', alignItems: 'flex-end', gap: 6 },
     inputBox: { flex: 1 },
     label: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', marginBottom: 4 },
     input: { backgroundColor: '#F8F9FD', borderRadius: 10, paddingHorizontal: 10, height: 40, fontSize: 12, fontWeight: '700', color: '#1A1A1A', borderWidth: 1, borderColor: '#EDF2F7' },
-    searchBtn: { width: 50, height: 50, borderRadius: 15, backgroundColor: '#3861FB', alignItems: 'center', justifyContent: 'center', elevation: 5 },
+    searchBtn: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#3861FB', alignItems: 'center', justifyContent: 'center', elevation: 5 },
 
     table: { backgroundColor: '#fff', borderRadius: 28, overflow: 'hidden', elevation: 5, shadowColor: '#3861FB', shadowOpacity: 0.05, shadowRadius: 15 },
     tableHeader: { flexDirection: 'row', backgroundColor: '#F0F4FF', paddingVertical: 12, paddingHorizontal: 20 },

@@ -100,10 +100,10 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Standardized Table Header */}
             <View style={styles.tableHeader}>
-                <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>PRICE (₹)</Text>
-                <Text style={[styles.colLabel, { flex: 2, textAlign: 'center' }]}>ITEM</Text>
+                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>PRICE (₹)</Text>
+                <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'center' }]}>ITEM</Text>
                 <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>TAX %</Text>
-                <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>MRP (₹)</Text>
+                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>MRP (₹)</Text>
             </View>
 
             {loading ? (
@@ -118,18 +118,18 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
                     renderItem={({ item }) => (
                         <View style={styles.priceCard}>
                             {/* 1. PRICE */}
-                            <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]}>₹{item.price}</Text>
+                            <Text style={[styles.prodVal, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.price}</Text>
 
                             {/* 2. ITEM */}
-                            <View style={{ flex: 2, alignItems: 'center' }}>
+                            <View style={{ flex: 1.2, alignItems: 'center' }}>
                                 <Text style={[styles.prodName, { textAlign: 'center' }]}>{item.name}</Text>
                             </View>
 
                             {/* 3. TAX */}
-                            <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]}>{item.tax}</Text>
+                            <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]} numberOfLines={1}>{item.tax}</Text>
 
                             {/* 4. MRP */}
-                            <Text style={[styles.prodMrp, { flex: 1, textAlign: 'center' }]}>₹{item.mrp}</Text>
+                            <Text style={[styles.prodMrp, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.mrp}</Text>
                         </View>
                     )}
                 />

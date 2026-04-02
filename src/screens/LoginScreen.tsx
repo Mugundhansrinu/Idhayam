@@ -160,7 +160,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             const loginRes = await AuthService.checkLogin(pan, mobile, verifyRes.eid);
 
             if (loginRes?.data?.message === "Login Successful") {
-                navigation.navigate('LoginResponse', { data: loginRes.data });
+                const finalData = { ...loginRes.data, eid: verifyRes.eid, pan, mobile };
+                navigation.navigate('LoginResponse', { data: finalData });
             } else {
                 setOtp(Array(OTP_LENGTH).fill(''));
             }
@@ -245,18 +246,20 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                 {linkedMobiles.length > 0 && (
                                     <View style={styles.inputGroup}>
                                         <Text style={styles.inputLabel}>SELECT MOBILE NUMBER</Text>
-                                        {linkedMobiles.map((num, i) => (
-                                            <TouchableOpacity 
-                                                key={i} 
-                                                style={[styles.phoneOption, mobile === num && styles.phoneOptionActive]} 
-                                                onPress={() => setMobile(num)}
-                                            >
-                                                <View style={[styles.rOuter, mobile === num && styles.rOuterActive]}>
-                                                    {mobile === num && <View style={styles.rInner} />}
-                                                </View>
-                                                <Text style={[styles.phoneText, mobile === num && styles.phoneTextActive]}>{num}</Text>
-                                            </TouchableOpacity>
-                                        ))}
+                                        <View style={{ marginTop: 5 }}>
+                                            {linkedMobiles.map((num, i) => (
+                                                <TouchableOpacity 
+                                                    key={i} 
+                                                    style={[styles.phoneOption, mobile === num && styles.phoneOptionActive]} 
+                                                    onPress={() => setMobile(num)}
+                                                >
+                                                    <View style={[styles.rOuter, mobile === num && styles.rOuterActive]}>
+                                                        {mobile === num && <View style={styles.rInner} />}
+                                                    </View>
+                                                    <Text style={[styles.phoneText, mobile === num && styles.phoneTextActive]}>{num}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
                                     </View>
                                 )}
 
@@ -370,7 +373,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F8F9FD' },
     flex: { flex: 1 },
-    scrollContent: { paddingBottom: 40, alignItems: 'center' },
+    scrollContent: { paddingTop: Platform.OS === 'ios' ? 70 : 50, paddingBottom: 60, alignItems: 'center' },
 
     topBadgeWrapper: { paddingTop: Platform.OS === 'ios' ? 70 : 50, marginBottom: 20 },
     distributorBadge: { 
@@ -434,13 +437,26 @@ const styles = StyleSheet.create({
     formatHint: { fontSize: 11, color: '#A0AEC0', marginTop: 10, fontWeight: '600' },
     editText: { color: '#3861FB', fontSize: 13, fontWeight: '800' },
 
-    phoneOption: { flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-    phoneOptionActive: { backgroundColor: '#F0F4FF', borderRadius: 12 },
-    rOuter: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#CBD5E0', alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    phoneOption: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        padding: 18, 
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: '#EDF2F7',
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.02,
+        shadowRadius: 5,
+        elevation: 1
+    },
+    phoneOptionActive: { backgroundColor: '#F0F4FF', borderColor: '#3861FB', borderWidth: 1.5 },
+    rOuter: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#CBD5E0', alignItems: 'center', justifyContent: 'center', marginRight: 15 },
     rOuterActive: { borderColor: '#3861FB' },
     rInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#3861FB' },
-    phoneText: { fontSize: 16, fontWeight: '600', color: '#718096' },
-    phoneTextActive: { color: '#1A1A1A', fontWeight: '800' },
+    phoneText: { fontSize: 15, fontWeight: '700', color: '#718096' },
+    phoneTextActive: { color: '#1A1A1A', fontWeight: '900' },
 
     mainBtn: { borderRadius: 20, paddingVertical: 18, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#3861FB', shadowOpacity: 0.3, shadowRadius: 15, shadowOffset: { width: 0, height: 10 } },
     mainBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 0.5 },

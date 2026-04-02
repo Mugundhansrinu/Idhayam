@@ -166,47 +166,13 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                 </LinearGradient>
                             </View>
 
-                            {/* Slide 3: Branch Details (NEW) */}
-                            <View style={styles.balSlide}>
-                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{x:0,y:0}} end={{x:1,y:1}}>
-                                    <View style={styles.slideHeader}>
-                                        <View style={styles.slideIconBg}>
-                                            <Icon name="business" size={22} color="#3861FB" />
-                                        </View>
-                                        <Text style={styles.slideTitle}>Active Branch Info</Text>
-                                        <View style={styles.activeLabel}><Text style={styles.activeLabelText}>CURRENT</Text></View>
-                                    </View>
-                                    <View style={styles.branchContent}>
-                                        <Text style={styles.branchMainName}>{session?.branchName || 'COIMBATORE MAIN'}</Text>
-                                        <View style={styles.branchMeta}>
-                                            <View style={styles.branchIdTag}>
-                                                <Text style={styles.branchIdText}>ID: {session?.branchId || 'CB-01'}</Text>
-                                            </View>
-                                            <View style={[styles.branchIdTag, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                                                <Text style={styles.branchIdText}>{session?.custType || 'CM'}</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                    <View style={styles.slideFooter}>
-                                        <View style={{ flex: 1 }}>
-                                            <Text style={styles.subLabel}>HUB</Text>
-                                            <Text style={styles.subValue} numberOfLines={1}>{session?.hubName || 'N/A'}</Text>
-                                        </View>
-                                        <View style={styles.divider} />
-                                        <View style={{ flex: 1 }}>
-                                            <Text style={styles.subLabel}>TERRITORY</Text>
-                                            <Text style={styles.subValue} numberOfLines={1}>{session?.territoryName || 'N/A'}</Text>
-                                        </View>
-                                    </View>
-                                </LinearGradient>
-                            </View>
+
                         </ScrollView>
                         
                         {/* Pagination Dots (3 DOTS) */}
                         <View style={styles.pagination}>
                             <View style={[styles.dot, activeSlide === 0 && styles.dotActive]} />
                             <View style={[styles.dot, activeSlide === 1 && styles.dotActive]} />
-                            <View style={[styles.dot, activeSlide === 2 && styles.dotActive]} />
                         </View>
                     </View>
                 </View>
@@ -253,8 +219,8 @@ const styles = StyleSheet.create({
     header: { paddingHorizontal: 25, paddingTop: Platform.OS === 'ios' ? 60 : 40, backgroundColor: '#FFFFFF', paddingBottom: 25 },
     headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
     profileRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-    profileBox: { width: 64, height: 64, borderRadius: 24, padding: 8, backgroundColor: '#F8F9FD', elevation: 2 },
-    profileImg: { width: '100%', height: '100%', resizeMode: 'contain', borderRadius: 16 },
+    profileBox: { width: 64, height: 64, borderRadius: 32, padding: 6, backgroundColor: '#F8F9FD', elevation: 4, borderWidth: 1, borderColor: '#EDF2F7' },
+    profileImg: { width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 32 },
     headerText: { marginLeft: 15, flex: 1 },
     headerBrand: { fontSize: 9, fontWeight: '900', color: '#64748B', letterSpacing: 1.5 },
     distributorName: { fontSize: 17, fontWeight: '900', color: '#1A1A1A', marginTop: 1 },

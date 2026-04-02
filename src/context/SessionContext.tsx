@@ -11,6 +11,7 @@ const SESSION_KEY = '@idhayam_session';
 export interface SessionData {
     custId: string;
     branchId: string;
+    userId: string;
     custName: string;
     custType: string;
     partyMudId: string;
@@ -31,6 +32,7 @@ interface SessionContextValue {
 const DEFAULT_SESSION: SessionData = {
     custId: '',
     branchId: '',
+    userId: '2937', 
     custName: '',
     custType: 'CM',
     partyMudId: '',

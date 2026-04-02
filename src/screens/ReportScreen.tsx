@@ -73,16 +73,19 @@ const ReportScreen: React.FC<Props> = ({ navigation }) => {
                     }}>
                         <TouchableOpacity onPress={() => handleReport(r.id)} activeOpacity={0.8} style={styles.reportCard}>
                             <View style={styles.reportRow}>
+                                <View style={[styles.iconBg, { backgroundColor: r.color + '10' }]}>
+                                    <Icon name={r.icon} size={28} color={r.color} />
+                                </View>
                                 <View style={styles.reportInfo}>
                                     <View style={styles.titleRow}>
                                         <Text style={styles.reportTitle}>{r.title}</Text>
-                                        <View style={[styles.formatBadge, { backgroundColor: r.color + '10', borderColor: r.color + '30' }]}>
-                                            <Text style={[styles.formatText, { color: r.color }]}>{r.format}</Text>
-                                        </View>
                                     </View>
                                     <Text style={styles.reportDesc}>{r.desc}</Text>
+                                    <View style={[styles.formatBadge, { backgroundColor: r.color + '08', borderColor: r.color + '20', marginTop: 8, alignSelf: 'flex-start' }]}>
+                                        <Text style={[styles.formatText, { color: r.color }]}>{r.format}</Text>
+                                    </View>
                                 </View>
-                                <Icon name="chevron-right" size={20} color="#CBD5E0" />
+                                <Icon name="chevron-right" size={24} color="#CBD5E0" />
                             </View>
                         </TouchableOpacity>
                     </Animated.View>
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
     helpBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
 
-    scroll: { paddingHorizontal: 25, paddingBottom: 60 },
+    scroll: { paddingHorizontal: 25, paddingBottom: 60, paddingTop: 10 },
     noticeBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F4FF', borderRadius: 20, padding: 18, marginBottom: 25 },
     noticeText: { flex: 1, fontSize: 12, lineHeight: 18, color: '#3861FB', fontWeight: '800' },
 

@@ -8,7 +8,6 @@ import {
     ScrollView,
     Alert,
     Dimensions,
-    TextInput,
     ActivityIndicator,
     Linking,
     Modal,
@@ -22,7 +21,8 @@ import { RootStackParamList } from '../../App';
 import { getTransactionList } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { autoFormatDate, formatForApi, validateDateRange } from '../utils/dateHelpers';
+import { formatForApi, validateDateRange } from '../utils/dateHelpers';
+import ReportDatePicker from '../components/ReportDatePicker';
 
 const { width } = Dimensions.get('window');
 
@@ -93,42 +93,20 @@ const MiniStatementScreen: React.FC<Props> = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
                 <View style={styles.card}>
                     <View style={styles.cardHeader}>
-                        <View style={styles.iconBox}>
-                            <Icon name="date-range" size={24} color="#3861FB" />
-                        </View>
                         <Text style={styles.cardTitle}>Filter Statement</Text>
                     </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>FROM DATE</Text>
-                        <View style={styles.inputBox}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="DD-MM-YYYY"
-                                placeholderTextColor="#A0AEC0"
-                                value={fromDate}
-                                onChangeText={t => setFromDate(autoFormatDate(t, fromDate))}
-                                keyboardType="numeric"
-                                maxLength={10}
-                            />
-                            <Icon name="event" size={20} color="#CBD5E0" />
-                        </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>TO DATE</Text>
-                        <View style={styles.inputBox}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="DD-MM-YYYY"
-                                placeholderTextColor="#A0AEC0"
-                                value={toDate}
-                                onChangeText={t => setToDate(autoFormatDate(t, toDate))}
-                                keyboardType="numeric"
-                                maxLength={10}
-                            />
-                            <Icon name="event" size={20} color="#CBD5E0" />
-                        </View>
+                    <View style={{ flexDirection: 'row', gap: 20, marginBottom: 25 }}>
+                        <ReportDatePicker 
+                            label="FROM DATE" 
+                            value={fromDate} 
+                            onSelect={setFromDate} 
+                        />
+                        <ReportDatePicker 
+                            label="TO DATE" 
+                            value={toDate} 
+                            onSelect={setToDate} 
+                        />
                     </View>
 
                     <TouchableOpacity onPress={handleGetReport} disabled={loading} style={styles.mainBtn}>
@@ -185,9 +163,9 @@ const styles = StyleSheet.create({
 
     scroll: { padding: 25 },
     card: { backgroundColor: '#fff', borderRadius: 32, padding: 25, elevation: 5, shadowColor: '#3861FB', shadowOpacity: 0.05, shadowRadius: 15 },
-    cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 25 },
+    cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 25 },
     iconBox: { width: 50, height: 50, borderRadius: 15, backgroundColor: '#F0F4FF', alignItems: 'center', justifyContent: 'center' },
-    cardTitle: { fontSize: 16, fontWeight: '900', color: '#1A1A1A', marginLeft: 15 },
+    cardTitle: { fontSize: 16, fontWeight: '900', color: '#1A1A1A' },
 
     inputGroup: { marginBottom: 20 },
     label: { fontSize: 10, fontWeight: '900', color: '#A0AEC0', letterSpacing: 1, marginBottom: 8 },
