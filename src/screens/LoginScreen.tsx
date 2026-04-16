@@ -33,6 +33,12 @@ const RESEND_TIMER = 30;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
+    const maskMobileNumber = (num: string) => {
+        if (!num) return '';
+        const clean = num.trim();
+        if (clean.length <= 4) return clean;
+        return '*'.repeat(clean.length - 4) + clean.slice(-4);
+    };
 
     /* ── Step state ── */
     const [step, setStep] = useState<'pan' | 'otp'>('pan');
@@ -106,7 +112,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             setLinkedMobiles(serverMobiles);
             setMobile(serverMobiles[0]);
         } catch (error: any) {
-            setApiMessage(error.message || 'Error fetching mobiles.');
+            Alert.alert('Error', error.message || 'Error fetching mobiles.');
         } finally {
             setFetchingMobiles(false);
         }
@@ -120,14 +126,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             if (response && response.message) {
                 setApiMessage(String(response.message));
             }
-        } catch (error: any) {
-            setApiMessage(error.message || "Failed to send OTP");
-            return;
-        } finally {
-            setSendingOtp(false);
+            // Only transition to OTP step if request succeeds
             setMaskedMobile(mobile);
             animateStep(() => setStep('otp'));
             startTimer();
+        } catch (error: any) {
+            Alert.alert('Error', error.message || "Failed to send OTP");
+        } finally {
+            setSendingOtp(false);
         }
     };
 
@@ -256,7 +262,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                                     <View style={[styles.rOuter, mobile === num && styles.rOuterActive]}>
                                                         {mobile === num && <View style={styles.rInner} />}
                                                     </View>
-                                                    <Text style={[styles.phoneText, mobile === num && styles.phoneTextActive]}>{num}</Text>
+                                                    <Text style={[styles.phoneText, mobile === num && styles.phoneTextActive]}>{maskMobileNumber(num)}</Text>
                                                 </TouchableOpacity>
                                             ))}
                                         </View>
@@ -300,7 +306,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
                                 <View style={styles.otpSentBadge}>
                                     <Icon name="phone-iphone" size={16} color="#3861FB" style={{ marginRight: 8 }} />
-                                    <Text style={styles.otpSentText}>{maskedMobile}</Text>
+                                    <Text style={styles.otpSentText}>{maskMobileNumber(maskedMobile)}</Text>
                                 </View>
 
                                 <View style={styles.otpRow}>

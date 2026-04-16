@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ThemeProvider } from './src/theme';
 import { SessionProvider } from './src/context/SessionContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // ── Screens ──────────────────────────────────────────────────────────────────
 import SplashScreen from './src/screens/SplashScreen';
@@ -53,31 +54,33 @@ function App(): React.JSX.Element {
   return (
     <ThemeProvider>
       <SessionProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Splash"
-            screenOptions={{
-              headerShown: false,
-              animation: 'slide_from_right',
-            }}>
-            <Stack.Screen name="Splash" component={SplashScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
-            <Stack.Screen name="Dashboard" component={DashboardScreen} />
-            <Stack.Screen name="OrderEntry" component={OrderEntryScreen} />
-            <Stack.Screen name="Discount" component={DiscountScreen} />
-            <Stack.Screen name="PriceDetails" component={PriceDetailsScreen} />
-            <Stack.Screen name="Report" component={ReportScreen} />
-            <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
-            <Stack.Screen name="MiniStatement" component={MiniStatementScreen} />
-            <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
-            <Stack.Screen name="ContactUs" component={ContactUsScreen} />
-            <Stack.Screen name="VehicleTracking" component={VehicleTrackingScreen} />
-            <Stack.Screen name="LoginResponse" component={LoginResponseScreen} />
-            <Stack.Screen name="OrderEntryReport" component={OrderEntryReportScreen} />
-            <Stack.Screen name="CreditDebitNote" component={CreditDebitNoteScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Splash"
+              screenOptions={{
+                headerShown: false,
+                animation: 'slide_from_right',
+              }}>
+              <Stack.Screen name="Splash" component={SplashScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Registration" component={RegistrationScreen} />
+              <Stack.Screen name="Dashboard" component={DashboardScreen} />
+              <Stack.Screen name="OrderEntry" component={OrderEntryScreen} />
+              <Stack.Screen name="Discount" component={DiscountScreen} />
+              <Stack.Screen name="PriceDetails" component={PriceDetailsScreen} />
+              <Stack.Screen name="Report" component={ReportScreen} />
+              <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+              <Stack.Screen name="MiniStatement" component={MiniStatementScreen} />
+              <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
+              <Stack.Screen name="ContactUs" component={ContactUsScreen} />
+              <Stack.Screen name="VehicleTracking" component={VehicleTrackingScreen} />
+              <Stack.Screen name="LoginResponse" component={LoginResponseScreen} />
+              <Stack.Screen name="OrderEntryReport" component={OrderEntryReportScreen} />
+              <Stack.Screen name="CreditDebitNote" component={CreditDebitNoteScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
       </SessionProvider>
     </ThemeProvider>
   );

@@ -39,7 +39,7 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
         setLoading(true);
         setError('');
         try {
-            const custId   = session?.custId   || undefined;
+            const custId = session?.custId || undefined;
             const branchId = session?.branchId || undefined;
             const custType = session?.custType || undefined;
             const result = await getContactInfo(custId, branchId, custType);
@@ -55,23 +55,9 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
             setLoading(false);
         }
     };
-
-    const handleOpen = async (url: string, label: string) => {
-        try {
-            const supported = await Linking.canOpenURL(url);
-            if (supported) {
-                await Linking.openURL(url);
-            } else {
-                Alert.alert('Error', `Cannot open ${label}`);
-            }
-        } catch {
-            Alert.alert('Error', `Unable to open ${label}`);
-        }
-    };
-
     const buildRows = (c: any) => {
         const rows: any[] = [];
-        const ROLES     = ['Technical Support', 'Office Support', 'Field Support', 'Relationship Mgr', 'General Care'];
+        const ROLES = ['Technical Support', 'Office Support', 'Field Support', 'Relationship Mgr', 'General Care'];
         const pairs = [
             { name: c.A, phone: c.B },
             { name: c.C, phone: c.D },
@@ -95,7 +81,7 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            
+
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={20} color="#3861FB" />
@@ -134,7 +120,6 @@ const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
                                 {rows.map((row, ri) => (
                                     <TouchableOpacity
                                         key={ri}
-                                        onPress={() => handleOpen(row.action, row.name)}
                                         activeOpacity={0.8}
                                         style={styles.contactCard}>
                                         <View style={styles.contactMain}>

@@ -20,6 +20,7 @@ import { useSession } from '../context/SessionContext';
 import { getCustomerBalance, getInvoicedVehicleList } from '../api';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,6 +42,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const [vehicleData, setVehicleData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [activeSlide, setActiveSlide] = useState(0);
+    const insets = useSafeAreaInsets();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -62,7 +64,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 pendingOrder: bal.pendingOrder || '0.0',
                 netBalance: bal.netBalance || '0.0'
             });
-            if (vehicles && vehicles.length > 0) setVehicleData(vehicles[0]);
+            if (vehicles) setVehicleData(vehicles);
         } catch (e) {
             console.error('Dashboard fetchData error:', e);
         } finally {
@@ -80,27 +82,30 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
             
+            {/* Sticky Header Top */}
+            <View style={[styles.stickyHeader, { paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 60 : 20) }]}>
+                <View style={styles.headerTop}>
+                    <View style={styles.profileRow}>
+                        <View style={styles.profileBox}>
+                            <Image source={require('../assets/papa 1.png')} style={styles.profileImg} />
+                        </View>
+                        <View style={styles.headerText}>
+                            <Text style={styles.headerBrand}>IDHAYAM</Text>
+                            <Text style={styles.distributorName} numberOfLines={1}>
+                                {session?.custName || 'Loading...'}
+                            </Text>
+                        </View>
+                    </View>
+                    <TouchableOpacity style={styles.profileIconBtn} onPress={() => clearSession().then(() => navigation.replace('Login'))}>
+                        <Icon name="logout" size={22} color="#3861FB" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
                 
-                {/* 1. Header Section */}
+                {/* 1. Remaining Header Section */}
                 <View style={styles.header}>
-                    <View style={styles.headerTop}>
-                        <View style={styles.profileRow}>
-                            <View style={styles.profileBox}>
-                                <Image source={require('../assets/papa 1.png')} style={styles.profileImg} />
-                            </View>
-                            <View style={styles.headerText}>
-                                <Text style={styles.headerBrand}>IDHAYAM</Text>
-                                <Text style={styles.distributorName} numberOfLines={1}>
-                                    {session?.custName || 'Loading...'}
-                                </Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity style={styles.profileIconBtn} onPress={() => clearSession().then(() => navigation.replace('Login'))}>
-                            <Icon name="logout" size={22} color="#3861FB" />
-                        </TouchableOpacity>
-                    </View>
-
                     {/* 2. Horizontal Slider Section (3 SLIDES) */}
                     <View style={styles.sliderContainer}>
                         <ScrollView 
@@ -135,26 +140,35 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                 </LinearGradient>
                             </View>
 
-                            {/* Slide 2: Vessel Tracking */}
-                            <View style={styles.balSlide}>
+                            {/* Slide 2: Vehicle Tracking */}
+                            <TouchableOpacity 
+                                style={styles.balSlide}
+                                activeOpacity={0.9}
+                                onPress={() => {
+                                    if (vehicleData) {
+                                        navigation.navigate('VehicleTracking' as any, { 
+                                            vehicleNo: vehicleData.vehicleNo,
+                                            tripRefNo: vehicleData.tripRefNo,
+                                            tripId: vehicleData.tripId
+                                        });
+                                    }
+                                }}
+                            >
                                 <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{x:0,y:0}} end={{x:1,y:1}}>
                                     <View style={styles.slideHeader}>
                                         <View style={styles.slideIconBg}>
                                             <Icon name="local-shipping" size={22} color="#3861FB" />
                                         </View>
-                                        <Text style={styles.slideTitle}>Vessel Tracking</Text>
+                                        <Text style={styles.slideTitle}>Vehicle Tracking</Text>
                                         <View style={styles.liveRecordIndicator}><View style={styles.liveDot} /><Text style={styles.liveText}>LIVE</Text></View>
                                     </View>
                                     {vehicleData ? (
                                         <View style={styles.trackContent}>
-                                            <Text style={styles.truckNo}>{vehicleData.VEHICLE_NO || 'TN-38-AX-0000'}</Text>
-                                            <View style={styles.locationRow}>
-                                                <Icon name="near-me" size={14} color="rgba(255,255,255,0.7)" style={{ marginRight: 6 }} />
-                                                <Text style={styles.truckLoc}>In-Transit (Salem District)</Text>
-                                            </View>
+                                            <Text style={styles.truckNo}>{vehicleData.vehicleNo}</Text>
+                                            <Text style={styles.truckLoc}>{vehicleData.tripName}</Text>
                                             <View style={styles.etaBar}>
-                                                <Text style={styles.etaLabel}>ESTIMATED ARRIVAL</Text>
-                                                <Text style={styles.etaTime}>45 Mins - 1 Hour Away</Text>
+                                                <Text style={styles.etaLabel}>TRIP CODE</Text>
+                                                <Text style={styles.etaTime}>{vehicleData.tripCode} — {vehicleData.tripType}</Text>
                                             </View>
                                         </View>
                                     ) : (
@@ -164,7 +178,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                         </View>
                                     )}
                                 </LinearGradient>
-                            </View>
+                            </TouchableOpacity>
 
 
                         </ScrollView>
@@ -216,8 +230,9 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#FFFFFF' },
     scroll: { paddingBottom: 40 },
 
-    header: { paddingHorizontal: 25, paddingTop: Platform.OS === 'ios' ? 60 : 40, backgroundColor: '#FFFFFF', paddingBottom: 25 },
-    headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
+    stickyHeader: { paddingHorizontal: 25, backgroundColor: '#FFFFFF', paddingBottom: 10, zIndex: 10 },
+    header: { paddingHorizontal: 25, backgroundColor: '#FFFFFF', paddingBottom: 25, paddingTop: 15 },
+    headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 0 },
     profileRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
     profileBox: { width: 64, height: 64, borderRadius: 32, padding: 6, backgroundColor: '#F8F9FD', elevation: 4, borderWidth: 1, borderColor: '#EDF2F7' },
     profileImg: { width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 32 },

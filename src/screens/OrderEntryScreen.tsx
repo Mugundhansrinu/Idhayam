@@ -21,6 +21,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { getOrderItems, submitOrder } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 const { width } = Dimensions.get('window');
 
@@ -32,55 +33,67 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
     const [focused, setFocused] = useState<'box' | 'pcs' | null>(null);
     const hasQty = (qty?.box && qty.box !== '0' && qty.box !== '') || (qty?.pcs && qty.pcs !== '0' && qty.pcs !== '');
     const priceText = item?.price ? parseFloat(item.price).toFixed(2) : '0.00';
+    const isZeroPrice = !item?.price || parseFloat(item.price) === 0;
 
     return (
         <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
             <View style={styles.itemMainContent}>
-                {/* 1. MRP */}
-                <View style={{ flex: 1.6, alignItems: 'center' }}>
-                    <Text style={styles.prodMrp} numberOfLines={1}>₹{item.mrp}</Text>
+                {/* 1. ITEM & MRP Combined */}
+                <View style={{ flex: 2.7, justifyContent: 'center' }}>
+                    <Text style={styles.prodName} numberOfLines={1}>{item.name}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                        <Text style={styles.prodSub}>MRP</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                        <Text style={styles.prodMrp}>₹{item.mrp}</Text>
+                    </View>
                 </View>
 
-                {/* 2. ITEM */}
-                <View style={{ flex: 1.7, alignItems: 'center' }}>
-                    <Text style={[styles.prodName, { textAlign: 'center' }]}>{item.name}</Text>
-                    <Text style={styles.prodSub}>{item.unit}</Text>
+                {/* 2. PRICE */}
+                <View style={{ flex: 1.2, alignItems: 'flex-start', justifyContent: 'center' }}>
+                    <Text style={[styles.prodVal]} numberOfLines={1}>₹{priceText}</Text>
                 </View>
 
-                {/* 3. PRICE */}
-                <View style={{ flex: 1.6, alignItems: 'flex-start', paddingLeft: 2 }}>
-                    <Text style={styles.prodVal} numberOfLines={1}>₹{priceText}</Text>
-                </View>
-
-                {/* 4. BOX Input */}
-                <View style={{ flex: 0.8, paddingHorizontal: 3 }}>
+                {/* 3. BOX Input */}
+                <View style={{ flex: 1.3, paddingHorizontal: 3 }}>
                     <TextInput
-                        style={[styles.miniInput, focused === 'box' && styles.manualInputFocused]}
+                        style={[
+                            styles.miniInput,
+                            focused === 'box' && styles.manualInputFocused,
+                            isZeroPrice && styles.miniInputDisabled,
+                        ]}
                         keyboardType="number-pad"
                         value={String(qty?.box || '')}
                         onChangeText={v => onUpdate(item?.id, 'box', v)}
-                        placeholder="0"
+                        placeholder=""
                         onFocus={() => setFocused('box')}
                         onBlur={() => setFocused(null)}
+                        editable={!isZeroPrice}
                     />
                 </View>
 
-                {/* 5. PCS Input */}
-                <View style={{ flex: 0.8, paddingHorizontal: 3 }}>
+                {/* 4. PCS Input */}
+                <View style={{ flex: 1.3, paddingHorizontal: 3 }}>
                     <TextInput
-                        style={[styles.miniInput, focused === 'pcs' && styles.manualInputFocused]}
+                        style={[
+                            styles.miniInput,
+                            focused === 'pcs' && styles.manualInputFocused,
+                            isZeroPrice && styles.miniInputDisabled,
+                        ]}
                         keyboardType="number-pad"
                         value={String(qty?.pcs || '')}
                         onChangeText={v => onUpdate(item?.id, 'pcs', v)}
-                        placeholder="0"
+                        placeholder=""
                         onFocus={() => setFocused('pcs')}
                         onBlur={() => setFocused(null)}
+                        editable={!isZeroPrice}
                     />
                 </View>
             </View>
         </View>
     );
 });
+
 
 const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const { session } = useSession();
@@ -126,7 +139,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const updateOrder = useCallback((id: string, field: 'box' | 'pcs', value: string) => {
         if (!id) return;
         const cleaned = value.replace(/[^0-9]/g, '');
-        setOrders(prev => ({ ...prev, [id]: { ...(prev[id] || {box:'', pcs:''}), [field]: cleaned } }));
+        setOrders(prev => ({ ...prev, [id]: { ...(prev[id] || { box: '', pcs: '' }), [field]: cleaned } }));
     }, []);
 
     const activeOrders = useMemo(() => products.map(p => {
@@ -171,7 +184,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            
+
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => { if (page === 2) setPage(1); else navigation.goBack(); }}>
                     <Icon name="arrow-back" size={20} color="#3861FB" />
@@ -184,20 +197,20 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             {page === 1 ? (
-                <KeyboardAvoidingView style={styles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                <View style={styles.flex1}>
 
 
                     <View style={styles.catWrapper}>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
                             {categories.map(cat => {
-                                const hasAnyOrder = products.some(p => 
-                                    p.category === cat && 
-                                    ((orders[p.id]?.box && orders[p.id].box !== '0' && orders[p.id].box !== '') || 
-                                     (orders[p.id]?.pcs && orders[p.id].pcs !== '0' && orders[p.id].pcs !== ''))
+                                const hasAnyOrder = products.some(p =>
+                                    p.category === cat &&
+                                    ((orders[p.id]?.box && orders[p.id].box !== '0' && orders[p.id].box !== '') ||
+                                        (orders[p.id]?.pcs && orders[p.id].pcs !== '0' && orders[p.id].pcs !== ''))
                                 );
                                 return (
-                                    <TouchableOpacity 
-                                        key={cat} 
+                                    <TouchableOpacity
+                                        key={cat}
                                         style={[styles.catChip, selectedCat === cat && styles.catChipActive]}
                                         onPress={() => setSelectedCat(cat)}
                                     >
@@ -214,30 +227,35 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                     {/* NEW: Table Header Row from Price Details */}
                     {/* Standardized Table Header (Financial-Focus Optimized) */}
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.colLabel, { flex: 1.6 }]}>MRP (₹)</Text>
-                        <Text style={[styles.colLabel, { flex: 1.7 }]}>ITEM</Text>
-                        <Text style={[styles.colLabel, { flex: 1.6, textAlign: 'left', paddingLeft: 2 }]}>PRICE (₹)</Text>
-                        <Text style={[styles.colLabel, { flex: 0.8 }]}>BOX</Text>
-                        <Text style={[styles.colLabel, { flex: 0.8 }]}>PCS</Text>
+                        <Text style={[styles.colLabel, { flex: 2.7, textAlign: 'left' }]}>ITEM / MRP</Text>
+                        <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'left' }]}>PRICE (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 1.3 }]}>BOX</Text>
+                        <Text style={[styles.colLabel, { flex: 1.3 }]}>PCS</Text>
                     </View>
 
                     {loading ? (
                         <View style={styles.centerBox}><ActivityIndicator size="large" color="#3861FB" /></View>
                     ) : (
-                        <FlatList 
+                        <KeyboardAwareFlatList
                             data={filteredData}
-                            keyExtractor={p => p.id}
-                            renderItem={({ item }) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
-                            contentContainerStyle={styles.listContent}
+                            keyExtractor={(p: any) => p.id}
+                            renderItem={({ item }: any) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
+                            contentContainerStyle={[styles.listContent, isKeyboardVisible && { paddingBottom: 400 }]}
                             initialNumToRender={8}
                             maxToRenderPerBatch={4}
                             windowSize={5}
+                            keyboardShouldPersistTaps="handled"
+                            enableOnAndroid={true}
+                            enableAutomaticScroll={true}
+                            extraScrollHeight={180}
+                            extraHeight={180}
+                            keyboardOpeningTime={0}
                         />
                     )}
 
                     {totalAmount > 0 && !isKeyboardVisible && (
                         <TouchableOpacity style={styles.summaryBar} onPress={() => setPage(2)}>
-                            <LinearGradient colors={['#3861FB', '#2752E7']} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.summaryInner}>
+                            <LinearGradient colors={['#3861FB', '#2752E7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.summaryInner}>
                                 <View>
                                     <Text style={styles.summaryLabel}>Total Amount</Text>
                                     <Text style={styles.summaryAmount}>₹ {totalAmount.toLocaleString()}</Text>
@@ -248,10 +266,10 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                             </LinearGradient>
                         </TouchableOpacity>
                     )}
-                </KeyboardAvoidingView>
+                </View>
             ) : (
                 <View style={styles.flex1}>
-                    <FlatList 
+                    <FlatList
                         data={activeOrders}
                         keyExtractor={(o: any) => o.id}
                         contentContainerStyle={styles.reviewList}
@@ -277,7 +295,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                                 <Text style={styles.submitBtnText}>BACK</Text>
                             </LinearGradient>
                         </TouchableOpacity>
-                        
+
                         <TouchableOpacity style={{ flex: 2 }} onPress={executeSubmit}>
                             <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.submitBtnInner}>
                                 {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>PLACE ORDER NOW</Text>}
@@ -314,22 +332,24 @@ const styles = StyleSheet.create({
     catTextActive: { color: '#fff' },
 
     tableHeader: { flexDirection: 'row', paddingHorizontal: 35, marginBottom: 15 },
-    colLabel: { flex: 1, fontSize: 10, fontWeight: '900', color: '#A0AEC0', textAlign: 'center' },
+    colLabel: { flex: 1, fontSize: 14, fontWeight: '900', color: '#1d1e1fff', textAlign: 'center' },
 
     listContent: { paddingHorizontal: 10, paddingBottom: 150 },
     itemRow: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 15, marginBottom: 10, elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8, borderWidth: 1.5, borderColor: 'transparent' },
     itemRowActive: { borderColor: '#3861FB' },
+    itemRowDisabled: { backgroundColor: '#F8F9FD', opacity: 0.6 },
     itemMainContent: { flexDirection: 'row', alignItems: 'center' },
-    prodName: { fontSize: 13, fontWeight: '800', color: '#1A1A1A' },
-    prodSub: { fontSize: 9, color: '#A0AEC0', fontWeight: '700' },
-    prodVal: { fontSize: 12, fontWeight: '900', color: '#718096' },
-    prodMrp: { fontSize: 13, fontWeight: '900', color: '#3861FB' },
-    miniInput: { height: 35, backgroundColor: '#FFFFFF', borderRadius: 8, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#EDF2F7', padding: 0 },
+    prodName: { fontSize: 14, fontWeight: '800', color: '#1A1A1A' },
+    prodSub: { fontSize: 13, color: '#303132ff', fontWeight: "bold", },
+    prodVal: { fontSize: 13, fontWeight: '900', color: '#065F46' },
+    prodMrp: { fontSize: 13, fontWeight: '900', color: '#3861FB', },
+    miniInput: { height: 40, backgroundColor: '#FFFFFF', borderRadius: 10, textAlign: 'center', fontSize: 14, fontWeight: '900', color: '#1A1A1A', borderWidth: 1.5, borderColor: '#626161ff', padding: 0 },
+    miniInputDisabled: { backgroundColor: '#F1F5F9', borderColor: '#E2E8F0', color: '#CBD5E0' },
 
     qtyRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 15 },
     manualInputWrap: { flex: 1 },
     manualLabel: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', textAlign: 'center', marginBottom: 8 },
-    manualInput: { height: 50, backgroundColor: '#F8F9FD', borderRadius: 12, textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#EDF2F7' },
+    manualInput: { height: 50, backgroundColor: '#F8F9FD', borderRadius: 12, textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#000000' },
     manualInputFocused: { borderColor: '#3861FB', backgroundColor: '#FFFFFF', elevation: 4, shadowColor: '#3861FB', shadowOpacity: 0.1, shadowRadius: 10 },
     qtySpacing: { width: 15 },
 

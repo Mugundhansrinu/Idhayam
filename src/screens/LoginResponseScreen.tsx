@@ -18,6 +18,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useSession } from '../context/SessionContext';
 import { BrandColors } from '../theme/Colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'LoginResponse'>;
@@ -29,6 +30,7 @@ const { width, height } = Dimensions.get('window');
 const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
     const { setSession } = useSession();
     const { data } = route.params;
+    const insets = useSafeAreaInsets();
 
     // ── Parse branch list ──────────────────────────────────────────────────────
     let branches: any[] = [];
@@ -86,7 +88,10 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
             <LinearGradient
                 colors={['#3861FB', '#2752E7']}
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                style={styles.header}
+                style={[
+                    styles.header,
+                    { paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 60 : 40) }
+                ]}
             >
                 <View style={styles.headerContent}>
                     <View style={styles.logoRow}>
@@ -132,7 +137,6 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
                                             <Text style={styles.branchName} numberOfLines={1}>
                                                 {branch.CUST_NAME_DISPLAY || 'Standard Branch'}
                                             </Text>
-                                            <Text style={styles.branchId}>BRANCH ID: {branch.BRANCH_ID || 'BR-001'}</Text>
                                         </View>
                                         <View style={styles.arrowBox}>
                                             <Icon name="keyboard-arrow-right" size={24} color="#CBD5E0" />
@@ -174,7 +178,6 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F8F9FD' },
     
     header: {
-        paddingTop: Platform.OS === 'ios' ? 80 : 60,
         paddingBottom: 80,
         paddingHorizontal: 30,
         borderBottomLeftRadius: 40,

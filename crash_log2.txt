@@ -1,0 +1,461 @@
+--------- beginning of crash
+03-31 09:48:25.026  1002  1002 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:25.026  1002  1002 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:25.026  1002  1002 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:25.465  1005  1005 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:25.465  1005  1005 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:25.465  1005  1005 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:25.754  1247  1247 I libneuralnetworks_sl_driver: mtk-brm-commit-id:d8ba63aa84fd71ce61d80f472a5e4892c620c130
+03-31 09:48:25.754  1247  1247 I libneuralnetworks_sl_driver: mtk-brm-change-id:Ib70af6811ba8559a9faeaa069247b312de8c1a3d
+03-31 09:48:25.754  1247  1247 I libneuralnetworks_sl_driver: mtk-brm-merge-id:none
+03-31 09:48:25.755  1247  1247 I neuralnetworks_shim: mtk-brm-commit-id:9c46590b1855ad9b5273079a3d2aa456119499e1
+03-31 09:48:25.755  1247  1247 I neuralnetworks_shim: mtk-brm-change-id:I32540a63166801c36f9d15ef08cfcf21be78bc85
+03-31 09:48:25.755  1247  1247 I neuralnetworks_shim: mtk-brm-merge-id:none
+03-31 09:48:25.928  1307  1307 I emdlogger: mtk-brm-commit-id:04ab5bd912477cf2320dee54df9ac8b535476f2d
+03-31 09:48:25.928  1307  1307 I emdlogger: mtk-brm-change-id:Ib405363e450403587f3a66bbe5b353966c086aba
+03-31 09:48:25.928  1307  1307 I emdlogger: mtk-brm-merge-id:none
+03-31 09:48:25.990  1240  1240 I libimsma_adapt: mtk-brm-commit-id:8783a29bae0ae84a456239f3212f27bdafa94c91
+03-31 09:48:25.991  1240  1240 I libimsma_adapt: mtk-brm-change-id:Iee598bb542f5de895a4b71649fbc79b2d93bc3de
+03-31 09:48:25.991  1240  1240 I libimsma_adapt: mtk-brm-merge-id:none
+03-31 09:48:26.253  1398  1398 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:26.258  1398  1398 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:26.258  1398  1398 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:26.685  1089  1615 I meow_lib: mtk-brm-commit-id:fd5bcd7aeba2f3e34241290c2e25c82f0c4e988d
+03-31 09:48:26.685  1089  1615 I meow_lib: mtk-brm-change-id:Ib6376eb9f04a5b0fd3b34c055af103b87c7c80ac
+03-31 09:48:26.685  1089  1615 I meow_lib: mtk-brm-merge-id:none
+03-31 09:48:26.751  1089  1615 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:26.751  1089  1615 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:26.751  1089  1615 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:26.752  1089  1615 I libged  : mtk-brm-commit-id:722d4d057786ee46754f9b77939cdc75d12fa06f
+03-31 09:48:26.752  1089  1615 I libged  : mtk-brm-change-id:I4573b37dc671335b64083430a22026f187852e25
+03-31 09:48:26.752  1089  1615 I libged  : mtk-brm-merge-id:none
+03-31 09:48:26.772  1089  1615 I libGLES_mali: mtk-brm-commit-id:bb307f5b096c02931b09d72b56dcc2b1bfb30b7b
+03-31 09:48:26.772  1089  1615 I libGLES_mali: mtk-brm-change-id:I3709bd948b52e72feea0b835da3d6ff2000fa27e
+03-31 09:48:26.772  1089  1615 I libGLES_mali: mtk-brm-merge-id:none
+03-31 09:48:26.989  1089  1615 I libMEOW_gift: mtk-brm-commit-id:b59bc59925939e58e917d73bb70589903975f54a
+03-31 09:48:26.989  1089  1615 I libMEOW_gift: mtk-brm-change-id:I094ebd0dbb735cad04d8464f33f48954f3e5909d
+03-31 09:48:26.989  1089  1615 I libMEOW_gift: mtk-brm-merge-id:none
+03-31 09:48:27.950  1343  1343 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:27.950  1343  1343 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:27.950  1343  1343 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:28.927   979   979 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:28.927   979   979 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:28.927   979   979 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:28.946   979   979 I meow_lib: mtk-brm-commit-id:fd5bcd7aeba2f3e34241290c2e25c82f0c4e988d
+03-31 09:48:28.946   979   979 I meow_lib: mtk-brm-change-id:Ib6376eb9f04a5b0fd3b34c055af103b87c7c80ac
+03-31 09:48:28.946   979   979 I meow_lib: mtk-brm-merge-id:none
+03-31 09:48:28.971   979   979 I libMEOW_gift: mtk-brm-commit-id:b59bc59925939e58e917d73bb70589903975f54a
+03-31 09:48:28.971   979   979 I libMEOW_gift: mtk-brm-change-id:I094ebd0dbb735cad04d8464f33f48954f3e5909d
+03-31 09:48:28.971   979   979 I libMEOW_gift: mtk-brm-merge-id:none
+03-31 09:48:29.954  1727  1790 I meow_lib: mtk-brm-commit-id:fd5bcd7aeba2f3e34241290c2e25c82f0c4e988d
+03-31 09:48:29.954  1727  1790 I meow_lib: mtk-brm-change-id:Ib6376eb9f04a5b0fd3b34c055af103b87c7c80ac
+03-31 09:48:29.954  1727  1790 I meow_lib: mtk-brm-merge-id:none
+03-31 09:48:29.982  1727  1790 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:29.982  1727  1790 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:29.982  1727  1790 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:30.100  1727  1790 I libMEOW_gift: mtk-brm-commit-id:b59bc59925939e58e917d73bb70589903975f54a
+03-31 09:48:30.100  1727  1790 I libMEOW_gift: mtk-brm-change-id:I094ebd0dbb735cad04d8464f33f48954f3e5909d
+03-31 09:48:30.100  1727  1790 I libMEOW_gift: mtk-brm-merge-id:none
+03-31 09:48:36.076   980   980 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 09:48:36.076   980   980 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 09:48:36.076   980   980 I libpq_sec: mtk-brm-merge-id:none
+03-31 09:48:36.244   980   980 I meow_lib: mtk-brm-commit-id:fd5bcd7aeba2f3e34241290c2e25c82f0c4e988d
+03-31 09:48:36.245   980   980 I meow_lib: mtk-brm-change-id:Ib6376eb9f04a5b0fd3b34c055af103b87c7c80ac
+03-31 09:48:36.245   980   980 I meow_lib: mtk-brm-merge-id:none
+03-31 09:48:36.310   980   980 I libMEOW_gift: mtk-brm-commit-id:b59bc59925939e58e917d73bb70589903975f54a
+03-31 09:48:36.310   980   980 I libMEOW_gift: mtk-brm-change-id:I094ebd0dbb735cad04d8464f33f48954f3e5909d
+03-31 09:48:36.310   980   980 I libMEOW_gift: mtk-brm-merge-id:none
+03-31 09:49:06.760  1071  1071 I liboemcrypto: mtk-brm-commit-id:7ddb9ca1c55d015d9a7246c528352e15a21a24c6
+03-31 09:49:06.761  1071  1071 I liboemcrypto: mtk-brm-change-id:I0e7409828a111ed2f14f3efbd155a48bebf5510c
+03-31 09:49:06.761  1071  1071 I liboemcrypto: mtk-brm-merge-id:none
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: FATAL EXCEPTION: main
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: Process: com.companyname.idhayam, PID: 11917
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{com.companyname.idhayam/com.companyname.idhayam.MainActivity}: androidx.fragment.app.Fragment$InstantiationException: Unable to instantiate fragment com.swmansion.rnscreens.ScreenStackFragment: calling Fragment constructor caused an exception
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4372)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4569)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:126)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:179)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:114)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:86)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2902)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:282)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:387)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:9500)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1005)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: Caused by: androidx.fragment.app.Fragment$InstantiationException: Unable to instantiate fragment com.swmansion.rnscreens.ScreenStackFragment: calling Fragment constructor caused an exception
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.Fragment.instantiate(Fragment.java:695)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentContainer.instantiate(FragmentContainer.java:57)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentManager$3.instantiate(FragmentManager.java:663)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentState.instantiate(FragmentState.java:87)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentStateManager.<init>(FragmentStateManager.java:92)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentManager.restoreSaveStateInternal(FragmentManager.java:2849)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentManager.attachController(FragmentManager.java:3008)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentController.attachHost(FragmentController.java:117)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentActivity.lambda$init$3$androidx-fragment-app-FragmentActivity(FragmentActivity.java:139)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentActivity$$ExternalSyntheticLambda3.onContextAvailable(D8$$SyntheticClass:0)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.activity.contextaware.ContextAwareHelper.dispatchOnContextAvailable(ContextAwareHelper.kt:84)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.activity.ComponentActivity.onCreate(ComponentActivity.java:358)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.FragmentActivity.onCreate(FragmentActivity.java:216)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at com.facebook.react.ReactActivity.onCreate(ReactActivity.java:60)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9196)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9168)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1544)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4346)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	... 13 more
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: Caused by: java.lang.reflect.InvocationTargetException
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at java.lang.reflect.Constructor.newInstance0(Native Method)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at java.lang.reflect.Constructor.newInstance(Constructor.java:343)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at androidx.fragment.app.Fragment.instantiate(Fragment.java:677)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	... 30 more
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: Caused by: java.lang.IllegalStateException: Screen fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at com.swmansion.rnscreens.ScreenFragment.<init>(ScreenFragment.kt:66)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	at com.swmansion.rnscreens.ScreenStackFragment.<init>(ScreenStackFragment.kt:87)
+03-31 12:17:18.618 11917 11917 E AndroidRuntime: 	... 33 more
+03-31 12:51:21.830 28526 28724 F libc    : Fatal signal 11 (SIGSEGV), code 2 (SEGV_ACCERR), fault addr 0x6e7af3b988 in tid 28724 (mqt_v_js), pid 28526 (anyname.idhayam)
+03-31 12:51:22.774 28776 28776 F DEBUG   : Process name is com.companyname.idhayam, uid is 10437, not key_process
+03-31 12:51:22.774 28776 28776 F DEBUG   : keyProcess: 0
+03-31 12:51:22.774 28776 28776 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+03-31 12:51:22.774 28776 28776 F DEBUG   : Build fingerprint: 'realme/RMX3686/RE58A5L1:15/AP3A.240617.008/T.R4T2.22c0181_1:user/release-keys'
+03-31 12:51:22.774 28776 28776 F DEBUG   : Revision: '0'
+03-31 12:51:22.774 28776 28776 F DEBUG   : ABI: 'arm64'
+03-31 12:51:22.774 28776 28776 F DEBUG   : Timestamp: 2026-03-31 12:51:21.942362473+0530
+03-31 12:51:22.774 28776 28776 F DEBUG   : Process uptime: 5s
+03-31 12:51:22.774 28776 28776 F DEBUG   : Cmdline: com.companyname.idhayam
+03-31 12:51:22.774 28776 28776 F DEBUG   : pid: 28526, tid: 28724, name: mqt_v_js  >>> com.companyname.idhayam <<<
+03-31 12:51:22.774 28776 28776 F DEBUG   : uid: 10437
+03-31 12:51:22.774 28776 28776 F DEBUG   : tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+03-31 12:51:22.774 28776 28776 F DEBUG   : signal 11 (SIGSEGV), code 2 (SEGV_ACCERR), fault addr 0x0000006e7af3b988
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x0  b400006d77d39ea0  x1  0000000000000001  x2  b400006d77d39ee8  x3  000000000000006e
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x4  0000000000000001  x5  0000006e53297fa8  x6  0000006e532953c8  x7  0000006e716f14e8
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x8  b400006e7af3b988  x9  978cbaf4bd4fd665  x10 0000000000000000  x11 0000000000000001
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x12 00000000000027dd  x13 000000007fffffff  x14 000000000041f026  x15 000000214a347e84
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x16 0000000000000001  x17 0000006e7512a98c  x18 0000006e4ab64000  x19 0000006e53298130
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x20 0000000000000001  x21 0000000000000001  x22 0000006e53297bc8  x23 b400006e7a830a20
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x24 0000006e523897c0  x25 0000006e53299028  x26 0000000000000002  x27 b400006d7ae89e40
+03-31 12:51:22.774 28776 28776 F DEBUG   :     x28 b400006d8470856d  x29 0000006e53298090
+03-31 12:51:22.774 28776 28776 F DEBUG   :     lr  0000006e720f7ec0  sp  0000006e53297b40  pc  0000006e7af3b988  pst 00000000a0001000
+03-31 12:51:22.774 28776 28776 F DEBUG   : 94 total frames
+03-31 12:51:22.774 28776 28776 F DEBUG   : backtrace:
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #00 pc 000000000073b988  [anon:libc_malloc]
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #01 pc 0000000000ecfebc  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::MountingCoordinator::pullTransaction(bool) const+524) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #02 pc 0000000000b02dc0  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::FabricUIManagerBinding::schedulerDidFinishTransaction(std::__ndk1::shared_ptr<facebook::react::MountingCoordinator const> const&)+72) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #03 pc 0000000000f5028c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::Scheduler::uiManagerDidFinishTransaction(std::__ndk1::shared_ptr<facebook::react::MountingCoordinator const>, bool)+96) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #04 pc 0000000000fa33e8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::UIManager::shadowTreeDidFinishTransaction(std::__ndk1::shared_ptr<facebook::react::MountingCoordinator const>, bool) const+116) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #05 pc 0000000000ed8724  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::ShadowTree::mount(facebook::react::ShadowTreeRevision, bool) const+144) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #06 pc 0000000000ed8ec4  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::ShadowTree::tryCommit(std::__ndk1::function<std::__ndk1::shared_ptr<facebook::react::RootShadowNode> (facebook::react::RootShadowNode const&)> const&, facebook::react::ShadowTreeCommitOptions const&) const+1020) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #07 pc 0000000000ed8a2c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::ShadowTree::commit(std::__ndk1::function<std::__ndk1::shared_ptr<facebook::react::RootShadowNode> (facebook::react::RootShadowNode const&)> const&, facebook::react::ShadowTreeCommitOptions const&) const+228) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #08 pc 0000000000faa720  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #09 pc 0000000000faa6b8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #10 pc 0000000000faa668  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #11 pc 0000000000faa63c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #12 pc 0000000000fa984c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #13 pc 0000000000ee662c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #14 pc 0000000000ee4024  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #15 pc 0000000000ee3f94  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::ShadowTreeRegistry::visit(int, std::__ndk1::function<void (facebook::react::ShadowTree const&)> const&) const+180) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #16 pc 0000000000fa1268  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::UIManager::completeSurface(int, std::__ndk1::shared_ptr<std::__ndk1::vector<std::__ndk1::shared_ptr<facebook::react::ShadowNode const>, std::__ndk1::allocator<std::__ndk1::shared_ptr<facebook::react::ShadowNode const>>>> const&, facebook::react::ShadowTreeCommitOptions)+124) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #17 pc 0000000000fdad94  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #18 pc 0000000000fdacdc  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #19 pc 0000000000fdac68  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #20 pc 0000000000fdac1c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #21 pc 0000000000fd9d04  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #22 pc 00000000000f23f8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #23 pc 0000000000270ee8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #24 pc 0000000000278270  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #25 pc 0000000000271074  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #26 pc 000000000025684c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.774 28776 28776 F DEBUG   :       #27 pc 0000000000255970  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #28 pc 00000000000e8808  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libhermesvm.so (offset 0xd28000) (BuildId: afc6d8b613088f64b63f4c909d6d14ae38519f8d)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #29 pc 0000000000a14ddc  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::jsi::Function::call(facebook::jsi::Runtime&, facebook::jsi::Value const*, unsigned long) const+104) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #30 pc 0000000000a14d28  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::jsi::Function::call(facebook::jsi::Runtime&, std::initializer_list<facebook::jsi::Value>) const+104) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #31 pc 0000000000f4d278  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::Task::execute(facebook::jsi::Runtime&, bool)+232) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #32 pc 0000000000f45f0c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::RuntimeScheduler_Modern::executeTask(facebook::jsi::Runtime&, facebook::react::Task&, bool) const+116) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #33 pc 0000000000f46890  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::RuntimeScheduler_Modern::runEventLoopTick(facebook::jsi::Runtime&, facebook::react::Task&)+204) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #34 pc 0000000000f4660c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (facebook::react::RuntimeScheduler_Modern::runEventLoop(facebook::jsi::Runtime&)+140) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #35 pc 0000000000f4cc80  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #36 pc 0000000000f4cc50  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #37 pc 0000000000f4cc00  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #38 pc 0000000000f4cbd4  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #39 pc 0000000000f4bcc4  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #40 pc 00000000009fe1d8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #41 pc 00000000009fe084  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #42 pc 00000000009fddc8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #43 pc 00000000009fdd30  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #44 pc 00000000009fdce8  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #45 pc 00000000009fdcc4  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #46 pc 00000000009fcd5c  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #47 pc 0000000000b802bc  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #48 pc 0000000000b80280  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #49 pc 0000000001030054  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #50 pc 000000000102fff4  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #51 pc 000000000102ffac  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #52 pc 000000000102ff88  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #53 pc 000000000102f0f4  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libreactnative.so (offset 0x1560000) (BuildId: cc724dd3382414424b7d32a5aea0ca1c32cd1459)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #54 pc 0000000000017dd0  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libfbjni.so (offset 0xc74000) (facebook::jni::detail::MethodWrapper<void (facebook::jni::JNativeRunnable::*)(), &facebook::jni::JNativeRunnable::run(), facebook::jni::JNativeRunnable, void>::dispatch(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>)+72) (BuildId: e438f6554af1d86b210a05412e96c4251e570157)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #55 pc 0000000000017d10  /data/app/~~QaPWyIgxW0BoJV8QSq6BJQ==/com.companyname.idhayam-hmjFApuLS19Q9FXZw7DmtA==/base.apk!libfbjni.so (offset 0xc74000) (facebook::jni::detail::FunctionWrapper<void (*)(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>), facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*, void>::call(_JNIEnv*, _jobject*, void (*)(facebook::jni::alias_ref<facebook::jni::detail::JTypeFor<facebook::jni::HybridClass<facebook::jni::JNativeRunnable, facebook::jni::JRunnable>::JavaPart, facebook::jni::JRunnable, void>::_javaobject*>))+60) (BuildId: e438f6554af1d86b210a05412e96c4251e570157)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #56 pc 00000000002c2300  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+144) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #57 pc 00000000003decac  [anon_shmem:dalvik-jit-code-cache] (offset 0x2000000) (android.os.Handler.handleCallback+556)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #58 pc 00000000000b9cf0  [anon_shmem:dalvik-jit-code-cache] (offset 0x2000000) (android.os.Handler.dispatchMessage+128)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #59 pc 00000000002aaf94  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #60 pc 0000000000585f60  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2688) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #61 pc 00000000004910e8  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+468) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #62 pc 00000000003d1718  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #63 pc 000000000044877c  <anonymous:6f003a2000>
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #64 pc 00000000003d136c  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.1949915194566060767)+364) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #65 pc 00000000003d0aa0  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+1020) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #66 pc 00000000002c2438  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #67 pc 0000000000090744  [anon_shmem:dalvik-jit-code-cache] (offset 0x2000000) (android.os.Looper.loopOnce+1348)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #68 pc 0000000000080d08  [anon_shmem:dalvik-jit-code-cache] (offset 0x2000000) (android.os.Looper.loop+328)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #69 pc 00000000002ab260  /apex/com.android.art/lib64/libart.so (art_quick_invoke_static_stub+640) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #70 pc 0000000000585ca0  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1984) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #71 pc 00000000004910e8  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+468) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #72 pc 00000000003d1718  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #73 pc 0000000000448a40  <anonymous:6f003a2000>
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #74 pc 00000000003d22e4  /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+448) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #75 pc 0000000000586350  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+3696) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #76 pc 00000000004910e8  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+468) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #77 pc 00000000003d1718  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #78 pc 00000000004489f8  <anonymous:6f003a2000>
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #79 pc 00000000003d22e4  /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+448) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #80 pc 0000000000586350  /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+3696) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #81 pc 00000000004910e8  /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+468) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #82 pc 00000000003d1718  /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #83 pc 000000000044881c  <anonymous:6f003a2000>
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #84 pc 00000000003d136c  /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.1949915194566060767)+364) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #85 pc 00000000003d0aa0  /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+1020) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #86 pc 00000000002c2438  /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #87 pc 0000000000007358  [anon_shmem:dalvik-jit-code-cache] (offset 0x2000000) (java.lang.Thread.run+136)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #88 pc 00000000002aaf94  /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #89 pc 00000000002708ec  /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+220) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #90 pc 00000000004bdfe0  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1184) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #91 pc 00000000004bdb30  /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallbackWithUffdGc(void*)+8) (BuildId: a1fcb66a9fb3fa9071e8a42dcf9cd5ea)
+03-31 12:51:22.775 28776 28776 F DEBUG   :       #92 pc 00000000000a6524  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+196) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-31 12:51:22.776 28776 28776 F DEBUG   :       #93 pc 00000000000978a0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-31 16:09:41.672  5247  5247 I libpq_sec: mtk-brm-commit-id:f50d278717348fd9929efb64499037dfe172edba
+03-31 16:09:41.672  5247  5247 I libpq_sec: mtk-brm-change-id:I7996f80a5c3f24cd69515255b14e6a054bc86351
+03-31 16:09:41.672  5247  5247 I libpq_sec: mtk-brm-merge-id:none
+03-31 18:08:52.410 20818 20818 F libc    : Fatal signal 31 (SIGSYS), code 1 (SYS_SECCOMP), syscall 116 in tid 20818 (dmesg), pid 20818 (dmesg)
+03-31 18:08:52.510 20825 20825 F DEBUG   : Process name is dmesg, uid is 10374, not key_process
+03-31 18:08:52.510 20825 20825 F DEBUG   : keyProcess: 0
+03-31 18:08:52.510 20825 20825 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+03-31 18:08:52.510 20825 20825 F DEBUG   : Build fingerprint: 'realme/RMX3686/RE58A5L1:15/AP3A.240617.008/T.R4T2.22c0181_1:user/release-keys'
+03-31 18:08:52.510 20825 20825 F DEBUG   : Revision: '0'
+03-31 18:08:52.510 20825 20825 F DEBUG   : ABI: 'arm64'
+03-31 18:08:52.510 20825 20825 F DEBUG   : Timestamp: 2026-03-31 18:08:52.469916999+0530
+03-31 18:08:52.510 20825 20825 F DEBUG   : Process uptime: 1s
+03-31 18:08:52.510 20825 20825 F DEBUG   : Cmdline: dmesg
+03-31 18:08:52.510 20825 20825 F DEBUG   : pid: 20818, tid: 20818, name: dmesg  >>> dmesg <<<
+03-31 18:08:52.510 20825 20825 F DEBUG   : uid: 10374
+03-31 18:08:52.510 20825 20825 F DEBUG   : tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+03-31 18:08:52.510 20825 20825 F DEBUG   : signal 31 (SIGSYS), code 1 (SYS_SECCOMP), fault addr --------
+03-31 18:08:52.510 20825 20825 F DEBUG   : Cause: seccomp prevented call to disallowed arm64 system call 116
+03-31 18:08:52.510 20825 20825 F DEBUG   :     x0  000000000000000a  x1  0000000000000000  x2  0000000000000000  x3  0000000000000000
+03-31 18:08:52.510 20825 20825 F DEBUG   :     x4  0000007fcd4acb51  x5  0000000000000004  x6  0080654500657869  x7  00382d475555016d
+03-31 18:08:52.510 20825 20825 F DEBUG   :     x8  0000000000000074  x9  a3e0851b3590d327  x10 0000007fcd4aaab0  x11 0000007fcd4aaa80
+03-31 18:08:52.510 20825 20825 F DEBUG   :     x12 ffffff80ffffffd0  x13 0000000000001000  x14 0000000000000001  x15 0000000000000000
+03-31 18:08:52.510 20825 20825 F DEBUG   :     x16 0000005c7a060120  x17 00000076c93bad70  x18 00000076d0cf8000  x19 0000000000000000
+03-31 18:08:52.510 20825 20825 F DEBUG   :     x20 0000000000000000  x21 00000076d0476fc0  x22 0000005c7a066000  x23 0000005c7a066000
+03-31 18:08:52.511 20825 20825 F DEBUG   :     x24 0000005c7a066000  x25 0000005c7a064018  x26 0000005c7a066000  x27 0000007fcd4accd0
+03-31 18:08:52.511 20825 20825 F DEBUG   :     x28 0000000000000000  x29 0000007fcd4acb60
+03-31 18:08:52.511 20825 20825 F DEBUG   :     lr  0000005c7a03a360  sp  0000007fcd4aab50  pc  00000076c93bad78  pst 0000000060001000
+03-31 18:08:52.511 20825 20825 F DEBUG   : 5 total frames
+03-31 18:08:52.511 20825 20825 F DEBUG   : backtrace:
+03-31 18:08:52.511 20825 20825 F DEBUG   :       #00 pc 0000000000100d78  /apex/com.android.runtime/lib64/bionic/libc.so (klogctl+8) (BuildId: 5144907d23fac121cc594696acde97e0)
+03-31 18:08:52.511 20825 20825 F DEBUG   :       #01 pc 000000000005e35c  /system/bin/toybox (dmesg_main+432) (BuildId: d66abf588e4031898a0917324fedf292)
+03-31 18:08:52.511 20825 20825 F DEBUG   :       #02 pc 00000000000394a0  /system/bin/toybox (toybox_main+644) (BuildId: d66abf588e4031898a0917324fedf292)
+03-31 18:08:52.511 20825 20825 F DEBUG   :       #03 pc 0000000000039ad8  /system/bin/toybox (main+112) (BuildId: d66abf588e4031898a0917324fedf292)
+03-31 18:08:52.511 20825 20825 F DEBUG   :       #04 pc 000000000008d564  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+116) (BuildId: 5144907d23fac121cc594696acde97e0)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: FATAL EXCEPTION: main
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: Process: com.companyname.idhayam, PID: 23731
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: com.facebook.soloader.SoLoaderDSONotFoundError: couldn't find DSO to load: libhermestooling.so
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	existing SO sources: 
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 		SoSource 0: ApplicationSoSource[DirectorySoSource[root = /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64 flags = 0]]
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 		SoSource 1: DirectApkSoSource[root = [/data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/base.apk!/lib/arm64-v8a]]
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 		SoSource 2: DirectorySoSource[root = /system/lib64 flags = 3]
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 		SoSource 3: DirectorySoSource[root = /vendor/lib64 flags = 3]
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	Native lib dir: /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.doLoadLibraryBySoName(SoLoader.java:1216)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoNameImpl(SoLoader.java:1078)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoName(SoLoader.java:943)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryOnAndroid(SoLoader.java:859)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:842)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:812)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.runtime.hermes.HermesInstance.<clinit>(HermesInstance.kt:26)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost(DefaultReactHost.kt:93)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost$default(DefaultReactHost.kt:60)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.reactHost_delegate$lambda$1(MainApplication.kt:13)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.$r8$lambda$W1MtPpwfISnhB8QzoDqu-cXCeZw(Unknown Source:0)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at kotlin.SynchronizedLazyImpl.getValue(LazyJVM.kt:86)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.getReactHost(MainApplication.kt:12)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.getReactHost(ReactActivityDelegate.java:109)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.lambda$onCreate$0(ReactActivityDelegate.java:152)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.$r8$lambda$HPdXfLmAU1y4Wc1XbwAHziPP2WA(Unknown Source:0)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.systrace.Systrace.traceSection(Systrace.kt:35)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.onCreate(ReactActivityDelegate.java:132)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.facebook.react.ReactActivity.onCreate(ReactActivity.java:61)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9196)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9168)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1544)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4346)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4569)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:126)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:179)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:114)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:86)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2902)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:282)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:387)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:9500)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
+04-02 15:38:18.743 23731 23731 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1005)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: FATAL EXCEPTION: main
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: Process: com.companyname.idhayam, PID: 23942
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: com.facebook.soloader.SoLoaderDSONotFoundError: couldn't find DSO to load: libhermestooling.so
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	existing SO sources: 
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 		SoSource 0: ApplicationSoSource[DirectorySoSource[root = /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64 flags = 0]]
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 		SoSource 1: DirectApkSoSource[root = [/data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/base.apk!/lib/arm64-v8a]]
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 		SoSource 2: DirectorySoSource[root = /system/lib64 flags = 3]
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 		SoSource 3: DirectorySoSource[root = /vendor/lib64 flags = 3]
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	Native lib dir: /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.doLoadLibraryBySoName(SoLoader.java:1216)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoNameImpl(SoLoader.java:1078)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoName(SoLoader.java:943)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryOnAndroid(SoLoader.java:859)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:842)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:812)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.runtime.hermes.HermesInstance.<clinit>(HermesInstance.kt:26)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost(DefaultReactHost.kt:93)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost$default(DefaultReactHost.kt:60)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.reactHost_delegate$lambda$1(MainApplication.kt:13)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.$r8$lambda$W1MtPpwfISnhB8QzoDqu-cXCeZw(Unknown Source:0)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at kotlin.SynchronizedLazyImpl.getValue(LazyJVM.kt:86)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.getReactHost(MainApplication.kt:12)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.getReactHost(ReactActivityDelegate.java:109)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.lambda$onCreate$0(ReactActivityDelegate.java:152)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.$r8$lambda$HPdXfLmAU1y4Wc1XbwAHziPP2WA(Unknown Source:0)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.systrace.Systrace.traceSection(Systrace.kt:35)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.onCreate(ReactActivityDelegate.java:132)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.facebook.react.ReactActivity.onCreate(ReactActivity.java:61)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9196)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9168)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1544)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4346)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4569)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:126)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:179)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:114)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:86)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2902)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:282)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:387)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:9500)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
+04-02 15:38:25.566 23942 23942 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1005)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: FATAL EXCEPTION: main
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: Process: com.companyname.idhayam, PID: 24110
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: com.facebook.soloader.SoLoaderDSONotFoundError: couldn't find DSO to load: libhermestooling.so
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	existing SO sources: 
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 		SoSource 0: ApplicationSoSource[DirectorySoSource[root = /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64 flags = 0]]
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 		SoSource 1: DirectApkSoSource[root = [/data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/base.apk!/lib/arm64-v8a]]
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 		SoSource 2: DirectorySoSource[root = /system/lib64 flags = 3]
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 		SoSource 3: DirectorySoSource[root = /vendor/lib64 flags = 3]
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	Native lib dir: /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.doLoadLibraryBySoName(SoLoader.java:1216)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoNameImpl(SoLoader.java:1078)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoName(SoLoader.java:943)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryOnAndroid(SoLoader.java:859)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:842)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:812)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.runtime.hermes.HermesInstance.<clinit>(HermesInstance.kt:26)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost(DefaultReactHost.kt:93)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost$default(DefaultReactHost.kt:60)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.reactHost_delegate$lambda$1(MainApplication.kt:13)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.$r8$lambda$W1MtPpwfISnhB8QzoDqu-cXCeZw(Unknown Source:0)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at kotlin.SynchronizedLazyImpl.getValue(LazyJVM.kt:86)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.getReactHost(MainApplication.kt:12)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.getReactHost(ReactActivityDelegate.java:109)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.lambda$onCreate$0(ReactActivityDelegate.java:152)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.$r8$lambda$HPdXfLmAU1y4Wc1XbwAHziPP2WA(Unknown Source:0)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.systrace.Systrace.traceSection(Systrace.kt:35)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.onCreate(ReactActivityDelegate.java:132)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.facebook.react.ReactActivity.onCreate(ReactActivity.java:61)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9196)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9168)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1544)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4346)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4569)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:126)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:179)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:114)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:86)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2902)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:282)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:387)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:9500)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
+04-02 15:38:28.888 24110 24110 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1005)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: FATAL EXCEPTION: main
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: Process: com.companyname.idhayam, PID: 24218
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: com.facebook.soloader.SoLoaderDSONotFoundError: couldn't find DSO to load: libhermestooling.so
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	existing SO sources: 
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 		SoSource 0: ApplicationSoSource[DirectorySoSource[root = /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64 flags = 0]]
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 		SoSource 1: DirectApkSoSource[root = [/data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/base.apk!/lib/arm64-v8a]]
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 		SoSource 2: DirectorySoSource[root = /system/lib64 flags = 3]
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 		SoSource 3: DirectorySoSource[root = /vendor/lib64 flags = 3]
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	Native lib dir: /data/app/~~SEvA3ouaI-dkpEuNlABBbg==/com.companyname.idhayam-O-gFwP0J2wtg3t3aoEBVbQ==/lib/arm64
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.doLoadLibraryBySoName(SoLoader.java:1216)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoNameImpl(SoLoader.java:1078)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryBySoName(SoLoader.java:943)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibraryOnAndroid(SoLoader.java:859)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:842)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.soloader.SoLoader.loadLibrary(SoLoader.java:812)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.runtime.hermes.HermesInstance.<clinit>(HermesInstance.kt:26)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost(DefaultReactHost.kt:93)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost$default(DefaultReactHost.kt:60)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.reactHost_delegate$lambda$1(MainApplication.kt:13)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.$r8$lambda$W1MtPpwfISnhB8QzoDqu-cXCeZw(Unknown Source:0)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication$$ExternalSyntheticLambda0.invoke(D8$$SyntheticClass:0)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at kotlin.SynchronizedLazyImpl.getValue(LazyJVM.kt:86)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.companyname.idhayam.MainApplication.getReactHost(MainApplication.kt:12)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.getReactHost(ReactActivityDelegate.java:109)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.lambda$onCreate$0(ReactActivityDelegate.java:152)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.$r8$lambda$HPdXfLmAU1y4Wc1XbwAHziPP2WA(Unknown Source:0)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.systrace.Systrace.traceSection(Systrace.kt:35)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.ReactActivityDelegate.onCreate(ReactActivityDelegate.java:132)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.facebook.react.ReactActivity.onCreate(ReactActivity.java:61)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9196)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9168)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1544)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4346)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4569)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:126)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:179)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:114)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:86)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2902)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:282)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:387)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:9500)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:600)
+04-02 15:39:00.662 24218 24218 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1005)

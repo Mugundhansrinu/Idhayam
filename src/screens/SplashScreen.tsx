@@ -5,6 +5,7 @@ import { RootStackParamList } from '../../App';
 import LinearGradient from 'react-native-linear-gradient';
 import { BrandColors } from '../theme/Colors';
 import { checkAppVersion } from '../api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Splash'>;
@@ -16,6 +17,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
     const scale = useRef(new Animated.Value(0.85)).current;
     const opacity = useRef(new Animated.Value(0)).current;
     const progress = useRef(new Animated.Value(0)).current;
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         let timer: ReturnType<typeof setTimeout>;
@@ -84,7 +86,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
             <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
                 {/* Branding text - Styled like screenshot */}
-                <View style={styles.textWrapper}>
+                <View style={[styles.textWrapper, { marginTop: Math.max(60, insets.top + 20) }]}>
                     <Text style={styles.brandTitleHeadline}>IDHAYAM</Text>
                     <View style={styles.taglineRow}>
                         <Text style={styles.taglineText}>SAY IDHAYAM</Text>
@@ -149,7 +151,6 @@ const styles = StyleSheet.create({
     },
     textWrapper: {
         alignItems: 'center',
-        marginTop: 60,
     },
     brandTitleHeadline: {
         fontSize: 52,

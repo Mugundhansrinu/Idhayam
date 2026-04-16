@@ -51,13 +51,14 @@ export async function checkAppVersion(): Promise<any> {
                 'P': '',
                 'J': minifiedJson,
                 'M': 'POST',
+                'Authorization': API_TOKEN,
             },
         });
         const textData = await response.text();
         console.log('CLOUDAPP_KEY Response:', textData);
         return textData ? JSON.parse(textData) : { success: true };
     } catch (e) {
-        console.error('CLOUDAPP_KEY Error:', e);
+        console.warn('CLOUDAPP_KEY Network Error (likely server down):', e);
         return { success: false };
     }
 }
@@ -112,8 +113,8 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
 
 export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, branchId = FALLBACK_BRANCH_ID): Promise<any> {
     const payload = {
-        A: branchId,
-        B: custId,
+        A: '51',
+        B: '7734',
         C: 'GetInvoicedVehicleList',
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
@@ -142,11 +143,21 @@ export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, bran
             // Map common server fields to the app's internal format
             // Based on typical naming conventions seen in other screens
             const rows = Array.isArray(inner) ? inner : [inner];
-            const mapped = rows.map(v => ({
-                vehicleNo: v.VEH_NO || v.VEHICLE_NO || v.A || '—',
-                tripRefNo: v.TRIP_REF_NO || v.B || '',
-                branchId: v.BRANCH_ID || branchId,
-                tripId: v.TRIP_ID || v.C || '',
+            const mapped = rows.map((v: any) => ({
+                vehicleNo:   v.VEHICLE_NO || v.BUS_NO || '—',
+                busNo:       v.BUS_NO || '',
+                tripName:    v.TRIP_NAME || v.TRIP || '',
+                tripCode:    v.TRIP_CODE || '',
+                tripId:      v.TRIP_ID || '',
+                tripTransId: v.TRIP_TRANS_ID || v.ID || '',
+                apiTripId:   v.API_TRIP_ID || '',
+                tripRefNo:   v.REF_NO || '',
+                invNo:       v.INV_NO || '',
+                status:      v.STATUS || '',
+                tripType:    v.TRIP_TYPE || '',
+                branchId:    v.BRANCH_ID || branchId,
+                latitude:    v.LATITUDE || null,
+                longitude:   v.LONGITUDE || null,
             }));
 
             // Dashboard currently expects a single object or null
@@ -565,7 +576,6 @@ export async function getCreditDebitNotes(fromDate: string, toDate: string, bran
         E: custId,
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
-
     try {
         const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
             method: 'POST',
@@ -592,9 +602,17 @@ export async function getCreditDebitNotes(fromDate: string, toDate: string, bran
                 console.log('FetchBills(CNDN) First Row Fields:', JSON.stringify(rows[0]));
             }
 
+            const stripTime = (val: any): string => {
+                if (!val || val === '—') return '—';
+                const s = String(val);
+                // handles "2024-04-10T00:00:00", "04/10/2024 12:00:00", etc.
+                return s.split('T')[0].split(' ')[0];
+            };
+
             return rows.map((r: any) => ({
                 id: r.BILL_NO || r.ID || r.CN_NO || r.DN_NO || '—',
-                date: r.BILL_DATE || r.DATE || r.CN_DATE || r.DN_DATE || '—',
+                billId: r.ID != null ? String(r.ID) : '—',
+                date: stripTime(r.BILL_DATE || r.DATE || r.CN_DATE || r.DN_DATE),
                 amount: r.NET_AMT || r.AMOUNT || r.CN_AMT || r.DN_AMT || '0',
                 type: r.BILL_TYPE || r.TYPE || r.NOTE_TYPE || 'CNDN',
                 custName: r.CUST_NAME || r.PARTY || '',

@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     catTextActive: { color: '#fff' },
 
     tableHeader: { flexDirection: 'row', paddingHorizontal: 25, marginBottom: 15 },
-    colLabel: { flex: 1, fontSize: 10, fontWeight: '900', color: '#A0AEC0', textAlign: 'center' },
+    colLabel: { flex: 1, fontSize: 12, fontWeight: '900', color: '#171718ff', textAlign: 'center' },
 
     listContent: { paddingHorizontal: 20, paddingBottom: 50 },
     priceCard: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     },
     prodName: { fontSize: 13, fontWeight: '800', color: '#1A1A1A' },
     prodSub: { fontSize: 10, color: '#A0AEC0', fontWeight: '700', marginTop: 2 },
-    prodVal: { flex: 1, textAlign: 'center', fontSize: 12, fontWeight: '900', color: '#718096' },
+    prodVal: { flex: 1, textAlign: 'center', fontSize: 12, fontWeight: '900', color: '#059669' },
     prodMrp: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#3861FB' },
 
     centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 },
