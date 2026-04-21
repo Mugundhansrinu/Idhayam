@@ -75,7 +75,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
             <Image
                 source={require('../assets/papa 2.png')}
                 style={styles.backgroundImage}
-                resizeMode="stretch"
+                resizeMode="cover"
             />
 
             {/* Blue Overlay Gradient */}
@@ -84,9 +84,9 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
                 style={StyleSheet.absoluteFillObject}
             />
 
-            <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
+            <Animated.View style={[styles.content, { opacity, transform: [{ scale }], paddingTop: insets.top }]}>
                 {/* Branding text - Styled like screenshot */}
-                <View style={[styles.textWrapper, { marginTop: Math.max(60, insets.top + 20) }]}>
+                <View style={[styles.textWrapper, { marginTop: 20 }]}>
                     <Text style={styles.brandTitleHeadline}>IDHAYAM</Text>
                     <View style={styles.taglineRow}>
                         <Text style={styles.taglineText}>SAY IDHAYAM</Text>
@@ -127,6 +127,8 @@ const styles = StyleSheet.create({
     },
     backgroundImage: {
         ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
         width: '100%',
         height: '100%',
     },

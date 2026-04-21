@@ -4,7 +4,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BrandColors } from '../theme/Colors';
 
 import { getVehicleTracking } from '../api';
 import { useSession } from '../context/SessionContext';
@@ -26,7 +25,7 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
     const { vehicleNo, tripRefNo, tripId } = route.params || {};
     
     const [loading, setLoading] = useState(true);
-    const [location, setLocation] = useState<{ latitude: number, longitude: number, status: string | number, locName: string } | null>(null);
+    const [location, setLocation] = useState<{ latitude: number, longitude: number, status: string | number, locName: string, stops?: any[] } | null>(null);
 
     useEffect(() => {
         if (!tripId || !tripRefNo || !session) return;
@@ -51,7 +50,8 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
                     latitude: Number(data.latitude),
                     longitude: Number(data.longitude),
                     status: data.status,
-                    locName: locName
+                    locName: locName,
+                    stops: data.stops || []
                 });
             } else {
                 setLocation({
@@ -69,7 +69,9 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
         }
     };
 
-    const generateMapHTML = (lat: number, lng: number) => `
+    const generateMapHTML = (lat: number, lng: number, stops?: any[]) => {
+        const stopsJson = JSON.stringify(stops || []);
+        return `
         <!DOCTYPE html>
         <html>
         <head>
@@ -77,60 +79,91 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
             <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
             <style>
-                body { padding: 0; margin: 0; }
-                html, body, #map { height: 100%; width: 100vw; }
-                .custom-div-icon {
-                    background-color: transparent;
-                    text-align: center;
-                }
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                html, body, #map { height: 100%; width: 100%; overflow: hidden; background: #e5e9f0; }
                 .truck-icon {
-                    background: ${BrandColors.primaryGradientStart};
-                    border: 2px solid #FFFFFF;
-                    border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 20px;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                    width: 44px;
+                    height: 44px;
+                    background: #3861FB;
+                    border: 3px solid #FFF;
+                    border-radius: 50%;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    font-size: 24px;
                 }
+                .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
             </style>
         </head>
         <body>
             <div id="map"></div>
             <script>
-                var map = L.map('map', { zoomControl: false }).setView([${lat}, ${lng}], 14);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                var lat = ${lat};
+                var lng = ${lng};
+                var stops = ${stopsJson};
+                var vehicleNo = '${vehicleNo || 'Vehicle'}';
+
+                var map = L.map('map', { zoomControl: false }).setView([lat, lng], 15);
+
+                // Use CartoDB Voyager for a cleaner, modern look similar to Google Maps
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                     maxZoom: 19,
-                    attribution: '© OpenStreetMap'
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
                 }).addTo(map);
 
-                var icon = L.divIcon({
-                    className: 'custom-div-icon',
-                    html: "<div class='truck-icon'>🚛</div>",
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20]
+                var truckHtml = '<div class="truck-icon">🚛</div>';
+                var truckIcon = L.divIcon({
+                    html: truckHtml,
+                    className: '',
+                    iconSize: [44, 44],
+                    iconAnchor: [22, 22],
+                    popupAnchor: [0, -22]
                 });
 
-                var marker = L.marker([${lat}, ${lng}], {icon: icon}).addTo(map)
-                    .bindPopup("<b>${vehicleNo || 'Vehicle'}</b><br>Active GPS Location")
-                    .openPopup();
-                
-                marker.on('click', function(e) {
-                    map.flyTo(e.latlng, 15, {
-                        animate: true,
-                        duration: 1
-                    });
+                var currentMarker = L.marker([lat, lng], {icon: truckIcon, zIndexOffset: 1000}).addTo(map);
+                currentMarker.bindPopup('<div style="font-family:sans-serif;padding:4px;"><b style="color:#3861FB;">' + vehicleNo + '</b><br><span style="font-size:12px;color:#555;">Active GPS Location</span></div>').openPopup();
+
+                currentMarker.on('click', function() {
+                    map.flyTo([lat, lng], 19, { duration: 1.5 });
                 });
+
+                // Draw path and stops
+                if (stops && stops.length > 0) {
+                    var latlngs = [];
                     
-                setTimeout(function() { map.invalidateSize(); }, 500);
+                    stops.forEach(function(stop) {
+                        latlngs.push([stop.lat, stop.lng]);
+                        
+                        var isCurrent = (Math.abs(stop.lat - lat) < 0.0001 && Math.abs(stop.lng - lng) < 0.0001);
+                        
+                        if (!isCurrent) {
+                            var stopColor = stop.status === 'Completed' ? '#27AE60' : '#8E8E93';
+                            var circleHtml = '<div style="width:14px;height:14px;background:' + stopColor + ';border:2px solid #FFF;border-radius:50%;box-shadow:0 0 4px rgba(0,0,0,0.4);"></div>';
+                            var circleIcon = L.divIcon({
+                                html: circleHtml,
+                                className: '',
+                                iconSize: [14, 14],
+                                iconAnchor: [7, 7]
+                            });
+                            
+                            L.marker([stop.lat, stop.lng], {icon: circleIcon}).addTo(map)
+                                .bindPopup('<div style="font-family:sans-serif;max-width:200px;"><b style="font-size:12px;color:#333;">' + stop.address + '</b><br><span style="font-size:10px;color:' + stopColor + ';">' + stop.status + '</span></div>');
+                        }
+                    });
+                    
+                    if (latlngs.length > 1) {
+                        var polyline = L.polyline(latlngs, {color: '#3861FB', weight: 4, opacity: 0.8}).addTo(map);
+                        map.fitBounds(polyline.getBounds(), { padding: [30, 30] });
+                    } else {
+                        map.setView([lat, lng], 15);
+                    }
+                }
             </script>
         </body>
         </html>
     `;
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: '#F0F4F8' }]}>
@@ -149,13 +182,13 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.mapContainer}>
                 {loading ? (
                     <View style={styles.loaderArea}>
-                        <ActivityIndicator size="large" color={BrandColors.primaryGradientStart} />
+                        <ActivityIndicator size="large" color="#3861FB" />
                         <Text style={styles.loadingText}>Fetching live coordinates...</Text>
                     </View>
                 ) : (
                     location && (
                         <WebView
-                            source={{ html: generateMapHTML(location.latitude, location.longitude) }}
+                            source={{ html: generateMapHTML(location.latitude, location.longitude, location.stops) }}
                             style={styles.webviewMap}
                             scrollEnabled={false}
                             javaScriptEnabled={true}

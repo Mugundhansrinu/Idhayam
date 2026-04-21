@@ -105,7 +105,7 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
             };
         }
     } catch (e) {
-        console.error('CUST_BALANCE_CHK Error:', e);
+        console.log('CUST_BALANCE_CHK Error:', e);
     }
 
     return { balance: '0.00', pendingOrder: '0.00', netBalance: '0.00' };
@@ -114,7 +114,7 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
 export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, branchId = FALLBACK_BRANCH_ID): Promise<any> {
     const payload = {
         A: '51',
-        B: '7734',
+        B: '46',
         C: 'GetInvoicedVehicleList',
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
@@ -144,27 +144,27 @@ export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, bran
             // Based on typical naming conventions seen in other screens
             const rows = Array.isArray(inner) ? inner : [inner];
             const mapped = rows.map((v: any) => ({
-                vehicleNo:   v.VEHICLE_NO || v.BUS_NO || '—',
-                busNo:       v.BUS_NO || '',
-                tripName:    v.TRIP_NAME || v.TRIP || '',
-                tripCode:    v.TRIP_CODE || '',
-                tripId:      v.TRIP_ID || '',
+                vehicleNo: v.VEHICLE_NO || v.BUS_NO || '—',
+                busNo: v.BUS_NO || '',
+                tripName: v.TRIP_NAME || v.TRIP || '',
+                tripCode: v.TRIP_CODE || '',
+                tripId: v.TRIP_ID || '',
                 tripTransId: v.TRIP_TRANS_ID || v.ID || '',
-                apiTripId:   v.API_TRIP_ID || '',
-                tripRefNo:   v.REF_NO || '',
-                invNo:       v.INV_NO || '',
-                status:      v.STATUS || '',
-                tripType:    v.TRIP_TYPE || '',
-                branchId:    v.BRANCH_ID || branchId,
-                latitude:    v.LATITUDE || null,
-                longitude:   v.LONGITUDE || null,
+                apiTripId: v.API_TRIP_ID || '',
+                tripRefNo: v.REF_NO || '',
+                invNo: v.INV_NO || '',
+                status: v.STATUS || '',
+                tripType: v.TRIP_TYPE || '',
+                branchId: v.BRANCH_ID || branchId,
+                latitude: v.LATITUDE || null,
+                longitude: v.LONGITUDE || null,
             }));
 
             // Dashboard currently expects a single object or null
             return mapped.length > 0 ? mapped[0] : null;
         }
     } catch (e) {
-        console.error('CheckVehicleDetails Error:', e);
+        console.log('CheckVehicleDetails Error:', e);
     }
 
     return null;
@@ -172,7 +172,7 @@ export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, bran
 
 export async function getVehicleTracking(branchId: string, tripId: string, tripRefNo: string): Promise<any> {
     const payload = {
-        A: branchId,
+        A: '51',
         B: tripId,
         C: 'GetVehicleTrackingStatus',
         D: '',
@@ -198,15 +198,34 @@ export async function getVehicleTracking(branchId: string, tripId: string, tripR
         const outer = deepParse(textData);
         if (outer?.success && outer?.result) {
             const inner = deepParse(outer.result);
+            const data = Array.isArray(inner) ? inner[0] : inner;
+
+            let stops: any[] = [];
+            if (data.BUS_STATUS_TRACKINGS) {
+                const trackings = Array.isArray(data.BUS_STATUS_TRACKINGS) ? data.BUS_STATUS_TRACKINGS : [data.BUS_STATUS_TRACKINGS];
+                stops = trackings.map((t: any) => ({
+                    lat: parseFloat(t.LATITUDE),
+                    lng: parseFloat(t.LONGITUDE),
+                    address: t.ADDRS || t.STOP_NAME || 'Stop',
+                    status: t.STATUS
+                })).filter((t: any) => !isNaN(t.lat) && !isNaN(t.lng));
+            }
+
+            // Include current location as the starting point for the route line
+            if (data.LATITUDE && data.LONGITUDE) {
+                stops.unshift({ lat: parseFloat(data.LATITUDE), lng: parseFloat(data.LONGITUDE), address: 'Current Location', status: data.STATUS || 'In Progress' });
+            }
+
             return {
-                latitude: parseFloat(inner.LATITUDE || inner.A || '9.3622'),
-                longitude: parseFloat(inner.LONGITUDE || inner.B || '77.9404'),
-                status: inner.STATUS || inner.C || 'Moving',
+                latitude: parseFloat(data.LATITUDE || data.A || '9.3622'),
+                longitude: parseFloat(data.LONGITUDE || data.B || '77.9404'),
+                status: data.STATUS || data.C || 'Moving',
+                stops: stops,
                 lastUpdated: new Date().toISOString()
             };
         }
     } catch (e) {
-        console.error('getVehicleTracking Error:', e);
+        console.log('getVehicleTracking Error:', e);
     }
     return null;
 }
@@ -246,7 +265,7 @@ export async function getTripStopList(tripTransId: string, tripRefNo: string, cu
             }));
         }
     } catch (e) {
-        console.error('getTripStopList Error:', e);
+        console.log('getTripStopList Error:', e);
     }
     return [];
 }
@@ -288,7 +307,7 @@ export async function getDiscountSummary(custId = FALLBACK_CUSTOMER_ID): Promise
             return Array.isArray(inner) ? inner : [inner];
         }
     } catch (e) {
-        console.error('CUST_DISCOUNT_SUM Error:', e);
+        console.log('CUST_DISCOUNT_SUM Error:', e);
     }
 
     return [];
@@ -327,7 +346,7 @@ export async function getDiscountDetail(discountIds: string, type: string, custI
             return Array.isArray(inner) ? inner : [inner];
         }
     } catch (e) {
-        console.error('CUST_DISCOUNT Error:', e);
+        console.log('CUST_DISCOUNT Error:', e);
     }
     return [];
 }
@@ -375,7 +394,7 @@ export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any>
             }));
         }
     } catch (e) {
-        console.error('FetchOrderItems Error:', e);
+        console.log('FetchOrderItems Error:', e);
     }
     return [];
 }
@@ -474,7 +493,7 @@ export async function submitOrder(custId: string, orderDetails: any[], branchId 
         }
         return { success: false, message: outer.message || 'Server error' };
     } catch (e) {
-        console.error('submitOrder Error:', e);
+        console.log('submitOrder Error:', e);
         return { success: false, message: 'Network request failed' };
     }
 }
@@ -524,7 +543,7 @@ export async function getOrderList(fromDate: string, toDate: string, custId = FA
             }));
         }
     } catch (e) {
-        console.error('FetchOrderList Error:', e);
+        console.log('FetchOrderList Error:', e);
     }
     return [];
 }
@@ -562,7 +581,7 @@ export async function getInvoiceList(fromDate: string, toDate: string, type: 'SI
             return Array.isArray(inner) ? inner : [inner];
         }
     } catch (e) {
-        console.error('FetchBills Error:', e);
+        console.log('FetchBills Error:', e);
     }
     return [];
 }
@@ -623,7 +642,7 @@ export async function getCreditDebitNotes(fromDate: string, toDate: string, bran
 
         console.log('FetchBills(CNDN) – no result in response:', JSON.stringify(outer));
     } catch (e) {
-        console.error('FetchBills(CNDN) Error:', e);
+        console.log('FetchBills(CNDN) Error:', e);
     }
     return [];
 }
@@ -675,7 +694,7 @@ export async function downloadBillPdf(type: 'SI' | 'CNDN', billIds: string, bran
             }
         }
     } catch (e) {
-        console.error('FetchBillsPdf Error:', e);
+        console.log('FetchBillsPdf Error:', e);
     }
     return { success: false, message: 'Failed to generate PDF' };
 }
@@ -710,7 +729,7 @@ export async function getTransactionList(fromDate: string, toDate: string, custI
             return { success: true, url: outer.result };
         }
     } catch (e) {
-        console.error('FetchTransDetails Error:', e);
+        console.log('FetchTransDetails Error:', e);
     }
 
     return { success: false, message: 'Failed to fetch statement URL' };
@@ -748,7 +767,7 @@ export async function getTransactionPdf(fromDate: string, toDate: string, custId
             return { success: true, url };
         }
     } catch (e) {
-        console.error('FetchTransDetailsPDF Error:', e);
+        console.log('FetchTransDetailsPDF Error:', e);
     }
     return { success: false, message: 'Failed to generate PDF' };
 }
@@ -802,7 +821,7 @@ export async function getContactInfo(
             return Array.isArray(inner) ? inner : [inner];
         }
     } catch (e) {
-        console.error('APP_Contact Error:', e);
+        console.log('APP_Contact Error:', e);
     }
 
     return [];
@@ -840,7 +859,7 @@ export async function getBankDetails(custId = FALLBACK_CUSTOMER_ID): Promise<any
             return Array.isArray(inner) ? inner : [inner];
         }
     } catch (e) {
-        console.error('CUST_VitrualAcc_CHK Error:', e);
+        console.log('CUST_VitrualAcc_CHK Error:', e);
     }
 
     return [];

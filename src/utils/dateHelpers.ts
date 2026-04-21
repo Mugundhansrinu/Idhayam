@@ -25,6 +25,15 @@ export const parseDDMMYYYY = (dateStr: string): Date | null => {
     return new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
 };
 
+/** Returns the current date in DD-MM-YYYY format */
+export const getCurrentDateDDMMYYYY = (): string => {
+    const d = new Date();
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+};
+
 /**
  * Auto-formats numeric input into DD-MM-YYYY as the user types.
  * Handles backspace correctly.

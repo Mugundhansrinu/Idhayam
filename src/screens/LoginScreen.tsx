@@ -21,6 +21,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { AuthService } from '../api/auth';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +34,7 @@ const RESEND_TIMER = 30;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
+    const insets = useSafeAreaInsets();
     const maskMobileNumber = (num: string) => {
         if (!num) return '';
         const clean = num.trim();
@@ -352,8 +354,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                     )}
                                 </View>
 
-                                <TouchableOpacity onPress={() => setStep('pan')} style={styles.backBtn}>
-                                    <Text style={styles.backBtnText}>← Change PAN Number</Text>
+                                <TouchableOpacity onPress={() => setStep('pan')} style={styles.changePanBtn}>
+                                    <Icon name="edit" size={16} color="#3861FB" style={{ marginRight: 6 }} />
+                                    <Text style={styles.changePanBtnText}>Change PAN Number</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -478,8 +481,8 @@ const styles = StyleSheet.create({
     bottomLinkRow: { width: '100%', alignItems: 'center', marginTop: 25 },
     resendInfo: { fontSize: 13, fontWeight: '600', color: '#718096' },
     resendLink: { color: '#1A1A1A', fontWeight: '800' },
-    backBtn: { marginTop: 20 },
-    backBtnText: { fontSize: 13, color: '#718096', fontWeight: '700' },
+    changePanBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 25, backgroundColor: '#eaefff', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 20, borderWidth: 1, borderColor: '#d3deff' },
+    changePanBtnText: { fontSize: 13, fontWeight: '800', color: '#3861FB', letterSpacing: 0.3 },
 
     trustFooter: { width: '100%', alignItems: 'center', marginTop: 15 },
     secureBadge: { flexDirection: 'row', alignItems: 'center', padding: 15 },

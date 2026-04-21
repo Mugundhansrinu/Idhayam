@@ -2,7 +2,7 @@
  * api/auth.ts — Real authentication services (PAN, OTP, Login)
  */
 
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { API_TOKEN } from './config';
 import { encode as btoa } from 'base-64';
@@ -42,7 +42,7 @@ export const AuthService = {
                 }
             }
         } catch (parseError) {
-            console.error('JSON Parsing Error for getMobileListByPan:', parseError);
+            console.log('JSON Parsing Error for getMobileListByPan:', parseError);
         }
 
         // Throw so the caller can show a proper error to the user
@@ -141,7 +141,6 @@ export const AuthService = {
                 : 'Apple Device';
 
         const manualJson = `{"pan":"${base64Pan}","mobilenumber":"${mobile}","eid":"${eid}","did":"${did}","pname":"IDHAYAM","dmobno":"","deviceinfo":"${deviceName}"}`;
-
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {

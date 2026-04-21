@@ -125,16 +125,23 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                         <Text style={styles.slideTitle}>Account Balance</Text>
                                         <TouchableOpacity style={styles.ledgerBtn}><Text style={styles.ledgerText}>LEDGER</Text></TouchableOpacity>
                                     </View>
-                                    <Text style={styles.balMainValue}>₹ {balanceData.balance}</Text>
-                                    <View style={styles.slideFooter}>
-                                        <View>
-                                            <Text style={styles.subLabel}>Credit Limit</Text>
-                                            <Text style={styles.subValue}>₹ 2,00,000</Text>
+                                    <View style={styles.balStack}>
+                                        <View style={styles.balRow}>
+                                            <Text style={styles.balLabel}>BALANCE</Text>
+                                            <Text style={styles.balValue}>₹ {balanceData.balance}</Text>
                                         </View>
-                                        <View style={styles.divider} />
-                                        <View>
-                                            <Text style={styles.subLabel}>Pending Order</Text>
-                                            <Text style={styles.subValue}>₹ {balanceData.pendingOrder}</Text>
+                                        <View style={styles.balDivider} />
+                                        <View style={styles.balRow}>
+                                            <Text style={styles.balLabel}>PENDING ORDER</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444', marginRight: 6 }} />
+                                                <Text style={styles.balValue}>₹ {balanceData.pendingOrder}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.balDivider} />
+                                        <View style={styles.balRow}>
+                                            <Text style={styles.balLabel}>NET BALANCE</Text>
+                                            <Text style={[styles.balValue, { color: '#86efac' }]}>₹ {balanceData.netBalance}</Text>
                                         </View>
                                     </View>
                                 </LinearGradient>
@@ -222,6 +229,8 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                     </View>
                 </View>
             </ScrollView>
+
+
         </View>
     );
 };
@@ -250,12 +259,11 @@ const styles = StyleSheet.create({
     slideTitle: { flex: 1, marginLeft: 12, fontSize: 13, fontWeight: '900', color: 'rgba(255,255,255,0.9)', letterSpacing: 0.5 },
     ledgerBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.2)' },
     ledgerText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-    balMainValue: { fontSize: 32, fontWeight: '900', color: '#fff', marginBottom: 20 },
-    slideFooter: { flexDirection: 'row', alignItems: 'center', paddingTop: 20, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)' },
-    subLabel: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.6)', letterSpacing: 0.5 },
-    subValue: { fontSize: 15, fontWeight: '900', color: '#fff', marginTop: 2 },
-    divider: { width: 1, height: 30, backgroundColor: 'rgba(255,255,255,0.2)', marginHorizontal: 20 },
-
+    balStack: { marginTop: 10, flex: 1, justifyContent: 'center' },
+    balRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12 },
+    balLabel: { fontSize: 13, fontWeight: '800', color: 'rgba(255,255,255,0.9)', letterSpacing: 0.5 },
+    balValue: { fontSize: 17, fontWeight: '900', color: '#fff' },
+    balDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
     trackContent: { marginTop: -5 },
     truckNo: { fontSize: 24, fontWeight: '900', color: '#fff' },
     locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
@@ -290,11 +298,11 @@ const styles = StyleSheet.create({
     activeBadgeText: { fontSize: 10, fontWeight: '900', color: '#3861FB' },
     moduleGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     moduleCard: { width: (width - 65) / 2, marginBottom: 15, borderRadius: 32, elevation: 3, shadowColor: '#3861FB', shadowOpacity: 0.05, shadowRadius: 15 },
-    moduleCardInner: { padding: 22 },
+    moduleCardInner: { padding: 22, alignItems: 'center' },
     modIconArea: { width: 56, height: 56, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 15 },
-    modLabel: { fontSize: 14, fontWeight: '900', color: '#1A1A1A' },
-    modFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 },
-    modSub: { fontSize: 11, fontWeight: '700', color: '#A0AEC0' },
+    modLabel: { fontSize: 14, fontWeight: '900', color: '#1A1A1A', textAlign: 'center' },
+    modFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 6 },
+    modSub: { fontSize: 11, fontWeight: '700', color: '#A0AEC0', textAlign: 'center' },
 });
 
 export default DashboardScreen;

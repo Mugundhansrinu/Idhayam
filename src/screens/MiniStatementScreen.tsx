@@ -21,7 +21,7 @@ import { RootStackParamList } from '../../App';
 import { getTransactionList } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { formatForApi, validateDateRange } from '../utils/dateHelpers';
+import { formatForApi, validateDateRange, getCurrentDateDDMMYYYY } from '../utils/dateHelpers';
 import ReportDatePicker from '../components/ReportDatePicker';
 
 const { width } = Dimensions.get('window');
@@ -37,8 +37,8 @@ type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'MiniSt
 const MiniStatementScreen: React.FC<Props> = ({ navigation }) => {
     const { colors } = useTheme();
     const { session } = useSession();
-    const [fromDate, setFromDate] = useState('');
-    const [toDate,   setToDate]   = useState('');
+    const [fromDate, setFromDate] = useState(getCurrentDateDDMMYYYY());
+    const [toDate, setToDate] = useState(getCurrentDateDDMMYYYY());
     const [loading, setLoading]     = useState(false);
     const [viewerVisible, setViewerVisible] = useState(false);
     const [reportUrl, setReportUrl] = useState('');

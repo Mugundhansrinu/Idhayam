@@ -42,15 +42,12 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
                 <View style={{ flex: 2.7, justifyContent: 'center' }}>
                     <Text style={styles.prodName} numberOfLines={1}>{item.name}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
-                        <Text style={styles.prodSub}>MRP</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                         <Text style={styles.prodMrp}>₹{item.mrp}</Text>
                     </View>
                 </View>
 
                 {/* 2. PRICE */}
-                <View style={{ flex: 1.2, alignItems: 'flex-start', justifyContent: 'center' }}>
+                <View style={{ flex: 1.2, alignItems: 'flex-end', justifyContent: 'flex-end' }}>
                     <Text style={[styles.prodVal]} numberOfLines={1}>₹{priceText}</Text>
                 </View>
 
@@ -228,7 +225,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                     {/* Standardized Table Header (Financial-Focus Optimized) */}
                     <View style={styles.tableHeader}>
                         <Text style={[styles.colLabel, { flex: 2.7, textAlign: 'left' }]}>ITEM / MRP</Text>
-                        <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'left' }]}>PRICE (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'right' }]}>PRICE (₹)</Text>
                         <Text style={[styles.colLabel, { flex: 1.3 }]}>BOX</Text>
                         <Text style={[styles.colLabel, { flex: 1.3 }]}>PCS</Text>
                     </View>

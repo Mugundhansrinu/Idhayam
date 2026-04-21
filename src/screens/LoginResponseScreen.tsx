@@ -100,7 +100,7 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
                             <Text style={styles.badgeText}>IDHAYAM DISTRIBUTOR</Text>
                         </View>
                     </View>
-                    <Text style={styles.welcomeText}>Select Your Branch</Text>
+                    <Text style={styles.welcomeText}>Select Your Account</Text>
                     <Text style={styles.subText}>Choose an operating unit to access the dashboard</Text>
                 </View>
             </LinearGradient>
@@ -108,7 +108,7 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
             {/* ── Branch List ── */}
             <View style={styles.listWrapper}>
                 <ScrollView 
-                    contentContainerStyle={styles.scroll}
+                    contentContainerStyle={[styles.scroll, { paddingBottom: 50 }]}
                     showsVerticalScrollIndicator={false}
                 >
                     {branches.length > 0 ? (
@@ -145,18 +145,59 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
 
                                     <View style={styles.divider} />
 
-                                    <View style={styles.cardFooter}>
-                                        <View style={styles.infoCol}>
-                                            <Text style={styles.infoLabel}>LOCATION</Text>
-                                            <Text style={styles.infoValue}>{branch.HUB_NAME || 'Main HQ'}</Text>
-                                        </View>
-                                        <View style={styles.infoCol}>
-                                            <Text style={styles.infoLabel}>STATUS</Text>
-                                            <View style={styles.statusBadge}>
-                                                <View style={styles.statusDot} />
-                                                <Text style={styles.statusText}>ACTIVE</Text>
+                                    <View style={styles.detailsContainer}>
+                                        <View style={styles.detailGrid}>
+                                            <View style={styles.detailBox}>
+                                                <View style={[styles.iconContainer, { backgroundColor: '#E0E7FF' }]}>
+                                                    <Icon name="place" size={16} color="#3861FB" />
+                                                </View>
+                                                <View>
+                                                    <Text style={styles.detailLabel}>LOCATION</Text>
+                                                    <Text style={styles.detailValue} numberOfLines={1}>{branch.LOCATION_NAME || branch.HUB_NAME || 'Main HQ'}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.detailBox}>
+                                                <View style={[styles.iconContainer, { backgroundColor: '#F3E8FF' }]}>
+                                                    <Icon name="phone" size={16} color="#9333EA" />
+                                                </View>
+                                                <View>
+                                                    <Text style={styles.detailLabel}>MOBILE</Text>
+                                                    <Text style={styles.detailValue} numberOfLines={1}>{data.mobile || 'N/A'}</Text>
+                                                </View>
                                             </View>
                                         </View>
+                                        
+                                        <View style={styles.detailMultiBox}>
+                                            <View style={[styles.iconContainer, { backgroundColor: '#FEF9C3' }]}>
+                                                <Icon name="receipt" size={16} color="#EAB308" />
+                                            </View>
+                                            <View style={{ flex: 1 }}>
+                                                <Text style={styles.detailLabel}>GST NUMBER</Text>
+                                                <Text style={styles.detailValue} numberOfLines={1}>{branch.GST_NO || branch.GSTNO || 'N/A'}</Text>
+                                            </View>
+                                        </View>
+
+                                        {(branch.ADDRESS || branch.ADDRS) && (
+                                            <View style={[styles.detailMultiBox, { borderBottomWidth: 0, paddingBottom: 0, marginBottom: 0 }]}>
+                                                <View style={[styles.iconContainer, { backgroundColor: '#F0FDF4' }]}>
+                                                    <Icon name="location-city" size={16} color="#16A34A" />
+                                                </View>
+                                                <View style={{ flex: 1 }}>
+                                                    <Text style={styles.detailLabel}>ADDRESS</Text>
+                                                    <Text style={styles.addressValue} numberOfLines={2}>
+                                                        {branch.ADDRESS || branch.ADDRS}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        )}
+                                    </View>
+
+                                    <View style={styles.cardStatusRow}>
+                                        <View style={styles.statusBadge}>
+                                            <View style={styles.statusDot} />
+                                            <Text style={styles.statusText}>ACTIVE</Text>
+                                        </View>
+                                        <Text style={styles.territoryText}>{branch.TERRITORY_NAME || ''}</Text>
                                     </View>
                                 </TouchableOpacity>
                             </Animated.View>
@@ -170,6 +211,8 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
                     )}
                 </ScrollView>
             </View>
+
+
         </View>
     );
 };
@@ -212,16 +255,69 @@ const styles = StyleSheet.create({
     branchId: { fontSize: 11, fontWeight: '700', color: '#3861FB', marginTop: 2 },
     arrowBox: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#F8F9FD', alignItems: 'center', justifyContent: 'center' },
 
-    divider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 20 },
+    divider: { height: 1, backgroundColor: '#F1F5F9', marginVertical: 16 },
 
-    cardFooter: { flexDirection: 'row', justifyContent: 'space-between' },
-    infoCol: { flex: 1 },
-    infoLabel: { fontSize: 8, fontWeight: '900', color: '#CBD5E0', letterSpacing: 0.5 },
-    infoValue: { fontSize: 13, fontWeight: '800', color: '#475569', marginTop: 4 },
+    detailsContainer: { 
+        backgroundColor: '#F8FAFC', 
+        borderRadius: 16, 
+        padding: 16, 
+        borderWidth: 1,
+        borderColor: '#F1F5F9'
+    },
+    detailGrid: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E2E8F0',
+        paddingBottom: 12,
+        marginBottom: 12,
+    },
+    detailBox: { 
+        flex: 1, 
+        flexDirection: 'row', 
+        alignItems: 'center' 
+    },
+    detailMultiBox: { 
+        flexDirection: 'row', 
+        alignItems: 'flex-start',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E2E8F0',
+        paddingBottom: 12,
+        marginBottom: 12,
+    },
+    iconContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 10,
+    },
+    detailLabel: { 
+        fontSize: 9, 
+        fontWeight: '800', 
+        color: '#94A3B8', 
+        letterSpacing: 0.5 
+    },
+    detailValue: { 
+        fontSize: 13, 
+        fontWeight: '700', 
+        color: '#334155', 
+        marginTop: 2 
+    },
+    addressValue: { 
+        fontSize: 12, 
+        fontWeight: '600', 
+        color: '#475569', 
+        marginTop: 3, 
+        lineHeight: 18 
+    },
 
-    statusBadge: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, marginTop: 4 },
+    cardStatusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 15 },
+    statusBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
     statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981', marginRight: 6 },
     statusText: { fontSize: 9, fontWeight: '900', color: '#10B981' },
+    territoryText: { fontSize: 10, fontWeight: '700', color: '#A0AEC0', textTransform: 'uppercase' },
 
     emptyBox: { alignItems: 'center', justifyContent: 'center', marginTop: 60, paddingHorizontal: 40 },
     emptyText: { fontSize: 18, fontWeight: '900', color: '#1A1A1A', marginTop: 20 },
