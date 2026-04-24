@@ -382,13 +382,25 @@ export async function getOrderItems(custId = FALLBACK_CUSTOMER_ID): Promise<any>
             const rows = Array.isArray(inner) ? inner : [inner];
 
             // Normalize server fields to app format
+            if (rows.length > 0) {
+                console.log('FetchOrderItems First Item Keys:', JSON.stringify(rows[0]));
+            }
             return rows.map(item => ({
-                id: String(item.ID || item.ITEM_ID),
-                name: item.ITEM_DESC || 'Unknown Item',
-                price: parseFloat(item.PLUS_TAX || item.APP_PRICE || '0').toFixed(2),
-                unit: item.SALES_UOM || 'Pcs',
-                category: item.ITEM_GRP_NAME,
-                mrp: parseFloat(item.APP_MRP || '0').toFixed(2),
+                id: String(item.ID || item.ITEM_ID || item.Id || ''),
+                name: item.ITEM_DESC || item.Item_Desc || 'Unknown Item',
+                price: parseFloat(item.PLUS_TAX || item.Plus_Tax || item.APP_PRICE || item.App_Price || '0').toFixed(2),
+                appPrice: parseFloat(item.APP_PRICE || item.App_Price || '0').toFixed(2), // Base price (without tax)
+                unit: item.SALES_UOM || item.Sales_Uom || 'Pcs',
+                category: item.ITEM_GRP_NAME || item.Item_Grp_Name || '',
+                igSort: parseInt(
+                    item.IG_SORT ?? item.IG_Sort ?? item.ig_sort ?? '9999',
+                    10
+                ),
+                imSort: parseInt(
+                    item.SORT ?? item.IM_SORT ?? item.IM_Sort ?? item.im_sort ?? '9999',
+                    10
+                ),
+                mrp: parseFloat(item.APP_MRP || item.App_Mrp || '0').toFixed(2),
                 tax: item.TAX_PER ? `${item.TAX_PER}%` : '0%',
                 raw: item // Keep raw data for order submission
             }));
@@ -533,13 +545,31 @@ export async function getOrderList(fromDate: string, toDate: string, custId = FA
             const inner = deepParse(outer.result);
             const rows = Array.isArray(inner) ? inner : [inner];
 
+            if (rows.length > 0) console.log('FetchOrderList First Row:', JSON.stringify(rows[0]));
+
+            const stripTime = (val: any): string => {
+                if (!val) return '—';
+                return String(val).split('T')[0]; // "2026-04-21T00:00:00" → "2026-04-21"
+            };
+
             return rows.map(o => ({
-                id: o.ORD_NO || o.ID || o.Order_No || '—',
-                date: o.ORD_DATE_STR || o.DATE || '—',
-                amount: o.NET_AMT || o.AMOUNT || '0',
-                status: o.STATUS || '—',
+                id: String(o.ORDER_NO || o.ORD_NO || o.ID || '—'),
+                date: stripTime(o.ORDER_DATE || o.ORD_DATE_STR || o.DATE),
+                amount: o.TOTAL_AMOUNT ?? o.PROD_AMOUNT ?? o.NET_AMT ?? o.NET_AMOUNT ?? 0,
+                status: o.SO_STATUS || o.CANCEL || '—',
                 branchId: o.BRANCH_ID || branchId,
                 type: o.TYPE || '—',
+                // Item-level columns (matching image columns)
+                group: o.IG_DISP || o.SO_DISPLAY_NAME || o.ITEM_GRP_NAME || '',
+                itemName: o.ITEM_DESC || o.ITEM_NAME || '',
+                perBox: o.PACKING_FACTOR || o.CONV_FACTOR || '',
+                price: o.SELLING_PRICE || o.APP_PRICE || o.MRP || 0,
+                ordBox: o.TOTAL_BOX || o.BOX_QTY || 0,
+                ordPcs: o.PCS || o.ORD_PCS || 0,
+                cnfBox: o.INV_BOX || o.CNF_BOX || 0,
+                cnfPcs: o.INV_QTY || o.INV_PCS || o.CNF_PCS || 0,
+                mrp: o.MRP || 0,
+                raw: o,
             }));
         }
     } catch (e) {

@@ -126,7 +126,17 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         try {
             const response = await AuthService.generateOtp(pan, mobile);
             if (response && response.message) {
-                setApiMessage(String(response.message));
+                const msg = String(response.message);
+                setApiMessage(msg);
+
+                // For testing: Autofill OTP automatically
+                const match = msg.match(/\b\d{4,6}\b/);
+                if (match) {
+                    const foundOtp = match[0].padStart(OTP_LENGTH, '0');
+                    setOtp(foundOtp.split(''));
+                } else {
+                    setOtp(['1', '2', '3', '4', '5', '6']); // default test fallback
+                }
             }
             // Only transition to OTP step if request succeeds
             setMaskedMobile(mobile);

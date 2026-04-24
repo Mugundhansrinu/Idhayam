@@ -75,11 +75,11 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
     );
 
     const renderBank = (bank: any, i: number) => {
-        const bankName      = bank.BANK_NAME        ?? '—';
-        const accName       = bank.ACC_NAME         ?? bank.PARTY_NAME ?? '—';
-        const virtualAccNo  = bank.VIRTUAL_ACCOUNT  ?? bank.VIRTUAL_ACCOUNT_NO ?? bank.VIRTUAL_ACCOUNT_NUMBER ?? '—';
-        const ifsc          = bank.IFSC_CODE        ?? '—';
-        const city          = bank.PARTY_CITY       ?? bank.City ?? '';
+        const bankName = bank.BANK_NAME ?? '—';
+        const accName = bank.ACC_NAME ?? bank.PARTY_NAME ?? '—';
+        const virtualAccNo = bank.VIRTUAL_ACCOUNT ?? bank.VIRTUAL_ACCOUNT_NO ?? bank.VIRTUAL_ACCOUNT_NUMBER ?? '—';
+        const ifsc = bank.IFSC_CODE ?? '—';
+        const city = bank.PARTY_CITY ?? bank.City ?? '';
 
         return (
             <View key={i} style={styles.bankCard}>
@@ -98,9 +98,9 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
                 <View style={styles.cardDivider} />
 
-                <CopyField label="Account Name"      value={accName} />
+                <CopyField label="Account Name" value={accName} />
                 <CopyField label="Virtual Account No" value={virtualAccNo} />
-                <CopyField label="IFSC Code"          value={ifsc} />
+                <CopyField label="IFSC Code" value={ifsc} />
             </View>
         );
     };
@@ -150,10 +150,6 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.insRow}>
                         <View style={styles.dot} />
                         <Text style={styles.insText}>Direct transfers to virtual accounts reflect instantly.</Text>
-                    </View>
-                    <View style={styles.insRow}>
-                        <View style={styles.dot} />
-                        <Text style={styles.insText}>Mention "Distributor Deposit" in payment remarks.</Text>
                     </View>
                 </View>
 

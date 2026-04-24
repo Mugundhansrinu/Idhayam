@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -11,8 +11,6 @@ import {
     Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../theme';
-import { BrandColors } from '../theme/Colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getOrderList } from '../api';
@@ -23,14 +21,31 @@ import ReportDatePicker from '../components/ReportDatePicker';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'OrderEntryReport'> };
 
+const formatVal = (val: any, decimals = 2): string => {
+    const n = parseFloat(String(val));
+    if (isNaN(n)) return '—';
+    return n.toFixed(decimals);
+};
+
+const formatAmount = (value: number): string => {
+    const fixed = value.toFixed(2);
+    const [intPart, decPart] = fixed.split('.');
+    const lastThree = intPart.slice(-3);
+    const remaining = intPart.slice(0, -3);
+    const formatted = remaining !== ''
+        ? remaining.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree
+        : lastThree;
+    return `${formatted}.${decPart}`;
+};
+
 const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
-    const { colors } = useTheme();
     const { session } = useSession();
 
     const [fromDate, setFromDate] = useState(getCurrentDateDDMMYYYY());
     const [toDate, setToDate] = useState(getCurrentDateDDMMYYYY());
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState<any[]>([]);
+    const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
 
     const handleSearch = async () => {
         const { fromError, toError } = validateDateRange(fromDate, toDate);
@@ -42,6 +57,10 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
             const apiTo = formatForApi(toDate);
             const results = await getOrderList(apiFrom, apiTo, session?.custId, session?.branchId);
             setOrders(results || []);
+            // Auto-expand first order
+            if (results?.length > 0) {
+                setExpandedOrders(new Set([results[0].id]));
+            }
             if (!results?.length) Alert.alert('No Data', 'No orders found.');
         } catch {
             Alert.alert('Error', 'Failed to fetch order report.');
@@ -50,12 +69,42 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
         }
     };
 
-    const totalAmount = orders.reduce((s, o) => s + (parseFloat(o.amount) || 0), 0);
+    // Group items by order id, sum amounts per order
+    const groupedOrders = useMemo(() => {
+        const map = new Map<string, any[]>();
+        orders.forEach(o => {
+            const key = o.id;
+            if (!map.has(key)) map.set(key, []);
+            map.get(key)!.push(o);
+        });
+        return Array.from(map.entries()).map(([orderId, items]) => {
+            // Sum TOTAL_AMOUNT per item for the order total
+            const totalAmt = items.reduce((s: number, o: any) => s + (parseFloat(o.amount) || 0), 0);
+            return {
+                orderId,
+                date: items[0].date,       // already stripped: "2026-04-21"
+                amount: totalAmt,
+                status: items[0].status,
+                items,
+            };
+        });
+    }, [orders]);
+
+    const totalAmount = groupedOrders.reduce((s, g) => s + (parseFloat(g.amount) || 0), 0);
+
+    const toggleOrder = (orderId: string) => {
+        setExpandedOrders(prev => {
+            const next = new Set(prev);
+            if (next.has(orderId)) next.delete(orderId);
+            else next.add(orderId);
+            return next;
+        });
+    };
 
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            
+
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={20} color="#3861FB" />
@@ -68,60 +117,117 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+
+                {/* Filter Card */}
                 <View style={styles.filterCard}>
                     <View style={styles.filterInputs}>
-                        <ReportDatePicker 
-                            label="FROM" 
-                            value={fromDate} 
-                            onSelect={setFromDate} 
-                        />
-                        <ReportDatePicker 
-                            label="TO" 
-                            value={toDate} 
-                            onSelect={setToDate} 
-                        />
+                        <ReportDatePicker label="FROM" value={fromDate} onSelect={setFromDate} />
+                        <ReportDatePicker label="TO" value={toDate} onSelect={setToDate} />
                         <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
                             {loading ? <ActivityIndicator color="#fff" /> : <Icon name="search" size={18} color="#fff" />}
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                {orders.length > 0 && (
-                    <View style={styles.table}>
+                {/* Table */}
+                {groupedOrders.length > 0 && (
+                    <View style={styles.tableWrap}>
+
+                        {/* Column Headers */}
                         <View style={styles.tableHeader}>
-                            <Text style={[styles.headText, { flex: 2 }]}>ORDER NO</Text>
-                            <Text style={[styles.headText, { flex: 2 }]}>DATE</Text>
-                            <Text style={[styles.headText, { flex: 1.5, textAlign: 'center' }]}>STATUS</Text>
-                            <Text style={[styles.headText, { flex: 2, textAlign: 'right' }]}>AMOUNT</Text>
+                            <Text style={[styles.headText, { flex: 1.6, textAlign: 'left' }]}>GROUP</Text>
+                            <Text style={[styles.headText, { flex: 1.8 }]}>ITEM</Text>
+                            <Text style={[styles.headText, { flex: 1 }]}>PER{'\n'}BOX</Text>
+                            <Text style={[styles.headText, { flex: 1.1 }]}>PRICE</Text>
+                            <Text style={[styles.headText, { flex: 1 }]}>ORD{'\n'}BOX</Text>
+                            <Text style={[styles.headText, { flex: 1 }]}>ORD{'\n'}PCS</Text>
+                            <Text style={[styles.headText, { flex: 1 }]}>CNF{'\n'}BOX</Text>
+                            <Text style={[styles.headText, { flex: 1 }]}>CNF{'\n'}PCS</Text>
                         </View>
-                        {orders.map((order, idx) => (
-                            <View key={idx} style={styles.row}>
-                                <View style={{ flex: 2 }}>
-                                    <Text style={styles.rowTextMain} numberOfLines={1}>{order.id}</Text>
-                                    <Text style={styles.branchTag}>BR-{order.branchId || '01'}</Text>
+
+                        {/* Order Groups */}
+                        {groupedOrders.map((group, gIdx) => {
+                            const isExpanded = expandedOrders.has(group.orderId);
+                            return (
+                                <View key={gIdx}>
+                                    {/* Order Header Row */}
+                                    <TouchableOpacity
+                                        style={styles.orderHeader}
+                                        onPress={() => toggleOrder(group.orderId)}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Icon
+                                            name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                                            size={18}
+                                            color="#3861FB"
+                                        />
+                                        <Text style={styles.orderHeaderText} numberOfLines={1}>
+                                            {group.orderId}  [{group.date} - {formatAmount(parseFloat(group.amount) || 0)}]
+                                        </Text>
+                                        <View style={[styles.statusChip, {
+                                            backgroundColor: group.status?.toUpperCase().includes('INVOICED') ? '#E1F9F1'
+                                                : group.status?.toUpperCase().includes('CANCEL') ? '#FEE2E2' : '#FFF4E6'
+                                        }]}>
+                                            <Text style={[styles.statusText, {
+                                                color: group.status?.toUpperCase().includes('INVOICED') ? '#059669'
+                                                    : group.status?.toUpperCase().includes('CANCEL') ? '#DC2626' : '#FF8C00'
+                                            }]}>
+                                                {group.status || 'PENDING'}
+                                            </Text>
+                                        </View>
+                                    </TouchableOpacity>
+
+                                    {/* Item Rows */}
+                                    {isExpanded && group.items.map((item: any, iIdx: number) => (
+                                        <View
+                                            key={iIdx}
+                                            style={[styles.itemRow, iIdx % 2 === 0 && styles.itemRowAlt]}
+                                        >
+                                            <Text style={[styles.cellText, { flex: 1.6, textAlign: 'left', color: '#3861FB', fontWeight: '800' }]} numberOfLines={2}>
+                                                {item.group || '—'}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1.8 }]} numberOfLines={2}>
+                                                {item.itemName || '—'}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1 }]}>
+                                                {item.perBox || '—'}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1.1, color: '#059669', fontWeight: '800' }]}>
+                                                {formatVal(item.price)}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1 }]}>
+                                                {formatVal(item.ordBox)}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1 }]}>
+                                                {formatVal(item.ordPcs)}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1, color: '#1A1A1A', fontWeight: '800' }]}>
+                                                {formatVal(item.cnfBox)}
+                                            </Text>
+                                            <Text style={[styles.cellText, { flex: 1, color: '#1A1A1A', fontWeight: '800' }]}>
+                                                {formatVal(item.cnfPcs)}
+                                            </Text>
+                                        </View>
+                                    ))}
                                 </View>
-                                <Text style={[styles.rowTextSub, { flex: 2 }]}>{order.date}</Text>
-                                <View style={{ flex: 1.5, alignItems: 'center' }}>
-                                    <View style={[styles.statusChip, { backgroundColor: order.status === 'Delivered' ? '#E1F9F1' : '#FFF4E6' }]}>
-                                        <Text style={[styles.statusText, { color: order.status === 'Delivered' ? '#00B894' : '#FF8C00' }]}>{order.status || 'Pending'}</Text>
-                                    </View>
-                                </View>
-                                <Text style={styles.amountText}>₹{(parseFloat(order.amount) || 0).toLocaleString()}</Text>
-                            </View>
-                        ))}
+                            );
+                        })}
+
+                        <Text style={styles.disclaimer}>*** Amount Changes applicable ***</Text>
                     </View>
                 )}
             </ScrollView>
 
-            {orders.length > 0 && (
+            {/* Footer Summary */}
+            {groupedOrders.length > 0 && (
                 <View style={styles.footerSummary}>
                     <View style={styles.summaryItem}>
                         <Text style={styles.summaryLabel}>TOTAL ORDERS</Text>
-                        <Text style={styles.summaryValue}>{orders.length}</Text>
+                        <Text style={styles.summaryValue}>{groupedOrders.length}</Text>
                     </View>
                     <View style={styles.summaryItem}>
                         <Text style={[styles.summaryLabel, { textAlign: 'right' }]}>TOTAL VALUE</Text>
-                        <Text style={[styles.summaryValue, { color: '#3861FB', textAlign: 'right' }]}>₹{totalAmount.toLocaleString()}</Text>
+                        <Text style={[styles.summaryValue, { color: '#3861FB', textAlign: 'right' }]}>₹{formatAmount(totalAmount)}</Text>
                     </View>
                 </View>
             )}
@@ -136,31 +242,83 @@ const styles = StyleSheet.create({
     headerTitles: { flex: 1, marginLeft: 15 },
     headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
     headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
-    helpBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
 
-    scroll: { padding: 25, paddingBottom: 150 },
-    filterCard: { backgroundColor: '#fff', borderRadius: 25, padding: 15, marginBottom: 25, elevation: 3 },
+    scroll: { padding: 20, paddingBottom: 150 },
+    filterCard: { backgroundColor: '#fff', borderRadius: 25, padding: 15, marginBottom: 20, elevation: 3 },
     filterInputs: { flexDirection: 'row', alignItems: 'flex-end', gap: 6 },
-    inputBox: { flex: 1 },
-    label: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', marginBottom: 4 },
-    input: { backgroundColor: '#F8F9FD', borderRadius: 10, paddingHorizontal: 10, height: 40, fontSize: 12, fontWeight: '700', color: '#1A1A1A', borderWidth: 1, borderColor: '#EDF2F7' },
     searchBtn: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#3861FB', alignItems: 'center', justifyContent: 'center', elevation: 5 },
 
-    table: { backgroundColor: '#fff', borderRadius: 28, overflow: 'hidden', elevation: 5, shadowColor: '#3861FB', shadowOpacity: 0.05, shadowRadius: 15 },
-    tableHeader: { flexDirection: 'row', backgroundColor: '#F0F4FF', paddingVertical: 12, paddingHorizontal: 20 },
-    headText: { fontSize: 10, fontWeight: '900', color: '#3861FB', letterSpacing: 0.5 },
+    tableWrap: { backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden', elevation: 4 },
 
-    row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 18, borderBottomWidth: 1, borderBottomColor: '#F7FAFC', paddingHorizontal: 15 },
-    rowTextMain: { fontSize: 13, fontWeight: '900', color: '#1A1A1A' },
-    branchTag: { fontSize: 9, fontWeight: '700', color: '#CBD5E0', marginTop: 2 },
-    rowTextSub: { fontSize: 11, fontWeight: '700', color: '#718096' },
+    tableHeader: {
+        flexDirection: 'row',
+        backgroundColor: '#3861FB',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+    },
+    headText: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '900',
+        color: '#fff',
+        textAlign: 'center',
+        letterSpacing: 0.3,
+    },
+
+    orderHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#EEF2FF',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        borderTopWidth: 1,
+        borderTopColor: '#E0E7FF',
+        gap: 6,
+    },
+    orderHeaderText: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#1A1A1A',
+    },
     statusChip: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-    statusText: { fontSize: 9, fontWeight: '900', textTransform: 'uppercase' },
-    amountText: { flex: 2, fontSize: 13, fontWeight: '900', color: '#3861FB', textAlign: 'right' },
+    statusText: { fontSize: 12, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 },
 
-    footerSummary: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', padding: 25, paddingTop: 15, borderTopWidth: 1, borderTopColor: '#F1F5F9', flexDirection: 'row', justifyContent: 'space-between' },
+    itemRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F1F5F9',
+    },
+    itemRowAlt: { backgroundColor: '#FAFBFF' },
+    cellText: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#4A5568',
+        textAlign: 'center',
+    },
+
+    disclaimer: {
+        textAlign: 'center',
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#E3001B',
+        padding: 12,
+        backgroundColor: '#FFF5F5',
+    },
+
+    footerSummary: {
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        backgroundColor: '#fff', padding: 20, paddingTop: 12,
+        borderTopWidth: 1, borderTopColor: '#F1F5F9',
+        flexDirection: 'row', justifyContent: 'space-between',
+        elevation: 10,
+    },
     summaryItem: { flex: 1 },
-    summaryLabel: { fontSize: 10, fontWeight: '800', color: '#A0AEC0', letterSpacing: 1, marginBottom: 5 },
+    summaryLabel: { fontSize: 10, fontWeight: '800', color: '#A0AEC0', letterSpacing: 1, marginBottom: 4 },
     summaryValue: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
 });
 

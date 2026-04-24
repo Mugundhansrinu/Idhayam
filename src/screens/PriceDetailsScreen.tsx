@@ -45,7 +45,16 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
             const data = await getPriceList(custId);
             setProducts(data || []);
             if (data && data.length > 0) {
-                const cats = Array.from(new Set(data.map((p: any) => p.category))).filter(Boolean).sort() as string[];
+                const catMap = new Map<string, number>();
+                data.forEach((p: any) => {
+                    if (p.category && !catMap.has(p.category)) {
+                        catMap.set(p.category, p.igSort || 9999);
+                    }
+                });
+                const cats = Array.from(catMap.entries())
+                    .sort((a, b) => a[1] - b[1])
+                    .map(entry => entry[0]);
+                
                 if (cats.length > 0) setSelectedCat(cats[0]);
             }
             Animated.timing(listAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
@@ -57,14 +66,24 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     const categories = useMemo(() => {
-        return Array.from(new Set(products.map(p => p.category))).filter(Boolean).sort() as string[];
+        const catMap = new Map<string, number>();
+        products.forEach(p => {
+            if (p.category && !catMap.has(p.category)) {
+                catMap.set(p.category, p.igSort || 9999);
+            }
+        });
+        return Array.from(catMap.entries())
+            .sort((a, b) => a[1] - b[1])
+            .map(entry => entry[0]);
     }, [products]);
 
-    const filtered = products.filter(p => {
-        const matchesSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
-        const matchesCat = p.category === selectedCat;
-        return matchesSearch && matchesCat;
-    });
+    const filtered = useMemo(() => {
+        return products.filter(p => {
+            const matchesSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
+            const matchesCat = p.category === selectedCat;
+            return matchesSearch && matchesCat;
+        }).sort((a, b) => (a.imSort ?? 9999) - (b.imSort ?? 9999));
+    }, [products, search, selectedCat]);
 
     return (
         <View style={styles.container}>
@@ -100,10 +119,10 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Standardized Table Header */}
             <View style={styles.tableHeader}>
-                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>PRICE (₹)</Text>
+                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>MRP (₹)</Text>
                 <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'center' }]}>ITEM</Text>
                 <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>TAX %</Text>
-                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>MRP (₹)</Text>
+                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>PRICE (₹)</Text>
             </View>
 
             {loading ? (
@@ -117,8 +136,8 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
                     contentContainerStyle={styles.listContent}
                     renderItem={({ item }) => (
                         <View style={styles.priceCard}>
-                            {/* 1. PRICE */}
-                            <Text style={[styles.prodVal, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.price}</Text>
+                            {/* 1. MRP */}
+                            <Text style={[styles.prodMrp, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.mrp}</Text>
 
                             {/* 2. ITEM */}
                             <View style={{ flex: 1.2, alignItems: 'center' }}>
@@ -128,8 +147,8 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
                             {/* 3. TAX */}
                             <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]} numberOfLines={1}>{item.tax}</Text>
 
-                            {/* 4. MRP */}
-                            <Text style={[styles.prodMrp, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.mrp}</Text>
+                            {/* 4. PRICE */}
+                            <Text style={[styles.prodVal, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.price}</Text>
                         </View>
                     )}
                 />
@@ -175,10 +194,10 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 3
     },
-    prodName: { fontSize: 13, fontWeight: '800', color: '#1A1A1A' },
+    prodName: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
     prodSub: { fontSize: 10, color: '#A0AEC0', fontWeight: '700', marginTop: 2 },
-    prodVal: { flex: 1, textAlign: 'center', fontSize: 12, fontWeight: '900', color: '#059669' },
-    prodMrp: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '900', color: '#3861FB' },
+    prodVal: { flex: 1, textAlign: 'center', fontSize: 15, fontWeight: '900', color: '#059669' },
+    prodMrp: { flex: 1, textAlign: 'center', fontSize: 15, fontWeight: '900', color: '#3861FB' },
 
     centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 },
 

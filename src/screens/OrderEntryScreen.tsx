@@ -25,6 +25,18 @@ import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 const { width } = Dimensions.get('window');
 
+// Reliable Indian number formatter (toLocaleString is inconsistent on Android)
+const formatAmount = (value: number): string => {
+    const fixed = value.toFixed(2);
+    const [intPart, decPart] = fixed.split('.');
+    const lastThree = intPart.slice(-3);
+    const remaining = intPart.slice(0, -3);
+    const formatted = remaining !== ''
+        ? remaining.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree
+        : lastThree;
+    return `${formatted}.${decPart}`;
+};
+
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'OrderEntry'>;
 };
@@ -32,8 +44,9 @@ type Props = {
 const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
     const [focused, setFocused] = useState<'box' | 'pcs' | null>(null);
     const hasQty = (qty?.box && qty.box !== '0' && qty.box !== '') || (qty?.pcs && qty.pcs !== '0' && qty.pcs !== '');
-    const priceText = item?.price ? parseFloat(item.price).toFixed(2) : '0.00';
-    const isZeroPrice = !item?.price || parseFloat(item.price) === 0;
+    const appPrice = parseFloat(item?.appPrice || item?.raw?.APP_PRICE || '0');
+    const priceText = appPrice.toFixed(2);
+    const isZeroPrice = appPrice === 0;
 
     return (
         <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
@@ -102,10 +115,17 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const [orders, setOrders] = useState<Record<string, { box: string, pcs: string }>>({});
 
     const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+    const [keyboardHeight, setKeyboardHeight] = useState(0);
 
     useEffect(() => {
-        const showSubscription = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardVisible(true));
-        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardVisible(false));
+        const showSubscription = Keyboard.addListener('keyboardDidShow', (e) => {
+            setIsKeyboardVisible(true);
+            setKeyboardHeight(e.endCoordinates.height);
+        });
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setIsKeyboardVisible(false);
+            setKeyboardHeight(0);
+        });
         fetchItems();
         return () => {
             showSubscription.remove();
@@ -119,7 +139,16 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
             const data = await getOrderItems(session?.custId || undefined);
             setProducts(data || []);
             if (data && data.length > 0) {
-                const cats = Array.from(new Set(data.map((p: any) => p.category))).filter(Boolean).sort() as string[];
+                const catMap = new Map<string, number>();
+                data.forEach((p: any) => {
+                    if (p.category && !catMap.has(p.category)) {
+                        catMap.set(p.category, p.igSort || 9999);
+                    }
+                });
+                const cats = Array.from(catMap.entries())
+                    .sort((a, b) => a[1] - b[1])
+                    .map(entry => entry[0]);
+
                 if (cats.length > 0) setSelectedCat(cats[0]);
             }
         } catch (e) {
@@ -130,7 +159,15 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     const categories = useMemo(() => {
-        return Array.from(new Set(products.map(p => p.category))).filter(Boolean).sort() as string[];
+        const catMap = new Map<string, number>();
+        products.forEach(p => {
+            if (p.category && !catMap.has(p.category)) {
+                catMap.set(p.category, p.igSort || 9999);
+            }
+        });
+        return Array.from(catMap.entries())
+            .sort((a, b) => a[1] - b[1])
+            .map(entry => entry[0]);
     }, [products]);
 
     const updateOrder = useCallback((id: string, field: 'box' | 'pcs', value: string) => {
@@ -144,10 +181,19 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
         if (!o || (o.box === '' && o.pcs === '')) return null;
         const box = parseInt(o.box || '0', 10);
         const pcs = parseInt(o.pcs || '0', 10);
-        const perBox = parseInt((p.unit || '').match(/\((\d+)\)/)?.[1] || '1', 10);
-        const totalPcs = (box * perBox) + pcs;
+
+        // Use CONV_FACTOR from raw data
+        const convFactor = parseFloat(p.raw?.CONV_FACTOR || '1');
+
+        // Formula: totalPcs = (BOX × CONV_FACTOR) + PCS
+        const totalPcs = (box * convFactor) + pcs;
         if (totalPcs <= 0) return null;
-        return { ...p, totalPcs, amount: totalPcs * parseFloat(p.price || '0') };
+
+        // Amount = totalPcs × APP_PRICE
+        const appPrice = parseFloat(p.appPrice || p.raw?.APP_PRICE || '0');
+        const amount = totalPcs * appPrice;
+
+        return { ...p, box, pcs, totalPcs, appPrice, amount };
     }).filter(Boolean), [products, orders]);
 
     const totalAmount = useMemo(() => activeOrders.reduce((s, o: any) => s + (o.amount || 0), 0), [activeOrders]);
@@ -158,7 +204,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
             const matchesSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
             const matchesCat = p.category === selectedCat;
             return matchesSearch && matchesCat;
-        });
+        }).sort((a, b) => (a.imSort || 9999) - (b.imSort || 9999));
     }, [products, search, selectedCat]);
 
     const executeSubmit = async () => {
@@ -194,9 +240,11 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             {page === 1 ? (
-                <View style={styles.flex1}>
-
-
+                <KeyboardAvoidingView
+                    style={styles.flex1}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    keyboardVerticalOffset={0}
+                >
                     <View style={styles.catWrapper}>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
                             {categories.map(cat => {
@@ -221,11 +269,10 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                         </ScrollView>
                     </View>
 
-                    {/* NEW: Table Header Row from Price Details */}
-                    {/* Standardized Table Header (Financial-Focus Optimized) */}
+                    {/* Standardized Table Header */}
                     <View style={styles.tableHeader}>
                         <Text style={[styles.colLabel, { flex: 2.7, textAlign: 'left' }]}>ITEM / MRP</Text>
-                        <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'right' }]}>PRICE (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 1.2 }]}>PRICE (₹)</Text>
                         <Text style={[styles.colLabel, { flex: 1.3 }]}>BOX</Text>
                         <Text style={[styles.colLabel, { flex: 1.3 }]}>PCS</Text>
                     </View>
@@ -237,25 +284,35 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                             data={filteredData}
                             keyExtractor={(p: any) => p.id}
                             renderItem={({ item }: any) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
-                            contentContainerStyle={[styles.listContent, isKeyboardVisible && { paddingBottom: 400 }]}
+                            contentContainerStyle={styles.listContent}
+                            ListEmptyComponent={() => (
+                                <View style={styles.centerBox}>
+                                    <Icon name="inventory" size={48} color="#E2E8F0" />
+                                    <Text style={{ color: '#A0AEC0', marginTop: 10, fontWeight: '600' }}>No products found</Text>
+                                </View>
+                            )}
                             initialNumToRender={8}
                             maxToRenderPerBatch={4}
                             windowSize={5}
                             keyboardShouldPersistTaps="handled"
                             enableOnAndroid={true}
                             enableAutomaticScroll={true}
-                            extraScrollHeight={180}
-                            extraHeight={180}
+                            extraScrollHeight={20}
+                            extraHeight={120}
                             keyboardOpeningTime={0}
                         />
                     )}
 
-                    {totalAmount > 0 && !isKeyboardVisible && (
-                        <TouchableOpacity style={styles.summaryBar} onPress={() => setPage(2)}>
+                    {totalAmount > 0 && (
+                        <TouchableOpacity
+                            style={styles.summaryBar}
+                            onPress={() => { Keyboard.dismiss(); setPage(2); }}
+                            activeOpacity={0.9}
+                        >
                             <LinearGradient colors={['#3861FB', '#2752E7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.summaryInner}>
                                 <View>
                                     <Text style={styles.summaryLabel}>Total Amount</Text>
-                                    <Text style={styles.summaryAmount}>₹ {totalAmount.toLocaleString()}</Text>
+                                    <Text style={styles.summaryAmount}>₹ {formatAmount(totalAmount)}</Text>
                                 </View>
                                 <View style={styles.summaryBtn}>
                                     <Text style={styles.summaryBtnText}>Review & Confirm →</Text>
@@ -263,7 +320,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                             </LinearGradient>
                         </TouchableOpacity>
                     )}
-                </View>
+                </KeyboardAvoidingView>
             ) : (
                 <View style={styles.flex1}>
                     <FlatList
@@ -276,13 +333,13 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                                     <Text style={styles.reviewName}>{item.name}</Text>
                                     <Text style={styles.reviewDetails}>{item.box || 0} Box + {item.pcs || 0} Pcs</Text>
                                 </View>
-                                <Text style={styles.reviewPrice}>₹{item.amount.toLocaleString()}</Text>
+                                <Text style={styles.reviewPrice}>₹{formatAmount(item.amount)}</Text>
                             </View>
                         )}
                         ListFooterComponent={() => (
                             <View style={styles.totalCard}>
                                 <Text style={styles.totalLabel}>Grand Total</Text>
-                                <Text style={styles.totalValue}>₹ {totalAmount.toLocaleString()}</Text>
+                                <Text style={styles.totalValue}>₹ {formatAmount(totalAmount)}</Text>
                             </View>
                         )}
                     />
@@ -328,18 +385,18 @@ const styles = StyleSheet.create({
     catText: { fontSize: 12, fontWeight: '800', color: '#718096' },
     catTextActive: { color: '#fff' },
 
-    tableHeader: { flexDirection: 'row', paddingHorizontal: 35, marginBottom: 15 },
+    tableHeader: { flexDirection: 'row', paddingHorizontal: 25, marginBottom: 15 },
     colLabel: { flex: 1, fontSize: 14, fontWeight: '900', color: '#1d1e1fff', textAlign: 'center' },
 
-    listContent: { paddingHorizontal: 10, paddingBottom: 150 },
+    listContent: { paddingHorizontal: 10, paddingBottom: 20 },
     itemRow: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 15, marginBottom: 10, elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8, borderWidth: 1.5, borderColor: 'transparent' },
     itemRowActive: { borderColor: '#3861FB' },
     itemRowDisabled: { backgroundColor: '#F8F9FD', opacity: 0.6 },
     itemMainContent: { flexDirection: 'row', alignItems: 'center' },
-    prodName: { fontSize: 14, fontWeight: '800', color: '#1A1A1A' },
-    prodSub: { fontSize: 13, color: '#303132ff', fontWeight: "bold", },
-    prodVal: { fontSize: 13, fontWeight: '900', color: '#065F46' },
-    prodMrp: { fontSize: 13, fontWeight: '900', color: '#3861FB', },
+    prodName: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
+    prodSub: { fontSize: 15, color: '#303132ff', fontWeight: "bold", },
+    prodVal: { fontSize: 15, fontWeight: '900', color: '#065F46' },
+    prodMrp: { fontSize: 15, fontWeight: '900', color: '#3861FB', },
     miniInput: { height: 40, backgroundColor: '#FFFFFF', borderRadius: 10, textAlign: 'center', fontSize: 14, fontWeight: '900', color: '#1A1A1A', borderWidth: 1.5, borderColor: '#626161ff', padding: 0 },
     miniInputDisabled: { backgroundColor: '#F1F5F9', borderColor: '#E2E8F0', color: '#CBD5E0' },
 
@@ -350,7 +407,7 @@ const styles = StyleSheet.create({
     manualInputFocused: { borderColor: '#3861FB', backgroundColor: '#FFFFFF', elevation: 4, shadowColor: '#3861FB', shadowOpacity: 0.1, shadowRadius: 10 },
     qtySpacing: { width: 15 },
 
-    summaryBar: { position: 'absolute', bottom: 30, left: 20, right: 20 },
+    summaryBar: { marginHorizontal: 20, marginBottom: 16, marginTop: 6 },
     summaryInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 25, paddingHorizontal: 25, paddingVertical: 18, elevation: 10 },
     summaryLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: '800' },
     summaryAmount: { color: '#fff', fontSize: 24, fontWeight: '900' },

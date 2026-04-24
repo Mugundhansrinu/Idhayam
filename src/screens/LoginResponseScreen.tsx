@@ -54,13 +54,18 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
     const cardAnims = useRef(branches.map(() => new Animated.Value(0))).current;
 
     useEffect(() => {
+        if (branches.length === 1) {
+            handleSelectBranch(branches[0]);
+            return;
+        }
+
         Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
         Animated.stagger(80,
             cardAnims.map(a =>
                 Animated.spring(a, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true })
             )
         ).start();
-    }, []);
+    }, [branches]);
 
     const handleSelectBranch = async (branch: any) => {
         await setSession({
@@ -77,7 +82,7 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
             mobile:        String(data.mobile           ?? ''),
             branchName:    String(branch.CUST_NAME_DISPLAY ?? branch.HUB_NAME ?? 'MAIN BRANCH'),
         });
-        navigation.replace('Dashboard');
+        navigation.navigate('Dashboard');
     };
 
     return (

@@ -44,6 +44,18 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const [activeSlide, setActiveSlide] = useState(0);
     const insets = useSafeAreaInsets();
 
+    const formatCurrency = (val: string | number) => {
+        const num = parseFloat(String(val)) || 0;
+        const parts = num.toFixed(2).split('.');
+        let integerPart = parts[0];
+        const lastThree = integerPart.slice(-3);
+        const otherNumbers = integerPart.slice(0, -3);
+        if (otherNumbers !== '') {
+            integerPart = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
+        }
+        return `${integerPart}.${parts[1]}`;
+    };
+
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -94,6 +106,10 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                             <Text style={styles.distributorName} numberOfLines={1}>
                                 {session?.custName || 'Loading...'}
                             </Text>
+                            <TouchableOpacity style={styles.switchAccountBtn} onPress={() => navigation.goBack()}>
+                                <Icon name="swap-horiz" size={16} color="#3861FB" />
+                                <Text style={styles.switchAccountText}>SWITCH ACCOUNT</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <TouchableOpacity style={styles.profileIconBtn} onPress={() => clearSession().then(() => navigation.replace('Login'))}>
@@ -128,20 +144,20 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                     <View style={styles.balStack}>
                                         <View style={styles.balRow}>
                                             <Text style={styles.balLabel}>BALANCE</Text>
-                                            <Text style={styles.balValue}>₹ {balanceData.balance}</Text>
+                                            <Text style={styles.balValue}>₹ {formatCurrency(balanceData.balance)}</Text>
                                         </View>
                                         <View style={styles.balDivider} />
                                         <View style={styles.balRow}>
                                             <Text style={styles.balLabel}>PENDING ORDER</Text>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444', marginRight: 6 }} />
-                                                <Text style={styles.balValue}>₹ {balanceData.pendingOrder}</Text>
+                                                <Text style={styles.balValue}>₹ {formatCurrency(balanceData.pendingOrder)}</Text>
                                             </View>
                                         </View>
                                         <View style={styles.balDivider} />
                                         <View style={styles.balRow}>
                                             <Text style={styles.balLabel}>NET BALANCE</Text>
-                                            <Text style={[styles.balValue, { color: '#86efac' }]}>₹ {balanceData.netBalance}</Text>
+                                            <Text style={[styles.balValue, { color: '#86efac' }]}>₹ {formatCurrency(balanceData.netBalance)}</Text>
                                         </View>
                                     </View>
                                 </LinearGradient>
@@ -167,15 +183,22 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                             <Icon name="local-shipping" size={22} color="#3861FB" />
                                         </View>
                                         <Text style={styles.slideTitle}>Vehicle Tracking</Text>
-                                        <View style={styles.liveRecordIndicator}><View style={styles.liveDot} /><Text style={styles.liveText}>LIVE</Text></View>
+                                        {vehicleData && (
+                                            <View style={styles.liveRecordIndicator}>
+                                                <View style={styles.liveDot} />
+                                                <Text style={styles.liveText}>LIVE</Text>
+                                            </View>
+                                        )}
                                     </View>
                                     {vehicleData ? (
                                         <View style={styles.trackContent}>
-                                            <Text style={styles.truckNo}>{vehicleData.vehicleNo}</Text>
-                                            <Text style={styles.truckLoc}>{vehicleData.tripName}</Text>
-                                            <View style={styles.etaBar}>
-                                                <Text style={styles.etaLabel}>TRIP CODE</Text>
-                                                <Text style={styles.etaTime}>{vehicleData.tripCode} — {vehicleData.tripType}</Text>
+                                            <View>
+                                                <Text style={{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.6)', letterSpacing: 1, marginBottom: 2 }}>VEHICLE NO</Text>
+                                                <Text style={styles.truckNo}>{vehicleData.vehicleNo}</Text>
+                                            </View>
+                                            <View style={[styles.etaBar, { marginTop: 15 }]}>
+                                                <Text style={styles.etaLabel}>BILL NO / REF</Text>
+                                                <Text style={styles.etaTime}>{vehicleData.tripRefNo || 'N/A'}</Text>
                                             </View>
                                         </View>
                                     ) : (
@@ -190,10 +213,23 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
                         </ScrollView>
                         
-                        {/* Pagination Dots (3 DOTS) */}
-                        <View style={styles.pagination}>
+                        {/* Pagination Dots & Live Tracking Indicator */}
+                        <View style={[styles.pagination, { position: 'relative' }]}>
                             <View style={[styles.dot, activeSlide === 0 && styles.dotActive]} />
-                            <View style={[styles.dot, activeSlide === 1 && styles.dotActive]} />
+                            <View style={[
+                                styles.dot, 
+                                activeSlide === 1 && styles.dotActive,
+                                vehicleData && activeSlide === 0 && { backgroundColor: '#10B981' }
+                            ]} />
+                            
+                            {/* Floating hint to swipe right if tracking is live */}
+                            {vehicleData && activeSlide === 0 && (
+                                <View style={styles.swipeHintBubble}>
+                                    <View style={styles.swipeHintDot} />
+                                    <Text style={styles.swipeHintText}>Live Dispatch</Text>
+                                    <Icon name="chevron-right" size={14} color="#10B981" />
+                                </View>
+                            )}
                         </View>
                     </View>
                 </View>
@@ -248,7 +284,10 @@ const styles = StyleSheet.create({
     headerText: { marginLeft: 15, flex: 1 },
     headerBrand: { fontSize: 9, fontWeight: '900', color: '#64748B', letterSpacing: 1.5 },
     distributorName: { fontSize: 17, fontWeight: '900', color: '#1A1A1A', marginTop: 1 },
+    switchAccountBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F4FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, alignSelf: 'flex-start', marginTop: 6 },
+    switchAccountText: { fontSize: 11, fontWeight: '900', color: '#3861FB', marginLeft: 6, letterSpacing: 0.5 },
     profileIconBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#F8F9FD', alignItems: 'center', justifyContent: 'center' },
+
 
     // Slider
     sliderContainer: { marginTop: 10 },
@@ -286,9 +325,14 @@ const styles = StyleSheet.create({
     activeLabel: { backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
     activeLabelText: { color: '#fff', fontSize: 8, fontWeight: '900' },
 
-    pagination: { flexDirection: 'row', justifyContent: 'center', marginTop: 15 },
+    pagination: { flexDirection: 'row', justifyContent: 'center', marginTop: 15, alignItems: 'center' },
     dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#E2E8F0', marginHorizontal: 4 },
     dotActive: { width: 22, backgroundColor: '#3861FB' },
+    
+    // Swipe Hint
+    swipeHintBubble: { position: 'absolute', right: 30, flexDirection: 'row', alignItems: 'center', backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: '#A7F3D0' },
+    swipeHintDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981', marginRight: 4 },
+    swipeHintText: { fontSize: 9, fontWeight: '900', color: '#10B981' },
 
     // Modules
     moduleSection: { paddingHorizontal: 25, paddingTop: 10 },

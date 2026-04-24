@@ -76,24 +76,10 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHB7JTRK2tDsEK-AaJyFVJuMj2d7H2cLk"></script>
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 html, body, #map { height: 100%; width: 100%; overflow: hidden; background: #e5e9f0; }
-                .truck-icon {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 44px;
-                    height: 44px;
-                    background: #3861FB;
-                    border: 3px solid #FFF;
-                    border-radius: 50%;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                    font-size: 24px;
-                }
-                .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
             </style>
         </head>
         <body>
@@ -104,65 +90,116 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
                 var stops = ${stopsJson};
                 var vehicleNo = '${vehicleNo || 'Vehicle'}';
 
-                var map = L.map('map', { zoomControl: false }).setView([lat, lng], 15);
+                function initMap() {
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 15,
+                        center: {lat: lat, lng: lng},
+                        disableDefaultUI: true,
+                        mapTypeId: 'roadmap',
+                        gestureHandling: 'greedy'
+                    });
 
-                // Use CartoDB Voyager for a cleaner, modern look similar to Google Maps
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-                }).addTo(map);
+                    // Premium Circular Truck SVG Marker
+                    var svgMarkerContent = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">' +
+                                           '<circle cx="25" cy="25" r="22" fill="#3861FB" stroke="#FFFFFF" stroke-width="4" />' +
+                                           '<g transform="translate(13, 13)"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="#FFFFFF"/></g>' +
+                                           '</svg>';
+                    var truckIcon = {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svgMarkerContent),
+                        scaledSize: new google.maps.Size(46, 46),
+                        anchor: new google.maps.Point(23, 23)
+                    };
 
-                var truckHtml = '<div class="truck-icon">🚛</div>';
-                var truckIcon = L.divIcon({
-                    html: truckHtml,
-                    className: '',
-                    iconSize: [44, 44],
-                    iconAnchor: [22, 22],
-                    popupAnchor: [0, -22]
-                });
+                    var currentMarker = new google.maps.Marker({
+                        position: {lat: lat, lng: lng},
+                        map: map,
+                        icon: truckIcon,
+                        title: vehicleNo,
+                        zIndex: 1000
+                    });
 
-                var currentMarker = L.marker([lat, lng], {icon: truckIcon, zIndexOffset: 1000}).addTo(map);
-                currentMarker.bindPopup('<div style="font-family:sans-serif;padding:4px;"><b style="color:#3861FB;">' + vehicleNo + '</b><br><span style="font-size:12px;color:#555;">Active GPS Location</span></div>').openPopup();
+                    var tooltipContent = '<div style="font-family: sans-serif; text-align: center; padding: 4px 6px;">' +
+                        '<b style="color: #1A1A1A; font-size: 14px; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">' + vehicleNo + '</b>' +
+                        '<span style="background-color: #10B981; color: #FFFFFF; padding: 3px 8px; border-radius: 10px; font-size: 9px; font-weight: 900; letter-spacing: 1px;">LIVE</span>' +
+                        '</div>';
 
-                currentMarker.on('click', function() {
-                    map.flyTo([lat, lng], 19, { duration: 1.5 });
-                });
-
-                // Draw path and stops
-                if (stops && stops.length > 0) {
-                    var latlngs = [];
-                    
-                    stops.forEach(function(stop) {
-                        latlngs.push([stop.lat, stop.lng]);
-                        
-                        var isCurrent = (Math.abs(stop.lat - lat) < 0.0001 && Math.abs(stop.lng - lng) < 0.0001);
-                        
-                        if (!isCurrent) {
-                            var stopColor = stop.status === 'Completed' ? '#27AE60' : '#8E8E93';
-                            var circleHtml = '<div style="width:14px;height:14px;background:' + stopColor + ';border:2px solid #FFF;border-radius:50%;box-shadow:0 0 4px rgba(0,0,0,0.4);"></div>';
-                            var circleIcon = L.divIcon({
-                                html: circleHtml,
-                                className: '',
-                                iconSize: [14, 14],
-                                iconAnchor: [7, 7]
-                            });
-                            
-                            L.marker([stop.lat, stop.lng], {icon: circleIcon}).addTo(map)
-                                .bindPopup('<div style="font-family:sans-serif;max-width:200px;"><b style="font-size:12px;color:#333;">' + stop.address + '</b><br><span style="font-size:10px;color:' + stopColor + ';">' + stop.status + '</span></div>');
-                        }
+                    var infoWindow = new google.maps.InfoWindow({
+                        content: tooltipContent
                     });
                     
-                    if (latlngs.length > 1) {
-                        var polyline = L.polyline(latlngs, {color: '#3861FB', weight: 4, opacity: 0.8}).addTo(map);
-                        map.fitBounds(polyline.getBounds(), { padding: [30, 30] });
-                    } else {
-                        map.setView([lat, lng], 15);
+                    infoWindow.open(map, currentMarker);
+
+                    currentMarker.addListener('click', function() {
+                        map.panTo(currentMarker.getPosition());
+                        var targetZoom = 18;
+                        var currentZoom = map.getZoom();
+                        if (currentZoom < targetZoom) {
+                            var interval = setInterval(function() {
+                                if (currentZoom >= targetZoom) {
+                                    clearInterval(interval);
+                                } else {
+                                    currentZoom++;
+                                    map.setZoom(currentZoom);
+                                }
+                            }, 100);
+                        } else {
+                            map.setZoom(targetZoom);
+                        }
+                    });
+
+                    // Draw path and stops
+                    if (stops && stops.length > 0) {
+                        var pathCoordinates = [];
+                        var bounds = new google.maps.LatLngBounds();
+
+                        stops.forEach(function(stop) {
+                            var stopLat = parseFloat(stop.lat);
+                            var stopLng = parseFloat(stop.lng);
+                            var pos = {lat: stopLat, lng: stopLng};
+                            pathCoordinates.push(pos);
+                            bounds.extend(pos);
+
+                            var isCurrent = (Math.abs(stopLat - lat) < 0.0001 && Math.abs(stopLng - lng) < 0.0001);
+                            
+                            if (!isCurrent) {
+                                var stopColor = stop.status === 'Completed' ? '#27AE60' : '#8E8E93';
+                                
+                                var stopMarker = new google.maps.Marker({
+                                    position: pos,
+                                    map: map,
+                                    icon: {
+                                        path: google.maps.SymbolPath.CIRCLE,
+                                        scale: 8,
+                                        fillColor: stopColor,
+                                        fillOpacity: 1,
+                                        strokeColor: '#FFFFFF',
+                                        strokeWeight: 2,
+                                    }
+                                });
+
+                                var stopInfo = new google.maps.InfoWindow({
+                                    content: '<div style="font-family:sans-serif;max-width:200px;"><b style="font-size:12px;color:#333;">' + stop.address + '</b><br><span style="font-size:10px;color:' + stopColor + ';">' + stop.status + '</span></div>'
+                                });
+
+                                stopMarker.addListener('click', function() {
+                                    stopInfo.open(map, stopMarker);
+                                });
+                            }
+                        });
+
+                        if (pathCoordinates.length > 1) {
+                            map.fitBounds(bounds);
+                        } else {
+                            map.setCenter({lat: lat, lng: lng});
+                        }
                     }
                 }
+                
+                window.onload = initMap;
             </script>
         </body>
         </html>
-    `;
+        `;
     }
 
     return (
@@ -200,15 +237,21 @@ const VehicleTrackingScreen: React.FC<Props> = ({ navigation, route }) => {
                 {!loading && location && (
                     <View style={styles.infoOverlay}>
                         <View style={styles.infoCard}>
-                            <View style={styles.infoLeft}>
-                                <Text style={styles.infoTitle}>Current Status</Text>
-                                <Text style={styles.infoDetail} numberOfLines={2}>{location.locName}</Text>
-                            </View>
-                            <View style={[styles.statusBadge, location.status === 'No GPS data' && { backgroundColor: '#FEE2E2' }]}>
-                                <View style={[styles.dot, location.status === 'No GPS data' && { backgroundColor: '#EF4444' }]} />
-                                <Text style={[styles.statusText, location.status === 'No GPS data' && { color: '#EF4444' }]}>
-                                    {location.status === 'No GPS data' ? 'NO DATA' : 'LIVE'}
-                                </Text>
+                            <View style={styles.metaRow}>
+                                <View style={styles.metaCol}>
+                                    <View style={[styles.iconBoxMini, { backgroundColor: '#E0E7FF' }]}><Icon name="local-shipping" size={14} color="#3861FB" /></View>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.metaLabel}>VEHICLE NO</Text>
+                                        <Text style={styles.metaValue} numberOfLines={1}>{vehicleNo || 'N/A'}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.metaCol}>
+                                    <View style={[styles.iconBoxMini, { backgroundColor: '#FEF9C3' }]}><Icon name="receipt" size={14} color="#EAB308" /></View>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.metaLabel}>BILL NO / REF</Text>
+                                        <Text style={styles.metaValue} numberOfLines={1}>{tripRefNo || 'N/A'}</Text>
+                                    </View>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -232,13 +275,13 @@ const styles = StyleSheet.create({
     webviewMap: { flex: 1, backgroundColor: 'transparent' },
     
     infoOverlay: { position: 'absolute', bottom: 30, left: 20, right: 20 },
-    infoCard: { backgroundColor: '#fff', borderRadius: 24, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20 },
-    infoLeft: { flex: 1, marginRight: 15 },
-    infoTitle: { fontSize: 11, fontWeight: '800', color: '#858597', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
-    infoDetail: { fontSize: 15, fontWeight: '700', color: '#1F1F39', lineHeight: 20 },
-    statusBadge: { backgroundColor: '#E8FDF0', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, flexDirection: 'row', alignItems: 'center' },
-    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#27AE60', marginRight: 8 },
-    statusText: { fontSize: 11, fontWeight: '800', color: '#27AE60' },
+    infoCard: { backgroundColor: '#fff', borderRadius: 24, padding: 20, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20 },
+
+    metaRow: { flexDirection: 'row', justifyContent: 'space-between' },
+    metaCol: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+    iconBoxMini: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+    metaLabel: { fontSize: 9, fontWeight: '800', color: '#A0AEC0', letterSpacing: 0.5, marginBottom: 2 },
+    metaValue: { fontSize: 13, fontWeight: '700', color: '#1A1A1A' },
 });
 
 export default VehicleTrackingScreen;
