@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     View,
     Text,
@@ -11,7 +11,6 @@ import {
     Platform,
     ActivityIndicator,
     KeyboardAvoidingView,
-    Dimensions,
     ScrollView,
     Keyboard,
 } from 'react-native';
@@ -23,7 +22,7 @@ import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
-const { width } = Dimensions.get('window');
+
 
 // Reliable Indian number formatter (toLocaleString is inconsistent on Android)
 const formatAmount = (value: number): string => {
@@ -110,27 +109,12 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const [page, setPage] = useState<1 | 2>(1);
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [search] = useState('');
     const [selectedCat, setSelectedCat] = useState('');
     const [orders, setOrders] = useState<Record<string, { box: string, pcs: string }>>({});
 
-    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
-
     useEffect(() => {
-        const showSubscription = Keyboard.addListener('keyboardDidShow', (e) => {
-            setIsKeyboardVisible(true);
-            setKeyboardHeight(e.endCoordinates.height);
-        });
-        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-            setIsKeyboardVisible(false);
-            setKeyboardHeight(0);
-        });
         fetchItems();
-        return () => {
-            showSubscription.remove();
-            hideSubscription.remove();
-        };
     }, []);
 
     const fetchItems = async () => {
@@ -197,7 +181,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     }).filter(Boolean), [products, orders]);
 
     const totalAmount = useMemo(() => activeOrders.reduce((s, o: any) => s + (o.amount || 0), 0), [activeOrders]);
-    const totalCount = useMemo(() => activeOrders.reduce((s, o: any) => s + (o.totalPcs || 0), 0), [activeOrders]);
+
 
     const filteredData = useMemo(() => {
         return products.filter(p => {
@@ -370,13 +354,7 @@ const styles = StyleSheet.create({
     headerTitles: { flex: 1, marginLeft: 15 },
     headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
     headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
-    cartCount: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
-    countBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#E3001B', borderRadius: 10, minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
-    countText: { color: '#fff', fontSize: 10, fontWeight: '900' },
 
-    searchSection: { paddingHorizontal: 25, marginBottom: 20 },
-    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 15, paddingHorizontal: 15, height: 52 },
-    searchInput: { flex: 1, fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
 
     catWrapper: { marginBottom: 20 },
     catScroll: { paddingHorizontal: 25 },
@@ -391,21 +369,14 @@ const styles = StyleSheet.create({
     listContent: { paddingHorizontal: 10, paddingBottom: 20 },
     itemRow: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 15, marginBottom: 10, elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8, borderWidth: 1.5, borderColor: 'transparent' },
     itemRowActive: { borderColor: '#3861FB' },
-    itemRowDisabled: { backgroundColor: '#F8F9FD', opacity: 0.6 },
     itemMainContent: { flexDirection: 'row', alignItems: 'center' },
     prodName: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
-    prodSub: { fontSize: 15, color: '#303132ff', fontWeight: "bold", },
     prodVal: { fontSize: 15, fontWeight: '900', color: '#065F46' },
     prodMrp: { fontSize: 15, fontWeight: '900', color: '#3861FB', },
     miniInput: { height: 40, backgroundColor: '#FFFFFF', borderRadius: 10, textAlign: 'center', fontSize: 14, fontWeight: '900', color: '#1A1A1A', borderWidth: 1.5, borderColor: '#626161ff', padding: 0 },
     miniInputDisabled: { backgroundColor: '#F1F5F9', borderColor: '#E2E8F0', color: '#CBD5E0' },
 
-    qtyRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 15 },
-    manualInputWrap: { flex: 1 },
-    manualLabel: { fontSize: 9, fontWeight: '900', color: '#A0AEC0', textAlign: 'center', marginBottom: 8 },
-    manualInput: { height: 50, backgroundColor: '#F8F9FD', borderRadius: 12, textAlign: 'center', fontSize: 18, fontWeight: '900', color: '#1A1A1A', borderWidth: 1, borderColor: '#000000' },
     manualInputFocused: { borderColor: '#3861FB', backgroundColor: '#FFFFFF', elevation: 4, shadowColor: '#3861FB', shadowOpacity: 0.1, shadowRadius: 10 },
-    qtySpacing: { width: 15 },
 
     summaryBar: { marginHorizontal: 20, marginBottom: 16, marginTop: 6 },
     summaryInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 25, paddingHorizontal: 25, paddingVertical: 18, elevation: 10 },
@@ -424,7 +395,6 @@ const styles = StyleSheet.create({
     totalValue: { fontSize: 32, fontWeight: '900', color: '#059669', marginTop: 5 },
     catDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#00B894', marginLeft: 8 },
     actionRow: { flexDirection: 'row', padding: 25, paddingBottom: 40, gap: 12 },
-    submitBtn: { padding: 25, paddingBottom: 40 },
     submitBtnInner: { height: 60, borderRadius: 20, alignItems: 'center', justifyContent: 'center', elevation: 5 },
     submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 1 },
     centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 },

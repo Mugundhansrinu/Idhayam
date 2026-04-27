@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     tableColSpan: { flexDirection: 'column' },
     tableHeadMain: { fontSize: 11, fontWeight: '900', color: '#1A1A1A', textAlign: 'center', paddingVertical: 10, borderBottomWidth: 1.5, borderColor: '#EDF2F7', letterSpacing: 0.5 },
     tableHeadSubRow: { flexDirection: 'row', paddingVertical: 8 },
-    tableHeadSub: { fontSize: 10, fontWeight: '900', color: '#718096', textAlign: 'center' },
+    tableHeadSub: { fontSize: 11, fontWeight: 'bold', color: '#3861FB', textAlign: 'center' },
     tableHeadDesc: { fontSize: 9, fontWeight: '800', color: '#A0AEC0', textAlign: 'center', paddingHorizontal: 4, paddingBottom: 8 },
 
     tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderColor: '#F1F5F9' },
