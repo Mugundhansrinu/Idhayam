@@ -21,12 +21,6 @@ import ReportDatePicker from '../components/ReportDatePicker';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'OrderEntryReport'> };
 
-const formatVal = (val: any, decimals = 2): string => {
-    const n = parseFloat(String(val));
-    if (isNaN(n)) return '—';
-    return n.toFixed(decimals);
-};
-
 const formatAmount = (value: number): string => {
     const fixed = value.toFixed(2);
     const [intPart, decPart] = fixed.split('.');
@@ -69,20 +63,22 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
         }
     };
 
-    // Group items by order id, sum amounts per order
+    // Group items by SO_ID
     const groupedOrders = useMemo(() => {
         const map = new Map<string, any[]>();
         orders.forEach(o => {
-            const key = o.id;
+            const key = String(o.raw?.SO_ID || o.id); // Explicitly use SO_ID from raw data
             if (!map.has(key)) map.set(key, []);
             map.get(key)!.push(o);
+            //Alert.alert(key);
         });
-        return Array.from(map.entries()).map(([orderId, items]) => {
+        return Array.from(map.entries()).map(([soId, items]) => {
             // Sum TOTAL_AMOUNT per item for the order total
             const totalAmt = items.reduce((s: number, o: any) => s + (parseFloat(o.amount) || 0), 0);
             return {
-                orderId,
-                date: items[0].date,       // already stripped: "2026-04-21"
+                orderId: soId,         // SO_ID as the group key
+                orderNo: items[0].orderNo, // ORDER_NO for display
+                date: items[0].date,
                 amount: totalAmt,
                 status: items[0].status,
                 items,
@@ -135,7 +131,6 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
 
                         {/* Column Headers */}
                         <View style={styles.tableHeader}>
-                            <Text style={[styles.headText, { flex: 1.6, textAlign: 'left' }]}>GROUP</Text>
                             <Text style={[styles.headText, { flex: 1.8 }]}>ITEM</Text>
                             <Text style={[styles.headText, { flex: 1 }]}>PER{'\n'}BOX</Text>
                             <Text style={[styles.headText, { flex: 1.1 }]}>PRICE</Text>
@@ -161,9 +156,14 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                                             size={18}
                                             color="#3861FB"
                                         />
-                                        <Text style={styles.orderHeaderText} numberOfLines={1}>
-                                            {group.orderId}  [{group.date} - {formatAmount(parseFloat(group.amount) || 0)}]
-                                        </Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Text style={styles.orderHeaderText} numberOfLines={1}>
+                                                {group.orderNo} - {group.items[0]?.group || ''}
+                                            </Text>
+                                            <Text style={{ fontSize: 13, color: '#475569', fontWeight: '700', marginTop: 3 }}>
+                                                {group.date}  •  <Text style={{ color: '#059669', fontWeight: '900' }}>₹ {formatAmount(parseFloat(group.amount) || 0)}</Text>
+                                            </Text>
+                                        </View>
                                         <View style={[styles.statusChip, {
                                             backgroundColor: group.status?.toUpperCase().includes('INVOICED') ? '#E1F9F1'
                                                 : group.status?.toUpperCase().includes('CANCEL') ? '#FEE2E2' : '#FFF4E6'
@@ -183,29 +183,26 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                                             key={iIdx}
                                             style={[styles.itemRow, iIdx % 2 === 0 && styles.itemRowAlt]}
                                         >
-                                            <Text style={[styles.cellText, { flex: 1.6, textAlign: 'left', color: '#3861FB', fontWeight: '800' }]} numberOfLines={2}>
-                                                {item.group || '—'}
-                                            </Text>
-                                            <Text style={[styles.cellText, { flex: 1.8 }]} numberOfLines={2}>
+                                            <Text style={[styles.cellText, { flex: 1.8, textAlign: 'left' }]} numberOfLines={2}>
                                                 {item.itemName || '—'}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1 }]}>
                                                 {item.perBox || '—'}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1.1, color: '#059669', fontWeight: '800' }]}>
-                                                {formatVal(item.price)}
+                                                {parseFloat(item.price || 0).toFixed(2)}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1 }]}>
-                                                {formatVal(item.ordBox)}
+                                                {item.ordBox}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1 }]}>
-                                                {formatVal(item.ordPcs)}
+                                                {item.ordPcs}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1, color: '#1A1A1A', fontWeight: '800' }]}>
-                                                {formatVal(item.cnfBox)}
+                                                {item.cnfBox}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1, color: '#1A1A1A', fontWeight: '800' }]}>
-                                                {formatVal(item.cnfPcs)}
+                                                {item.cnfPcs}
                                             </Text>
                                         </View>
                                     ))}

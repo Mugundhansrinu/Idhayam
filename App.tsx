@@ -24,6 +24,7 @@ import LoginResponseScreen from './src/screens/LoginResponseScreen';
 import OrderEntryReportScreen from './src/screens/OrderEntryReportScreen';
 import CreditDebitNoteScreen from './src/screens/CreditDebitNoteScreen';
 import DiscountDetailScreen from './src/screens/DiscountDetailScreen';
+import PdfViewerScreen from './src/screens/PdfViewerScreen';
 
 // ─────────────────────────────────────────
 //  Navigation types
@@ -46,6 +47,7 @@ export type RootStackParamList = {
   OrderEntryReport: undefined;
   CreditDebitNote: undefined;
   DiscountDetail: { items: string; type: string; custType: string; schemeName: string };
+  PdfViewer: { url: string; title?: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -96,6 +98,7 @@ function App(): React.JSX.Element {
                 <Stack.Screen name="OrderEntryReport" component={OrderEntryReportScreen} />
                 <Stack.Screen name="CreditDebitNote" component={CreditDebitNoteScreen} />
                 <Stack.Screen name="DiscountDetail" component={DiscountDetailScreen} />
+                <Stack.Screen name="PdfViewer" component={PdfViewerScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </RootLayout>

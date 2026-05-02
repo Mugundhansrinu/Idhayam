@@ -11,13 +11,15 @@ import {
     ActivityIndicator,
     Animated,
     Platform,
+    Linking,
+    Alert,
 } from 'react-native';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSession } from '../context/SessionContext';
-import { getCustomerBalance, getInvoicedVehicleList } from '../api';
+import { getCustomerBalance, getInvoicedVehicleList, getNewTransactionDetailsPdf } from '../api';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,7 +34,8 @@ const MODULES = [
     { id: 'PriceDetails', icon: 'currency-rupee', iconColor: '#3861FB', label: 'Price Details', sub: 'View live rates', color: '#F0F4FF' },
     { id: 'Report', icon: 'bar-chart', iconColor: '#3861FB', label: 'Reports', sub: 'Order & Analysis', color: '#F0F4FF' },
     { id: 'BankDetails', icon: 'account-balance', iconColor: '#3861FB', label: 'Bank Details', sub: 'Virtual accounts', color: '#F0F4FF' },
-    { id: 'ContactUs', icon: 'support-agent', iconColor: '#3861FB', label: 'Contact Us', sub: 'Support & Help', color: '#F0F4FF' },
+    { id: 'TransactionDetails', icon: 'receipt-long', iconColor: '#3861FB', label: 'Transaction Details', sub: 'View details', color: '#F0F4FF' },
+    { id: 'ContactUs', icon: 'support-agent', iconColor: '#3861FB', label: 'Contact Us', sub: 'Support & Help', color: '#F0F4FF' }
 ];
 
 const DashboardScreen: React.FC<Props> = ({ navigation }) => {
@@ -65,7 +68,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
     const fetchData = async () => {
         try {
-            const custId   = session?.custId   || undefined;
+            const custId = session?.custId || undefined;
             const branchId = session?.branchId || undefined;
             const [bal, vehicles] = await Promise.all([
                 getCustomerBalance(custId),
@@ -90,10 +93,31 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         setActiveSlide(Math.round(index));
     };
 
+    const handleTransactionDetails = async () => {
+        setLoading(true);
+        try {
+            const response = await getNewTransactionDetailsPdf();
+            if (response && response.success && response.url) {
+                // Navigate to in-app PDF Viewer
+                navigation.navigate('PdfViewer', {
+                    url: response.url,
+                    title: 'Transaction Details'
+                });
+            } else {
+                Alert.alert('Error', response?.message || 'Failed to fetch transaction details.');
+            }
+        } catch (error) {
+            console.error('handleTransactionDetails error:', error);
+            Alert.alert('Error', 'An error occurred while fetching the transaction details.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            
+
             {/* Sticky Header Top */}
             <View style={[styles.stickyHeader, { paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 60 : 20) }]}>
                 <View style={styles.headerTop}>
@@ -119,21 +143,21 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-                
+
                 {/* 1. Remaining Header Section */}
                 <View style={styles.header}>
                     {/* 2. Horizontal Slider Section (3 SLIDES) */}
                     <View style={styles.sliderContainer}>
-                        <ScrollView 
-                            horizontal 
-                            pagingEnabled 
-                            showsHorizontalScrollIndicator={false} 
+                        <ScrollView
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
                             onScroll={handleScroll}
                             scrollEventThrottle={16}
                         >
                             {/* Slide 1: Account Balance */}
                             <View style={styles.balSlide}>
-                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{x:0,y:0}} end={{x:1,y:1}}>
+                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                                     <View style={styles.slideHeader}>
                                         <View style={styles.slideIconBg}>
                                             <Icon name="account-balance-wallet" size={22} color="#3861FB" />
@@ -164,12 +188,12 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                             </View>
 
                             {/* Slide 2: Vehicle Tracking */}
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.balSlide}
                                 activeOpacity={0.9}
                                 onPress={() => {
                                     if (vehicleData) {
-                                        navigation.navigate('VehicleTracking' as any, { 
+                                        navigation.navigate('VehicleTracking' as any, {
                                             vehicleNo: vehicleData.vehicleNo,
                                             tripRefNo: vehicleData.tripRefNo,
                                             tripId: vehicleData.tripId
@@ -177,7 +201,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                     }
                                 }}
                             >
-                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{x:0,y:0}} end={{x:1,y:1}}>
+                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                                     <View style={styles.slideHeader}>
                                         <View style={styles.slideIconBg}>
                                             <Icon name="local-shipping" size={22} color="#3861FB" />
@@ -212,16 +236,16 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
 
                         </ScrollView>
-                        
+
                         {/* Pagination Dots & Live Tracking Indicator */}
                         <View style={[styles.pagination, { position: 'relative' }]}>
                             <View style={[styles.dot, activeSlide === 0 && styles.dotActive]} />
                             <View style={[
-                                styles.dot, 
+                                styles.dot,
                                 activeSlide === 1 && styles.dotActive,
                                 vehicleData && activeSlide === 0 && { backgroundColor: '#10B981' }
                             ]} />
-                            
+
                             {/* Floating hint to swipe right if tracking is live */}
                             {vehicleData && activeSlide === 0 && (
                                 <View style={styles.swipeHintBubble}>
@@ -239,16 +263,22 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>Distributor Master</Text>
                         <View style={styles.activeBadge}>
-                            <Text style={styles.activeBadgeText}>6 Live Services</Text>
+                            <Text style={styles.activeBadgeText}>7 Live Services</Text>
                         </View>
                     </View>
 
                     <View style={styles.moduleGrid}>
                         {MODULES.map((m) => (
-                            <TouchableOpacity 
-                                key={m.id} 
+                            <TouchableOpacity
+                                key={m.id}
                                 style={[styles.moduleCard, { backgroundColor: '#FFFFFF' }]}
-                                onPress={() => navigation.navigate(m.id as any)}
+                                onPress={() => {
+                                    if (m.id === 'TransactionDetails') {
+                                        handleTransactionDetails();
+                                    } else {
+                                        navigation.navigate(m.id as any);
+                                    }
+                                }}
                             >
                                 <View style={styles.moduleCardInner}>
                                     <View style={[styles.modIconArea, { backgroundColor: m.color }]}>
@@ -328,7 +358,7 @@ const styles = StyleSheet.create({
     pagination: { flexDirection: 'row', justifyContent: 'center', marginTop: 15, alignItems: 'center' },
     dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#E2E8F0', marginHorizontal: 4 },
     dotActive: { width: 22, backgroundColor: '#3861FB' },
-    
+
     // Swipe Hint
     swipeHintBubble: { position: 'absolute', right: 30, flexDirection: 'row', alignItems: 'center', backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: '#A7F3D0' },
     swipeHintDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981', marginRight: 4 },

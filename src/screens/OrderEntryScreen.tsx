@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import {
     KeyboardAvoidingView,
     ScrollView,
     Keyboard,
+    PanResponder,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -51,7 +52,7 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
         <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
             <View style={styles.itemMainContent}>
                 {/* 1. ITEM & MRP Combined */}
-                <View style={{ flex: 2.7, justifyContent: 'center' }}>
+                <View style={{ flex: 2, justifyContent: 'center' }}>
                     <Text style={styles.prodName} numberOfLines={1}>{item.name}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                         <Text style={styles.prodMrp}>₹{item.mrp}</Text>
@@ -59,7 +60,7 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
                 </View>
 
                 {/* 2. PRICE */}
-                <View style={{ flex: 1.2, alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+                <View style={{ flex: 1.9, alignItems: 'flex-end', justifyContent: 'flex-end', paddingRight: 10 }}>
                     <Text style={[styles.prodVal]} numberOfLines={1}>₹{priceText}</Text>
                 </View>
 
@@ -191,6 +192,36 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
         }).sort((a, b) => (a.imSort || 9999) - (b.imSort || 9999));
     }, [products, search, selectedCat]);
 
+    // Swipe-to-change-category support
+    const catScrollRef = useRef<ScrollView>(null);
+    const catXPositions = useRef<number[]>([]);
+
+    const changeCat = useCallback((dir: 'left' | 'right') => {
+        if (categories.length === 0) return;
+        const currentIdx = categories.indexOf(selectedCat);
+        let nextIdx = currentIdx;
+        if (dir === 'left') nextIdx = Math.min(currentIdx + 1, categories.length - 1);
+        else nextIdx = Math.max(currentIdx - 1, 0);
+        if (nextIdx === currentIdx) return;
+        setSelectedCat(categories[nextIdx]);
+        const x = catXPositions.current[nextIdx];
+        if (x !== undefined) catScrollRef.current?.scrollTo({ x: Math.max(0, x - 20), animated: true });
+    }, [categories, selectedCat]);
+
+    const changeCatRef = useRef(changeCat);
+    useEffect(() => { changeCatRef.current = changeCat; }, [changeCat]);
+
+    const swipePanResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponder: (_, gs) =>
+                Math.abs(gs.dx) > 15 && Math.abs(gs.dx) > Math.abs(gs.dy),
+            onPanResponderRelease: (_, gs) => {
+                if (gs.dx < -40) changeCatRef.current('left');
+                else if (gs.dx > 40) changeCatRef.current('right');
+            },
+        })
+    ).current;
+
     const executeSubmit = async () => {
         setLoading(true);
         try {
@@ -230,8 +261,8 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                     keyboardVerticalOffset={0}
                 >
                     <View style={styles.catWrapper}>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
-                            {categories.map(cat => {
+                        <ScrollView ref={catScrollRef} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
+                            {categories.map((cat, idx) => {
                                 const hasAnyOrder = products.some(p =>
                                     p.category === cat &&
                                     ((orders[p.id]?.box && orders[p.id].box !== '0' && orders[p.id].box !== '') ||
@@ -240,8 +271,13 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                                 return (
                                     <TouchableOpacity
                                         key={cat}
+                                        onLayout={e => { catXPositions.current[idx] = e.nativeEvent.layout.x; }}
                                         style={[styles.catChip, selectedCat === cat && styles.catChipActive]}
-                                        onPress={() => setSelectedCat(cat)}
+                                        onPress={() => {
+                                            setSelectedCat(cat);
+                                            const x = catXPositions.current[idx];
+                                            if (x !== undefined) catScrollRef.current?.scrollTo({ x: Math.max(0, x - 20), animated: true });
+                                        }}
                                     >
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Text style={[styles.catText, selectedCat === cat && styles.catTextActive]}>{cat}</Text>
@@ -264,27 +300,29 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                     {loading ? (
                         <View style={styles.centerBox}><ActivityIndicator size="large" color="#3861FB" /></View>
                     ) : (
-                        <KeyboardAwareFlatList
-                            data={filteredData}
-                            keyExtractor={(p: any) => p.id}
-                            renderItem={({ item }: any) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
-                            contentContainerStyle={styles.listContent}
-                            ListEmptyComponent={() => (
-                                <View style={styles.centerBox}>
-                                    <Icon name="inventory" size={48} color="#E2E8F0" />
-                                    <Text style={{ color: '#A0AEC0', marginTop: 10, fontWeight: '600' }}>No products found</Text>
-                                </View>
-                            )}
-                            initialNumToRender={8}
-                            maxToRenderPerBatch={4}
-                            windowSize={5}
-                            keyboardShouldPersistTaps="handled"
-                            enableOnAndroid={true}
-                            enableAutomaticScroll={true}
-                            extraScrollHeight={20}
-                            extraHeight={120}
-                            keyboardOpeningTime={0}
-                        />
+                        <View style={{ flex: 1 }} {...swipePanResponder.panHandlers}>
+                            <KeyboardAwareFlatList
+                                data={filteredData}
+                                keyExtractor={(p: any) => p.id}
+                                renderItem={({ item }: any) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
+                                contentContainerStyle={styles.listContent}
+                                ListEmptyComponent={() => (
+                                    <View style={styles.centerBox}>
+                                        <Icon name="inventory" size={48} color="#E2E8F0" />
+                                        <Text style={{ color: '#A0AEC0', marginTop: 10, fontWeight: '600' }}>No products found</Text>
+                                    </View>
+                                )}
+                                initialNumToRender={8}
+                                maxToRenderPerBatch={4}
+                                windowSize={5}
+                                keyboardShouldPersistTaps="handled"
+                                enableOnAndroid={true}
+                                enableAutomaticScroll={true}
+                                extraScrollHeight={20}
+                                extraHeight={120}
+                                keyboardOpeningTime={0}
+                            />
+                        </View>
                     )}
 
                     {totalAmount > 0 && (

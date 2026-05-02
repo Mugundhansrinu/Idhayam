@@ -10,7 +10,7 @@ import { getDiscountDetail } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-type Props = { 
+type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'DiscountDetail'>;
     route: RouteProp<RootStackParamList, 'DiscountDetail'>;
 };
@@ -50,10 +50,16 @@ const DiscountDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         return ((s / t) * 100).toFixed(2);
     };
 
+    const formatNumber = (val: any): string => {
+        const num = parseFloat(val);
+        if (isNaN(num)) return val || '-';
+        return num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    };
+
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-            
+
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={20} color="#3861FB" />
@@ -99,17 +105,17 @@ const DiscountDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                             : String(v)
                                     ).filter(Boolean);
                                 }
-                            } catch {}
+                            } catch { }
                             // Fallback: comma-separated string
                             return str.split(',').map((s: string) => s.trim()).filter(Boolean);
                         };
 
                         const applicableItems = parseOrderItems(rawOrderItems);
-                        
+
                         return (
                             <View key={sIdx} style={styles.card}>
                                 <Text style={styles.slabTitle}>{slab?.IG_DISP || schemeName || 'Product Scheme'}</Text>
-                                
+
                                 <View style={styles.infoList}>
                                     {isSD && <InfoRow label="QUOTA" value={slab?.REMARKS || slab?.FREE_ITEM_REMARKS || 'N/A'} />}
                                     <InfoRow label="VALIDITY" value={formatValidity(slab?.VALID_FROM, slab?.VALID_TO)} />
@@ -166,7 +172,7 @@ const DiscountDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                                 </View>
                                                 <View style={[styles.tableColSpan, { flex: 1.5, borderLeftWidth: 1, borderColor: '#EDF2F7', justifyContent: 'center' }]}>
                                                     <Text style={styles.tableHeadMain}>ACHIEVED</Text>
-                                                    <Text style={styles.tableHeadDesc}>({slab?.PERIOD_SALE || '0'} {slab?.INV_UOM || 'LT'} WITH {calculateAchieved(slab?.PERIOD_SALE, slab?.LTR)}%)</Text>
+                                                    <Text style={styles.tableHeadSub}>({formatNumber(slab?.PERIOD_SALE)} {slab?.INV_UOM || 'LT'} WITH {calculateAchieved(slab?.PERIOD_SALE, slab?.LTR)}%)</Text>
                                                 </View>
                                             </View>
                                             {slab.DISCOUNT_DETAIL.split(',').map((rowStr: string, rIdx: number) => {
@@ -177,7 +183,7 @@ const DiscountDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                                                         <Text style={[styles.tableCell, { flex: 1 }]}>{cols[1] || '-'}</Text>
                                                         <Text style={[styles.tableCell, { flex: 1 }]}>{cols[2] || '-'}</Text>
                                                         <View style={[styles.tableCellBox, { flex: 1.5, borderLeftWidth: 1, borderColor: '#EDF2F7' }]}>
-                                                            <Text style={[styles.tableCell, { width: '100%' }]}>{cols[3] || '-'}</Text>
+                                                            <Text style={[styles.tableCell, { width: '100%' }]}>{formatNumber(cols[3])}</Text>
                                                         </View>
                                                     </View>
                                                 );
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
 
     card: { backgroundColor: '#fff', borderRadius: 28, padding: 22, marginBottom: 15, elevation: 3, shadowColor: '#304FFE', shadowOpacity: 0.05, shadowRadius: 15, borderWidth: 1.5, borderColor: 'transparent' },
     slabTitle: { fontSize: 16, fontWeight: '900', color: '#1A1A1A', textTransform: 'uppercase', marginBottom: 15, letterSpacing: 0.5 },
-    
+
     infoList: { marginBottom: 20 },
     infoRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6 },
     infoRowLabel: { flex: 1.2, fontSize: 11, fontWeight: '900', color: '#A0AEC0', letterSpacing: 0.5 },

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import {
     View,
     Text,
@@ -7,32 +7,28 @@ import {
     StatusBar,
     Animated,
     ScrollView,
-    TextInput,
-    Dimensions,
     Platform,
     ActivityIndicator,
     FlatList,
+    PanResponder,
 } from 'react-native';
-import { useTheme } from '../theme';
-import { BrandColors } from '../theme/Colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getPriceList } from '../api';
 import { useSession } from '../context/SessionContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const { width } = Dimensions.get('window');
-
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'PriceDetails'> };
 
 const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
-    const { colors } = useTheme();
     const { session } = useSession();
     const [search, setSearch] = useState('');
     const [products, setProducts] = useState<any[]>([]);
     const [selectedCat, setSelectedCat] = useState('');
     const [loading, setLoading] = useState(true);
     const listAnim = useRef(new Animated.Value(0)).current;
+    const catScrollRef = useRef<ScrollView>(null);
+    const catXPositions = useRef<number[]>([]);
 
     useEffect(() => {
         fetchPrices();
@@ -54,7 +50,7 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
                 const cats = Array.from(catMap.entries())
                     .sort((a, b) => a[1] - b[1])
                     .map(entry => entry[0]);
-                
+
                 if (cats.length > 0) setSelectedCat(cats[0]);
             }
             Animated.timing(listAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
@@ -85,6 +81,33 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
         }).sort((a, b) => (a.imSort ?? 9999) - (b.imSort ?? 9999));
     }, [products, search, selectedCat]);
 
+    const changeCat = useCallback((dir: 'left' | 'right') => {
+        if (categories.length === 0) return;
+        const currentIdx = categories.indexOf(selectedCat);
+        let nextIdx = currentIdx;
+        if (dir === 'left') nextIdx = Math.min(currentIdx + 1, categories.length - 1);
+        else nextIdx = Math.max(currentIdx - 1, 0);
+        if (nextIdx === currentIdx) return;
+        setSelectedCat(categories[nextIdx]);
+        const x = catXPositions.current[nextIdx];
+        if (x !== undefined) catScrollRef.current?.scrollTo({ x: Math.max(0, x - 20), animated: true });
+    }, [categories, selectedCat]);
+
+    // Use a ref so PanResponder always calls the latest changeCat without stale closure
+    const changeCatRef = useRef(changeCat);
+    useEffect(() => { changeCatRef.current = changeCat; }, [changeCat]);
+
+    const swipePanResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponder: (_, gs) =>
+                Math.abs(gs.dx) > 15 && Math.abs(gs.dx) > Math.abs(gs.dy),
+            onPanResponderRelease: (_, gs) => {
+                if (gs.dx < -40) changeCatRef.current('left');
+                else if (gs.dx > 40) changeCatRef.current('right');
+            },
+        })
+    ).current;
+
     return (
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
@@ -104,12 +127,17 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Category Chips */}
             <View style={styles.catWrapper}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
-                    {categories.map(cat => (
+                <ScrollView ref={catScrollRef} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
+                    {categories.map((cat, idx) => (
                         <TouchableOpacity
                             key={cat}
+                            onLayout={e => { catXPositions.current[idx] = e.nativeEvent.layout.x; }}
                             style={[styles.catChip, selectedCat === cat && styles.catChipActive]}
-                            onPress={() => setSelectedCat(cat)}
+                            onPress={() => {
+                                setSelectedCat(cat);
+                                const x = catXPositions.current[idx];
+                                if (x !== undefined) catScrollRef.current?.scrollTo({ x: Math.max(0, x - 20), animated: true });
+                            }}
                         >
                             <Text style={[styles.catText, selectedCat === cat && styles.catTextActive]}>{cat}</Text>
                         </TouchableOpacity>
@@ -119,8 +147,8 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Standardized Table Header */}
             <View style={styles.tableHeader}>
-                <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>MRP (₹)</Text>
-                <Text style={[styles.colLabel, { flex: 1.2, textAlign: 'center' }]}>ITEM</Text>
+                <Text style={[styles.colLabel, { flex: 0.9, textAlign: 'right' }]}>MRP (₹)</Text>
+                <Text style={[styles.colLabel, { flex: 1.5, textAlign: 'center' }]}>ITEM</Text>
                 <Text style={[styles.colLabel, { flex: 1, textAlign: 'center' }]}>TAX %</Text>
                 <Text style={[styles.colLabel, { flex: 1.4, textAlign: 'center' }]}>PRICE (₹)</Text>
             </View>
@@ -130,28 +158,28 @@ const PriceDetailsScreen: React.FC<Props> = ({ navigation }) => {
                     <ActivityIndicator size="large" color="#3861FB" />
                 </View>
             ) : (
-                <FlatList
-                    data={filtered}
-                    keyExtractor={(item, index) => index.toString()}
-                    contentContainerStyle={styles.listContent}
-                    renderItem={({ item }) => (
-                        <View style={styles.priceCard}>
-                            {/* 1. MRP */}
-                            <Text style={[styles.prodMrp, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.mrp}</Text>
+                <View style={{ flex: 1 }} {...swipePanResponder.panHandlers}>
+                    <FlatList
+                        data={filtered}
+                        keyExtractor={(item, index) => index.toString()}
+                        contentContainerStyle={styles.listContent}
+                        renderItem={({ item }) => (
+                            <View style={styles.priceCard}>
+                                {/* 1. MRP */}
+                                <Text style={[styles.prodMrp, { flex: 0.9, textAlign: 'right' }]} numberOfLines={1}>₹{item.mrp}</Text>
 
-                            {/* 2. ITEM */}
-                            <View style={{ flex: 1.2, alignItems: 'center' }}>
-                                <Text style={[styles.prodName, { textAlign: 'center' }]}>{item.name}</Text>
+                                {/* 2. ITEM */}
+                                <Text style={[styles.prodName, { flex: 1.5, textAlign: 'center' }]}>{item.name}</Text>
+
+                                {/* 3. TAX */}
+                                <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]} numberOfLines={1}>{item.tax}</Text>
+
+                                {/* 4. PRICE */}
+                                <Text style={[styles.prodVal, { flex: 1.4, textAlign: 'right' }]} numberOfLines={1}>₹{item.price}</Text>
                             </View>
-
-                            {/* 3. TAX */}
-                            <Text style={[styles.prodVal, { flex: 1, textAlign: 'center' }]} numberOfLines={1}>{item.tax}</Text>
-
-                            {/* 4. PRICE */}
-                            <Text style={[styles.prodVal, { flex: 1.4, textAlign: 'center' }]} numberOfLines={1}>₹{item.price}</Text>
-                        </View>
-                    )}
-                />
+                        )}
+                    />
+                </View>
             )}
 
         </View>
@@ -165,11 +193,6 @@ const styles = StyleSheet.create({
     headerTitles: { flex: 1, marginLeft: 15 },
     headerTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
     headerSub: { fontSize: 13, color: '#A0AEC0', fontWeight: '600', marginTop: 2 },
-    downloadBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', elevation: 2 },
-
-    searchSection: { paddingHorizontal: 25, marginBottom: 20 },
-    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 15, paddingHorizontal: 15, height: 52 },
-    searchInput: { flex: 1, fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
 
     catWrapper: { marginBottom: 20 },
     catScroll: { paddingHorizontal: 25 },
@@ -195,30 +218,10 @@ const styles = StyleSheet.create({
         elevation: 3
     },
     prodName: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
-    prodSub: { fontSize: 10, color: '#A0AEC0', fontWeight: '700', marginTop: 2 },
     prodVal: { flex: 1, textAlign: 'center', fontSize: 15, fontWeight: '900', color: '#059669' },
     prodMrp: { flex: 1, textAlign: 'center', fontSize: 15, fontWeight: '900', color: '#3861FB' },
 
     centerBox: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 },
-
-    footerInfo: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#F8F9FD', padding: 25 },
-    footerInner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 24,
-        padding: 20,
-        shadowColor: '#3861FB',
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 5
-    },
-    updateIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F0F4FF', alignItems: 'center', justifyContent: 'center' },
-    updateLabel: { fontSize: 10, fontWeight: '800', color: '#A0AEC0' },
-    updateValue: { fontSize: 15, fontWeight: '900', color: '#1A1A1A', marginTop: 2 },
-    prodCountBadge: { backgroundColor: '#F0F4FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
-    prodCountText: { fontSize: 10, fontWeight: '900', color: '#3861FB' },
-    footerNote: { textAlign: 'center', fontSize: 11, color: '#A0AEC0', fontWeight: '700', marginTop: 15 },
 });
 
 export default PriceDetailsScreen;

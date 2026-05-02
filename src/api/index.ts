@@ -113,8 +113,8 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
 
 export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, branchId = FALLBACK_BRANCH_ID): Promise<any> {
     const payload = {
-        A: '51',
-        B: '46',
+        A: custId,
+        B: branchId,
         C: 'GetInvoicedVehicleList',
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
@@ -322,7 +322,6 @@ export async function getDiscountDetail(discountIds: string, type: string, custI
         E: discountIds,
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
-
     try {
         const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
             method: 'POST',
@@ -519,8 +518,8 @@ export async function getOrderList(fromDate: string, toDate: string, custId = FA
         A: fromDate, // MM/DD/YYYY
         B: toDate,   // MM/DD/YYYY
         C: 'ORD',
-        D: branchId,
-        E: custId,
+        D: custId,
+        E: branchId,
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
 
@@ -547,21 +546,25 @@ export async function getOrderList(fromDate: string, toDate: string, custId = FA
 
             if (rows.length > 0) console.log('FetchOrderList First Row:', JSON.stringify(rows[0]));
 
+            // Sort by SO_ID ascending (item sequence within each order)
+            rows.sort((a: any, b: any) => (Number(a.SO_ID) || 0) - (Number(b.SO_ID) || 0));
+
             const stripTime = (val: any): string => {
                 if (!val) return '—';
                 return String(val).split('T')[0]; // "2026-04-21T00:00:00" → "2026-04-21"
             };
 
             return rows.map(o => ({
-                id: String(o.ORDER_NO || o.ORD_NO || o.ID || '—'),
+                id: String(o.SO_ID || o.ID || '—'),
+                orderNo: String(o.ORDER_NO_STR || o.ORDER_NO || o.ORD_NO || o.ID || '—'),
                 date: stripTime(o.ORDER_DATE || o.ORD_DATE_STR || o.DATE),
                 amount: o.TOTAL_AMOUNT ?? o.PROD_AMOUNT ?? o.NET_AMT ?? o.NET_AMOUNT ?? 0,
-                status: o.SO_STATUS || o.CANCEL || '—',
+                status: o.STATUS || '—',
                 branchId: o.BRANCH_ID || branchId,
                 type: o.TYPE || '—',
                 // Item-level columns (matching image columns)
                 group: o.IG_DISP || o.SO_DISPLAY_NAME || o.ITEM_GRP_NAME || '',
-                itemName: o.ITEM_DESC || o.ITEM_NAME || '',
+                itemName: o.DISPLAY_NAME || o.ITEM_DESC || o.ITEM_NAME || '',
                 perBox: o.PACKING_FACTOR || o.CONV_FACTOR || '',
                 price: o.SELLING_PRICE || o.APP_PRICE || o.MRP || 0,
                 ordBox: o.TOTAL_BOX || o.BOX_QTY || 0,
@@ -802,8 +805,35 @@ export async function getTransactionPdf(fromDate: string, toDate: string, custId
     return { success: false, message: 'Failed to generate PDF' };
 }
 
-export function getTransactionPdfUrl(custId = FALLBACK_CUSTOMER_ID): string {
-    return '';
+export async function getNewTransactionDetailsPdf(): Promise<any> {
+    const payload = '';
+
+    try {
+        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+            method: 'POST',
+            headers: {
+                'F': 'FetchTransDetailsPdf',
+                'MODE': 'MOBILE',
+                'P': 'Cust_Id=10895',
+                'J': payload,
+                'M': 'POST',
+                'Authorization': API_TOKEN,
+            },
+        });
+
+        const textData = await response.text();
+        console.log('FetchTransDetailsPdf Raw Response:', textData);
+
+        const outer = deepParse(textData);
+        if (outer?.success && outer?.result) {
+            const inner = deepParse(outer.result);
+            const url = typeof inner === 'string' ? inner : inner.URL || inner.url || inner.DMOBNO;
+            return { success: true, url };
+        }
+    } catch (e) {
+        console.log('FetchTransDetailsPdf Error:', e);
+    }
+    return { success: false, message: 'Failed to generate PDF' };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
