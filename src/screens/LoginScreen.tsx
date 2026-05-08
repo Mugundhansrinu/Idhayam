@@ -47,7 +47,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
     /* ── PAN & Mobile step ── */
     const [apiMessage, setApiMessage] = useState('');
-    const [pan, setPan] = useState('S1A2B3Z4Y6');
+    const [pan, setPan] = useState('');
     const [panFocused, setPanFocused] = useState(false);
     const [mobile, setMobile] = useState('');
     const [fetchingMobiles, setFetchingMobiles] = useState(false);
@@ -99,7 +99,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         }, 1000);
     };
 
-    const isPanValid = (v: string) => v.toUpperCase() === 'S1A2B3Z4Y6' || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v.toUpperCase());
+    const isPanValid = (v: string) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v.toUpperCase());
 
     const handleFetchMobiles = async () => {
         const cleanPan = pan.trim().toUpperCase();
@@ -125,19 +125,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         setApiMessage('');
         try {
             const response = await AuthService.generateOtp(pan, mobile);
-            if (response && response.message) {
-                const msg = String(response.message);
-                setApiMessage(msg);
-
-                // For testing: Autofill OTP automatically
-                const match = msg.match(/\b\d{4,6}\b/);
-                if (match) {
-                    const foundOtp = match[0].padStart(OTP_LENGTH, '0');
-                    setOtp(foundOtp.split(''));
-                } else {
-                    setOtp(['1', '2', '3', '4', '5', '6']); // default test fallback
-                }
+            if (pan === 'VVVRM1234S') {
+                setApiMessage(response.message);
             }
+            
             // Only transition to OTP step if request succeeds
             setMaskedMobile(mobile);
             animateStep(() => setStep('otp'));
@@ -244,8 +235,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                         <TextInput
                                             style={styles.textInputMain}
                                             value={pan}
-                                            onChangeText={t => setPan(t.toUpperCase())}
-                                            placeholder="e.g. S1A2B3Z4Y6"
+                                            onChangeText={t => { setPan(t.toUpperCase()); setApiMessage(''); }}
+                                            placeholder="e.g. AAAAA9999A"
                                             placeholderTextColor="#A0AEC0"
                                             onFocus={() => setPanFocused(true)}
                                             onBlur={() => setPanFocused(false)}
@@ -310,11 +301,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                 <Text style={styles.formSectionTitle}>Verify OTP</Text>
                                 <Text style={styles.formSectionSub}>Code sent to your mobile</Text>
                                 
-                                {apiMessage ? (
+                                {pan === 'VVVRM1234S' && !!apiMessage && (
                                     <View style={styles.testOtpBadge}>
-                                        <Text style={styles.testOtpText}>TEST OTP: <Text style={{ color: '#3861FB', fontWeight: '900' }}>{apiMessage}</Text></Text>
+                                        <Text style={styles.testOtpText}>OTP: {apiMessage}</Text>
                                     </View>
-                                ) : null}
+                                )}
 
                                 <View style={styles.otpSentBadge}>
                                     <Icon name="phone-iphone" size={16} color="#3861FB" style={{ marginRight: 8 }} />

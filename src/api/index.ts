@@ -95,7 +95,7 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
 
             const balance = parseFloat(inner.DMOBNO ?? '0') || 0;
             const pendingOrder = parseFloat(inner.NAME ?? '0') || 0;
-            const netCalc = balance - pendingOrder;
+            const netCalc = balance === 0 ? 0 : balance - Math.abs(pendingOrder);
             const netBalance = netCalc < 0 ? 0 : netCalc;
 
             return {
@@ -133,7 +133,7 @@ export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, bran
         });
 
         const textData = await response.text();
-        console.log('CheckVehicleDetails Raw Response:', textData);
+        console.log('CheckVehicleDetails Raw Response (custId=' + custId + ', branchId=' + branchId + '):', textData);
 
         const outer = deepParse(textData);
         if (outer?.success && outer?.result) {
@@ -172,7 +172,7 @@ export async function getInvoicedVehicleList(custId = FALLBACK_CUSTOMER_ID, bran
 
 export async function getVehicleTracking(branchId: string, tripId: string, tripRefNo: string): Promise<any> {
     const payload = {
-        A: '51',
+        A: branchId || '51',
         B: tripId,
         C: 'GetVehicleTrackingStatus',
         D: '',
