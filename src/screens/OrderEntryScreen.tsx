@@ -352,6 +352,7 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                         renderItem={({ item }: any) => (
                             <View style={styles.reviewCard}>
                                 <View style={{ flex: 1 }}>
+                                    <Text style={styles.reviewCategory}>{item.category}</Text>
                                     <Text style={styles.reviewName}>{item.name}</Text>
                                     <Text style={styles.reviewDetails}>{item.box || 0} Box + {item.pcs || 0} Pcs</Text>
                                 </View>
@@ -425,6 +426,7 @@ const styles = StyleSheet.create({
 
     reviewList: { padding: 25 },
     reviewCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 20, borderRadius: 20, marginBottom: 12, elevation: 2 },
+    reviewCategory: { fontSize: 11, color: '#3861FB', fontWeight: '800', textTransform: 'uppercase', marginBottom: 2 },
     reviewName: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
     reviewDetails: { fontSize: 12, color: '#A0AEC0', fontWeight: '600', marginTop: 4 },
     reviewPrice: { fontSize: 17, fontWeight: '900', color: '#1A1A1A' },
