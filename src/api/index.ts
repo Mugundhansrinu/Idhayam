@@ -518,8 +518,8 @@ export async function getOrderList(fromDate: string, toDate: string, custId = FA
         A: fromDate, // MM/DD/YYYY
         B: toDate,   // MM/DD/YYYY
         C: 'ORD',
-        D: custId,
-        E: branchId,
+        D: branchId,
+        E: custId,
     };
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
 
@@ -546,8 +546,8 @@ export async function getOrderList(fromDate: string, toDate: string, custId = FA
 
             if (rows.length > 0) console.log('FetchOrderList First Row:', JSON.stringify(rows[0]));
 
-            // Sort by SO_ID ascending (item sequence within each order)
-            rows.sort((a: any, b: any) => (Number(a.SO_ID) || 0) - (Number(b.SO_ID) || 0));
+            // Sort by SO_ID descending (latest orders first)
+            rows.sort((a: any, b: any) => (Number(b.SO_ID) || 0) - (Number(a.SO_ID) || 0));
 
             const stripTime = (val: any): string => {
                 if (!val) return '—';
@@ -805,7 +805,7 @@ export async function getTransactionPdf(fromDate: string, toDate: string, custId
     return { success: false, message: 'Failed to generate PDF' };
 }
 
-export async function getNewTransactionDetailsPdf(): Promise<any> {
+export async function getNewTransactionDetailsPdf(custId = FALLBACK_CUSTOMER_ID): Promise<any> {
     const payload = '';
 
     try {
@@ -814,7 +814,7 @@ export async function getNewTransactionDetailsPdf(): Promise<any> {
             headers: {
                 'F': 'FetchTransDetailsPdf',
                 'MODE': 'MOBILE',
-                'P': 'Cust_Id=10895',
+                'P': `Cust_Id=${custId}`,
                 'J': payload,
                 'M': 'POST',
                 'Authorization': API_TOKEN,

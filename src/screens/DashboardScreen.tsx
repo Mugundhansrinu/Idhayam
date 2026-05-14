@@ -96,7 +96,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const handleTransactionDetails = async () => {
         setLoading(true);
         try {
-            const response = await getNewTransactionDetailsPdf();
+            const response = await getNewTransactionDetailsPdf(session?.custId || undefined);
             if (response && response.success && response.url) {
                 // Navigate to in-app PDF Viewer
                 navigation.navigate('PdfViewer', {

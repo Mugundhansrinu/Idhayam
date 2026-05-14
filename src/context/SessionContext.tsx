@@ -25,6 +25,7 @@ export interface SessionData {
 
 interface SessionContextValue {
     session: SessionData | null;
+    isRestoring: boolean;
     setSession: (data: SessionData) => Promise<void>;
     clearSession: () => Promise<void>;
 }
@@ -46,12 +47,14 @@ const DEFAULT_SESSION: SessionData = {
 
 const SessionContext = createContext<SessionContextValue>({
     session: null,
+    isRestoring: true,
     setSession: async () => {},
     clearSession: async () => {},
 });
 
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [session, setSessionState] = useState<SessionData | null>(null);
+    const [isRestoring, setIsRestoring] = useState(true);
 
     const setSession = useCallback(async (data: SessionData) => {
         setSessionState(data);
@@ -79,11 +82,13 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     setSessionState(JSON.parse(stored));
                 } catch { }
             }
+        }).finally(() => {
+            setIsRestoring(false);
         });
     }, []);
 
     return (
-        <SessionContext.Provider value={{ session, setSession, clearSession }}>
+        <SessionContext.Provider value={{ session, isRestoring, setSession, clearSession }}>
             {children}
         </SessionContext.Provider>
     );

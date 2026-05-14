@@ -79,7 +79,6 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
         const accName = bank.ACC_NAME ?? bank.PARTY_NAME ?? '—';
         const virtualAccNo = bank.VIRTUAL_ACCOUNT ?? bank.VIRTUAL_ACCOUNT_NO ?? bank.VIRTUAL_ACCOUNT_NUMBER ?? '—';
         const ifsc = bank.IFSC_CODE ?? '—';
-        const city = bank.PARTY_CITY ?? bank.City ?? '';
 
         return (
             <View key={i} style={styles.bankCard}>
@@ -87,9 +86,6 @@ const BankDetailsScreen: React.FC<Props> = ({ navigation }) => {
 
                     <View style={styles.bankTitle}>
                         <Text style={styles.bankName}>{bankName}</Text>
-                        <View style={styles.cityBadge}>
-                            <Text style={styles.cityText}>{city || 'Primary Account'}</Text>
-                        </View>
                     </View>
                     <View style={styles.activeBadge}>
                         <Text style={styles.activeBadgeText}>ACTIVE</Text>

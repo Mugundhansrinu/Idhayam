@@ -63,6 +63,10 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
         }
     };
 
+    React.useEffect(() => {
+        handleSearch();
+    }, []);
+
     // Group items by SO_ID
     const groupedOrders = useMemo(() => {
         const map = new Map<string, any[]>();

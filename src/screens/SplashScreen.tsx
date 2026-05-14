@@ -7,6 +7,8 @@ import { BrandColors } from '../theme/Colors';
 import { checkAppVersion } from '../api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSession } from '../context/SessionContext';
+
 type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 };
@@ -18,6 +20,8 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
     const opacity = useRef(new Animated.Value(0)).current;
     const progress = useRef(new Animated.Value(0)).current;
     const insets = useSafeAreaInsets();
+    const { session, isRestoring } = useSession();
+    const [isAnimDone, setIsAnimDone] = React.useState(false);
 
     useEffect(() => {
         let timer: ReturnType<typeof setTimeout>;
@@ -56,11 +60,21 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
         ]).start();
 
         timer = setTimeout(() => {
-            navigation.replace('Login');
+            setIsAnimDone(true);
         }, 3200);
 
         return () => clearTimeout(timer);
-    }, [navigation]);
+    }, []);
+
+    useEffect(() => {
+        if (isAnimDone && !isRestoring) {
+            if (session && session.custId) {
+                navigation.replace('Dashboard');
+            } else {
+                navigation.replace('Login');
+            }
+        }
+    }, [isAnimDone, isRestoring, session, navigation]);
 
     const progressWidth = progress.interpolate({
         inputRange: [0, 1],
