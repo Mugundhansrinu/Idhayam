@@ -55,8 +55,10 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
 
     useEffect(() => {
         if (branches.length === 1) {
-            handleSelectBranch(branches[0]);
-            return;
+            const timer = setTimeout(() => {
+                handleSelectBranch(branches[0]);
+            }, 600);
+            return () => clearTimeout(timer);
         }
 
         Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();

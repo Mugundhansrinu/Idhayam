@@ -20,6 +20,20 @@ const deepParse = (val: any): any => {
     return val;
 };
 
+/** Fetch with timeout to prevent hanging UI */
+const fetchWithTimeout = async (url: string, options: any, timeout = 10000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(id);
+        return response;
+    } catch (e) {
+        clearTimeout(id);
+        throw e;
+    }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  AUTH — delegate to auth.ts (canonical implementation)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -72,7 +86,7 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
     const minifiedJson = JSON.stringify(payload).replace(/\s/g, '');
 
     try {
-        const response = await fetch(`${BASE_URL}/APPEAL_UAT`, {
+        const response = await fetchWithTimeout(`${BASE_URL}/APPEAL_UAT`, {
             method: 'POST',
             headers: {
                 'F': 'CUST_BALANCE_CHK',
@@ -82,7 +96,7 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
                 'M': 'POST',
                 'Authorization': API_TOKEN,
             },
-        });
+        }, 8000); // 8 second timeout
 
         const textData = await response.text();
         console.log('CUST_BALANCE_CHK Raw Response:', textData);
@@ -93,10 +107,9 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
             const inner = deepParse(outer.result);
             console.log('CUST_BALANCE_CHK Inner:', JSON.stringify(inner));
 
-            const balance = parseFloat(inner.DMOBNO ?? '0') || 0;
-            const pendingOrder = parseFloat(inner.NAME ?? '0') || 0;
-            const netCalc = balance === 0 ? 0 : balance - Math.abs(pendingOrder);
-            const netBalance = netCalc < 0 ? 0 : netCalc;
+            const balance = parseFloat(inner.NAME ?? '0') || 0;
+            const pendingOrder = parseFloat(inner.DMOBNO ?? '0') || 0;
+            const netBalance = balance - pendingOrder;
 
             return {
                 balance: balance.toFixed(2),

@@ -41,7 +41,7 @@ type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'OrderEntry'>;
 };
 
-const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
+const ItemRow = React.memo(({ item, qty, onUpdate, index, onFocus }: any) => {
     const [focused, setFocused] = useState<'box' | 'pcs' | null>(null);
     const hasQty = (qty?.box && qty.box !== '0' && qty.box !== '') || (qty?.pcs && qty.pcs !== '0' && qty.pcs !== '');
     const appPrice = parseFloat(item?.appPrice || item?.raw?.APP_PRICE || '0');
@@ -76,7 +76,7 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
                         value={String(qty?.box || '')}
                         onChangeText={v => onUpdate(item?.id, 'box', v)}
                         placeholder=""
-                        onFocus={() => setFocused('box')}
+                        onFocus={() => { setFocused('box'); onFocus(index); }}
                         onBlur={() => setFocused(null)}
                         editable={!isZeroPrice}
                     />
@@ -94,7 +94,7 @@ const ItemRow = React.memo(({ item, qty, onUpdate }: any) => {
                         value={String(qty?.pcs || '')}
                         onChangeText={v => onUpdate(item?.id, 'pcs', v)}
                         placeholder=""
-                        onFocus={() => setFocused('pcs')}
+                        onFocus={() => { setFocused('pcs'); onFocus(index); }}
                         onBlur={() => setFocused(null)}
                         editable={!isZeroPrice}
                     />
@@ -113,6 +113,20 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
     const [search] = useState('');
     const [selectedCat, setSelectedCat] = useState('');
     const [orders, setOrders] = useState<Record<string, { box: string, pcs: string }>>({});
+    const listRef = useRef<any>(null);
+
+    const handleItemFocus = useCallback((index: number) => {
+        if (listRef.current) {
+            // Give a small timeout for keyboard to start opening
+            setTimeout(() => {
+                listRef.current?.scrollToIndex({ 
+                    index, 
+                    animated: true, 
+                    viewPosition: 0, // 0 = top, 0.5 = middle, 1 = bottom
+                });
+            }, 100);
+        }
+    }, []);
 
     useEffect(() => {
         fetchItems();
@@ -302,9 +316,18 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                     ) : (
                         <View style={{ flex: 1 }} {...swipePanResponder.panHandlers}>
                             <KeyboardAwareFlatList
+                                innerRef={(ref: any) => { listRef.current = ref; }}
                                 data={filteredData}
                                 keyExtractor={(p: any) => p.id}
-                                renderItem={({ item }: any) => <ItemRow item={item} qty={orders[item.id]} onUpdate={updateOrder} />}
+                                renderItem={({ item, index }: any) => (
+                                    <ItemRow 
+                                        item={item} 
+                                        qty={orders[item.id]} 
+                                        onUpdate={updateOrder} 
+                                        index={index}
+                                        onFocus={handleItemFocus}
+                                    />
+                                )}
                                 contentContainerStyle={styles.listContent}
                                 ListEmptyComponent={() => (
                                     <View style={styles.centerBox}>

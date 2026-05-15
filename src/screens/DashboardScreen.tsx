@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import {
     Platform,
     Linking,
     Alert,
+    InteractionManager,
 } from 'react-native';
 import { useTheme } from '../theme';
 import { BrandColors } from '../theme/Colors';
@@ -47,7 +48,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const [activeSlide, setActiveSlide] = useState(0);
     const insets = useSafeAreaInsets();
 
-    const formatCurrency = (val: string | number) => {
+    const formatCurrency = useCallback((val: string | number) => {
         const num = parseFloat(String(val)) || 0;
         const parts = num.toFixed(2).split('.');
         let integerPart = parts[0];
@@ -57,22 +58,30 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
             integerPart = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
         }
         return `${integerPart}.${parts[1]}`;
-    };
+    }, []);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
-        fetchData();
-    }, []);
+        // Start entrance animation immediately
+        Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+        
+        // Defer data fetching slightly to avoid blocking UI thread during mount
+        const timer = setTimeout(() => {
+            fetchData();
+        }, 300);
 
-    const fetchData = async () => {
+        return () => clearTimeout(timer);
+    }, [fetchData, fadeAnim]);
+
+    const fetchData = useCallback(async () => {
         try {
             const custId = session?.custId || undefined;
             const branchId = session?.branchId || undefined;
             const [bal, vehicles] = await Promise.all([
                 getCustomerBalance(custId),
                 getInvoicedVehicleList(custId, branchId)
+
             ]);
             setBalanceData({
                 balance: bal.balance || '0.0',
@@ -85,7 +94,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [session]);
 
     const handleScroll = (event: any) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;
@@ -142,7 +151,12 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scroll}
+                keyboardShouldPersistTaps="handled"
+                removeClippedSubviews={false}
+            >
 
                 {/* 1. Remaining Header Section */}
                 <View style={styles.header}>
@@ -181,7 +195,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                         <View style={styles.balDivider} />
                                         <View style={styles.balRow}>
                                             <Text style={styles.balLabel}>NET BALANCE</Text>
-                                            <Text style={[styles.balValue, { color: '#86efac' }]}>₹ {formatCurrency(balanceData.netBalance)}</Text>
+                                            <Text style={[styles.balValue, { color: parseFloat(balanceData.netBalance) < 0 ? '#EF4444' : '#86efac' }]}>₹ {formatCurrency(balanceData.netBalance)}</Text>
                                         </View>
                                     </View>
                                 </LinearGradient>
@@ -272,6 +286,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                             <TouchableOpacity
                                 key={m.id}
                                 style={[styles.moduleCard, { backgroundColor: '#FFFFFF' }]}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 onPress={() => {
                                     if (m.id === 'TransactionDetails') {
                                         handleTransactionDetails();
@@ -296,7 +311,12 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
             </ScrollView>
 
-
+            {loading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#3861FB" />
+                    <Text style={styles.loadingText}>Please wait...</Text>
+                </View>
+            )}
         </View>
     );
 };
@@ -377,6 +397,19 @@ const styles = StyleSheet.create({
     modLabel: { fontSize: 14, fontWeight: '900', color: '#1A1A1A', textAlign: 'center' },
     modFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 6 },
     modSub: { fontSize: 11, fontWeight: '700', color: '#A0AEC0', textAlign: 'center' },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#3861FB',
+    },
 });
 
 export default DashboardScreen;
