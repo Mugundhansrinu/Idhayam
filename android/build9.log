@@ -1,0 +1,178 @@
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :app
+WARNING: The option setting 'android.defaults.buildfeatures.aidl=true' is deprecated.
+The current default is 'false'.
+It will be removed in version 9.0 of the Android Gradle plugin.
+WARNING: The option setting 'android.defaults.buildfeatures.buildconfig=true' is deprecated.
+The current default is 'false'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+To keep using this feature, add the following to your module-level build.gradle files:
+    android.buildFeatures.buildConfig = true
+or from Android Studio, click: `Refactor` > `Migrate BuildConfig to Gradle Build Files`.
+
+> Task :app:externalNativeBuildCleanDebug
+> Task :app:externalNativeBuildCleanDebugOptimized
+> Task :app:externalNativeBuildCleanRelease
+> Task :app:clean
+> Task :react-native-async-storage_async-storage:clean
+> Task :react-native-community_blur:clean UP-TO-DATE
+> Task :react-native-linear-gradient:clean UP-TO-DATE
+> Task :react-native-safe-area-context:clean
+> Task :react-native-screens:externalNativeBuildCleanDebug
+> Task :react-native-screens:externalNativeBuildCleanRelease
+> Task :react-native-screens:clean
+> Task :react-native-vector-icons:clean
+> Task :app:generateAutolinkingNewArchitectureFiles
+> Task :app:generateAutolinkingPackageList
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:generateReactNativeEntryPoint
+> Task :react-native-async-storage_async-storage:generateCodegenSchemaFromJavaScript
+> Task :react-native-async-storage_async-storage:generateCodegenArtifactsFromSchema
+> Task :react-native-async-storage_async-storage:preBuild
+> Task :react-native-community_blur:generateCodegenSchemaFromJavaScript
+> Task :react-native-community_blur:generateCodegenArtifactsFromSchema
+> Task :react-native-community_blur:preBuild
+> Task :react-native-linear-gradient:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema
+> Task :react-native-safe-area-context:preBuild
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript
+> Task :react-native-screens:generateCodegenArtifactsFromSchema
+> Task :react-native-screens:preBuild
+> Task :react-native-vector-icons:generateCodegenSchemaFromJavaScript
+> Task :react-native-vector-icons:generateCodegenArtifactsFromSchema
+> Task :react-native-vector-icons:preBuild
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :react-native-async-storage_async-storage:preDebugBuild
+> Task :react-native-async-storage_async-storage:compileDebugAidl NO-SOURCE
+> Task :react-native-community_blur:preDebugBuild
+> Task :react-native-community_blur:compileDebugAidl NO-SOURCE
+> Task :react-native-linear-gradient:preDebugBuild UP-TO-DATE
+> Task :react-native-linear-gradient:compileDebugAidl NO-SOURCE
+> Task :react-native-safe-area-context:preDebugBuild
+> Task :react-native-safe-area-context:compileDebugAidl NO-SOURCE
+> Task :react-native-screens:preDebugBuild
+> Task :react-native-screens:compileDebugAidl NO-SOURCE
+> Task :react-native-vector-icons:preDebugBuild
+> Task :react-native-vector-icons:compileDebugAidl NO-SOURCE
+> Task :app:compileDebugAidl NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig
+> Task :react-native-community_blur:writeDebugAarMetadata
+> Task :react-native-async-storage_async-storage:writeDebugAarMetadata
+> Task :react-native-linear-gradient:writeDebugAarMetadata
+> Task :react-native-safe-area-context:writeDebugAarMetadata
+> Task :react-native-screens:writeDebugAarMetadata
+> Task :react-native-vector-icons:writeDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :react-native-async-storage_async-storage:generateDebugResValues
+> Task :react-native-async-storage_async-storage:generateDebugResources
+> Task :app:checkDebugAarMetadata FAILED
+> Task :react-native-async-storage_async-storage:packageDebugResources
+
+[Incubating] Problems report is available at: file:///C:/ReactWorkSpace/Idhayam/android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:checkDebugAarMetadata'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction
+   > 4 issues were found when checking AAR metadata:
+     
+       1.  Dependency 'androidx.transition:transition:1.7.0' requires libraries and applications that
+           depend on it to compile against version 35 or later of the
+           Android APIs.
+     
+           :app is currently compiled against android-34.
+     
+           Recommended action: Update this project to use a newer compileSdk
+           of at least 35, for example 36.
+     
+           Note that updating a library or application's compileSdk (which
+           allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed
+           on).
+     
+       2.  Dependency 'androidx.transition:transition-ktx:1.7.0' requires libraries and applications that
+           depend on it to compile against version 35 or later of the
+           Android APIs.
+     
+           :app is currently compiled against android-34.
+     
+           Recommended action: Update this project to use a newer compileSdk
+           of at least 35, for example 36.
+     
+           Note that updating a library or application's compileSdk (which
+           allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed
+           on).
+     
+       3.  Dependency 'androidx.core:core:1.17.0' requires libraries and applications that
+           depend on it to compile against version 36 or later of the
+           Android APIs.
+     
+           :app is currently compiled against android-34.
+     
+           Recommended action: Update this project to use a newer compileSdk
+           of at least 36, for example 36.
+     
+           Note that updating a library or application's compileSdk (which
+           allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed
+           on).
+     
+       4.  Dependency 'androidx.core:core-ktx:1.17.0' requires libraries and applications that
+           depend on it to compile against version 36 or later of the
+           Android APIs.
+     
+           :app is currently compiled against android-34.
+     
+           Recommended action: Update this project to use a newer compileSdk
+           of at least 36, for example 36.
+     
+           Note that updating a library or application's compileSdk (which
+           allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed
+           on).
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 15s
+47 actionable tasks: 35 executed, 12 up-to-date

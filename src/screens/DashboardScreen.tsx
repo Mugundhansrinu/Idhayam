@@ -1,0 +1,438 @@
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    StatusBar,
+    ScrollView,
+    TouchableOpacity,
+    Image,
+    Dimensions,
+    ActivityIndicator,
+    Animated,
+    Platform,
+    Linking,
+    Alert,
+    InteractionManager,
+} from 'react-native';
+import { useTheme } from '../theme';
+import { BrandColors } from '../theme/Colors';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import LinearGradient from 'react-native-linear-gradient';
+import { useSession } from '../context/SessionContext';
+import { getCustomerBalance, getInvoicedVehicleList, getNewTransactionDetailsPdf } from '../api';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const { width, height } = Dimensions.get('window');
+
+type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Dashboard'> };
+
+const MODULES = [
+    { id: 'OrderEntry', icon: 'shopping-basket', iconColor: '#3861FB', label: 'Order Entry', sub: 'Create new orders', color: '#F0F4FF' },
+    { id: 'Discount', icon: 'local-offer', iconColor: '#3861FB', label: 'Discount Details', sub: 'Save discounts', color: '#F0F4FF' },
+    { id: 'PriceDetails', icon: 'currency-rupee', iconColor: '#3861FB', label: 'Price Details', sub: 'View live rates', color: '#F0F4FF' },
+    { id: 'Report', icon: 'bar-chart', iconColor: '#3861FB', label: 'Reports', sub: 'Order & Analysis', color: '#F0F4FF' },
+    { id: 'BankDetails', icon: 'account-balance', iconColor: '#3861FB', label: 'Bank Details', sub: 'Virtual accounts', color: '#F0F4FF' },
+    { id: 'TransactionDetails', icon: 'receipt-long', iconColor: '#3861FB', label: 'Transaction Details', sub: 'View details', color: '#F0F4FF' },
+    { id: 'ContactUs', icon: 'support-agent', iconColor: '#3861FB', label: 'Contact Us', sub: 'Support & Help', color: '#F0F4FF' }
+];
+
+const DashboardScreen: React.FC<Props> = ({ navigation }) => {
+    const { colors } = useTheme();
+    const { session, clearSession } = useSession();
+    const [balanceData, setBalanceData] = useState<any>({ balance: '0.0', pendingOrder: '0.0', netBalance: '0.0' });
+    const [vehicleData, setVehicleData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [activeSlide, setActiveSlide] = useState(0);
+    const insets = useSafeAreaInsets();
+
+    const formatCurrency = useCallback((val: string | number) => {
+        // Strip any negative sign and format the absolute value
+        const num = Math.abs(parseFloat(String(val)) || 0);
+        const parts = num.toFixed(2).split('.');
+        let integerPart = parts[0];
+        const lastThree = integerPart.slice(-3);
+        const otherNumbers = integerPart.slice(0, -3);
+        if (otherNumbers !== '') {
+            integerPart = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
+        }
+        return `${integerPart}.${parts[1]}`;
+    }, []);
+
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    // Fetch data function defined before useEffect to avoid TDZ
+    const fetchData = useCallback(async () => {
+        try {
+            const custId = session?.custId;
+            const branchId = session?.branchId;
+            const [bal, vehicles] = await Promise.all([
+                getCustomerBalance(custId),
+                getInvoicedVehicleList(custId, branchId)
+            ]);
+            // Compute Net Balance based on custom rules:
+            //  • If balance is negative, treat its absolute value, then subtract pending and keep the sign negative.
+            //  • If balance is positive, simply add pending to balance.
+            const balNum = parseFloat(bal.balance ?? '0');
+            const pendingNum = parseFloat(bal.pendingOrder ?? '0');
+            let computedNet;
+            if (balNum < 0) {
+                // Convert to positive, subtract pending, then apply negative sign
+                computedNet = -(Math.abs(balNum) - pendingNum);
+            } else {
+                // Positive balance: add pending order
+                computedNet = balNum + pendingNum;
+            }
+            // Use absolute values for display (ignore minus sign)
+            const absBalance = Math.abs(parseFloat(bal.balance ?? '0')).toFixed(2);
+            const absPending = Math.abs(parseFloat(bal.pendingOrder ?? '0')).toFixed(2);
+            setBalanceData({
+                balance: absBalance,
+                pendingOrder: absPending,
+                netBalance: computedNet.toFixed(2)
+            });
+            if (vehicles) setVehicleData(vehicles);
+        } catch (e) {
+            console.error('Dashboard fetchData error:', e);
+        } finally {
+            setLoading(false);
+        }
+    }, [session]);
+
+
+    useEffect(() => {
+        // Start entrance animation immediately
+        Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+        
+        // Defer data fetching slightly to avoid blocking UI thread during mount
+        const timer = setTimeout(() => {
+            fetchData();
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [fetchData, fadeAnim]);
+
+    const handleScroll = (event: any) => {
+        const slideSize = event.nativeEvent.layoutMeasurement.width;
+        const index = event.nativeEvent.contentOffset.x / slideSize;
+        setActiveSlide(Math.round(index));
+    };
+
+    const handleTransactionDetails = async () => {
+        setLoading(true);
+        try {
+            const response = await getNewTransactionDetailsPdf(session?.custId || undefined);
+            if (response && response.success && response.url) {
+                // Navigate to in-app PDF Viewer
+                navigation.navigate('PdfViewer', {
+                    url: response.url,
+                    title: 'Transaction Details'
+                });
+            } else {
+                Alert.alert('Error', response?.message || 'Failed to fetch transaction details.');
+            }
+        } catch (error) {
+            console.error('handleTransactionDetails error:', error);
+            Alert.alert('Error', 'An error occurred while fetching the transaction details.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+
+            {/* Sticky Header Top */}
+            <View style={[styles.stickyHeader, { paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 60 : 20) }]}>
+                <View style={styles.headerTop}>
+                    <View style={styles.profileRow}>
+                        <View style={styles.profileBox}>
+                            <Image source={require('../assets/papa 1.png')} style={styles.profileImg} />
+                        </View>
+                        <View style={styles.headerText}>
+                            <Text style={styles.headerBrand}>IDHAYAM</Text>
+                            <Text style={styles.distributorName} numberOfLines={1}>
+                                {session?.custName || 'Loading...'}
+                            </Text>
+                            {(session?.accountCount ?? 0) > 1 && (
+                                <TouchableOpacity
+                                    style={styles.switchAccountBtn}
+                                    onPress={() => navigation.navigate('LoginResponse', { data: session?.loginData })}
+                                >
+                                    <Icon name="swap-horiz" size={16} color="#3861FB" />
+                                    <Text style={styles.switchAccountText}>SWITCH ACCOUNT</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    </View>
+                    <TouchableOpacity style={styles.profileIconBtn} onPress={() => clearSession().then(() => navigation.replace('Login'))}>
+                        <Icon name="logout" size={22} color="#3861FB" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scroll}
+                keyboardShouldPersistTaps="handled"
+                removeClippedSubviews={false}
+            >
+
+                {/* 1. Remaining Header Section */}
+                <View style={styles.header}>
+                    {/* 2. Horizontal Slider Section (3 SLIDES) */}
+                    <View style={styles.sliderContainer}>
+                        <ScrollView
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            onScroll={handleScroll}
+                            scrollEventThrottle={16}
+                        >
+                            {/* Slide 1: Account Balance */}
+                            <View style={styles.balSlide}>
+                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                                    <View style={styles.slideHeader}>
+                                        <View style={styles.slideIconBg}>
+                                            <Icon name="account-balance-wallet" size={22} color="#3861FB" />
+                                        </View>
+                                        <Text style={styles.slideTitle}>Account Balance</Text>
+                                        <TouchableOpacity style={styles.ledgerBtn}><Text style={styles.ledgerText}>LEDGER</Text></TouchableOpacity>
+                                    </View>
+                                    <View style={styles.balStack}>
+                                        <View style={styles.balRow}>
+                                            <Text style={styles.balLabel}>BALANCE</Text>
+                                            <Text style={styles.balValue}>₹ {formatCurrency(balanceData.balance)}</Text>
+                                        </View>
+                                        <View style={styles.balDivider} />
+                                        <View style={styles.balRow}>
+                                            <Text style={styles.balLabel}>PENDING ORDER</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444', marginRight: 6 }} />
+                                                <Text style={styles.balValue}>₹ {formatCurrency(parseFloat(balanceData.pendingOrder))}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.balDivider} />
+                                        <View style={styles.balRow}>
+                                            <Text style={styles.balLabel}>NET BALANCE</Text>
+                                            <Text style={[styles.balValue, { color: Math.abs(parseFloat(balanceData.netBalance)) < 0 ? '#EF4444' : '#86efac' }]}>₹ {formatCurrency(Math.abs(parseFloat(balanceData.netBalance)))}</Text>
+                                        </View>
+                                    </View>
+                                </LinearGradient>
+                            </View>
+
+                            {/* Slide 2: Vehicle Tracking */}
+                            <TouchableOpacity
+                                style={styles.balSlide}
+                                activeOpacity={0.9}
+                                onPress={() => {
+                                    if (vehicleData) {
+                                        navigation.navigate('VehicleTracking' as any, {
+                                            vehicleNo: vehicleData.vehicleNo,
+                                            tripRefNo: vehicleData.tripRefNo,
+                                            tripId: vehicleData.tripId
+                                        });
+                                    }
+                                }}
+                            >
+                                <LinearGradient colors={['#3861FB', '#2752E7']} style={styles.balCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+                                    <View style={styles.slideHeader}>
+                                        <View style={styles.slideIconBg}>
+                                            <Icon name="local-shipping" size={22} color="#3861FB" />
+                                        </View>
+                                        <Text style={styles.slideTitle}>Vehicle Tracking</Text>
+                                        {vehicleData && (
+                                            <View style={styles.liveRecordIndicator}>
+                                                <View style={styles.liveDot} />
+                                                <Text style={styles.liveText}>LIVE</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                    {vehicleData ? (
+                                        <View style={styles.trackContent}>
+                                            <View>
+                                                <Text style={{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.6)', letterSpacing: 1, marginBottom: 2 }}>VEHICLE NO</Text>
+                                                <Text style={styles.truckNo}>{vehicleData.vehicleNo}</Text>
+                                            </View>
+                                            <View style={[styles.etaBar, { marginTop: 15 }]}>
+                                                <Text style={styles.etaLabel}>BILL NO / REF</Text>
+                                                <Text style={styles.etaTime}>{vehicleData.tripRefNo || 'N/A'}</Text>
+                                            </View>
+                                        </View>
+                                    ) : (
+                                        <View style={styles.noTrack}>
+                                            <Icon name="not-interested" size={30} color="rgba(255,255,255,0.3)" />
+                                            <Text style={styles.noTrackText}>No active dispatches for today</Text>
+                                        </View>
+                                    )}
+                                </LinearGradient>
+                            </TouchableOpacity>
+
+
+                        </ScrollView>
+
+                        {/* Pagination Dots & Live Tracking Indicator */}
+                        <View style={[styles.pagination, { position: 'relative' }]}>
+                            <View style={[styles.dot, activeSlide === 0 && styles.dotActive]} />
+                            <View style={[
+                                styles.dot,
+                                activeSlide === 1 && styles.dotActive,
+                                vehicleData && activeSlide === 0 && { backgroundColor: '#10B981' }
+                            ]} />
+
+                            {/* Floating hint to swipe right if tracking is live */}
+                            {vehicleData && activeSlide === 0 && (
+                                <View style={styles.swipeHintBubble}>
+                                    <View style={styles.swipeHintDot} />
+                                    <Text style={styles.swipeHintText}>Live Dispatch</Text>
+                                    <Icon name="chevron-right" size={14} color="#10B981" />
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                </View>
+
+                {/* 3. Main Modules Section */}
+                <View style={styles.moduleSection}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Distributor Master</Text>
+                        <View style={styles.activeBadge}>
+                            <Text style={styles.activeBadgeText}>7 Live Services</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.moduleGrid}>
+                        {MODULES.map((m) => (
+                            <TouchableOpacity
+                                key={m.id}
+                                style={[styles.moduleCard, { backgroundColor: '#FFFFFF' }]}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                onPress={() => {
+                                    if (m.id === 'TransactionDetails') {
+                                        handleTransactionDetails();
+                                    } else {
+                                        navigation.navigate(m.id as any);
+                                    }
+                                }}
+                            >
+                                <View style={styles.moduleCardInner}>
+                                    <View style={[styles.modIconArea, { backgroundColor: m.color }]}>
+                                        <Icon name={m.icon} size={28} color={m.iconColor} />
+                                    </View>
+                                    <Text style={styles.modLabel}>{m.label}</Text>
+                                    <View style={styles.modFooter}>
+                                        <Text style={styles.modSub}>{m.sub}</Text>
+                                        <Icon name="chevron-right" size={14} color="#CBD5E0" />
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+            </ScrollView>
+
+            {loading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#3861FB" />
+                    <Text style={styles.loadingText}>Please wait...</Text>
+                </View>
+            )}
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#FFFFFF' },
+    scroll: { paddingBottom: 40 },
+
+    stickyHeader: { paddingHorizontal: 25, backgroundColor: '#FFFFFF', paddingBottom: 10, zIndex: 10 },
+    header: { paddingHorizontal: 25, backgroundColor: '#FFFFFF', paddingBottom: 25, paddingTop: 15 },
+    headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 0 },
+    profileRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+    profileBox: { width: 64, height: 64, borderRadius: 32, padding: 6, backgroundColor: '#F8F9FD', elevation: 4, borderWidth: 1, borderColor: '#EDF2F7' },
+    profileImg: { width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 32 },
+    headerText: { marginLeft: 15, flex: 1 },
+    headerBrand: { fontSize: 9, fontWeight: '900', color: '#64748B', letterSpacing: 1.5 },
+    distributorName: { fontSize: 17, fontWeight: '900', color: '#1A1A1A', marginTop: 1 },
+    switchAccountBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F4FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, alignSelf: 'flex-start', marginTop: 6 },
+    switchAccountText: { fontSize: 11, fontWeight: '900', color: '#3861FB', marginLeft: 6, letterSpacing: 0.5 },
+    profileIconBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#F8F9FD', alignItems: 'center', justifyContent: 'center' },
+
+
+    // Slider
+    sliderContainer: { marginTop: 10 },
+    balSlide: { width: width - 50 },
+    balCard: { height: 220, borderRadius: 32, padding: 25, elevation: 8, shadowColor: '#3861FB', shadowOpacity: 0.25, shadowRadius: 20, justifyContent: 'space-between' },
+    slideHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+    slideIconBg: { width: 36, height: 36, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+    slideTitle: { flex: 1, marginLeft: 12, fontSize: 13, fontWeight: '900', color: 'rgba(255,255,255,0.9)', letterSpacing: 0.5 },
+    ledgerBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.2)' },
+    ledgerText: { color: '#fff', fontSize: 9, fontWeight: '900' },
+    balStack: { marginTop: 10, flex: 1, justifyContent: 'center' },
+    balRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12 },
+    balLabel: { fontSize: 13, fontWeight: '800', color: 'rgba(255,255,255,0.9)', letterSpacing: 0.5 },
+    balValue: { fontSize: 17, fontWeight: '900', color: '#fff' },
+    balDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
+    trackContent: { marginTop: -5 },
+    truckNo: { fontSize: 24, fontWeight: '900', color: '#fff' },
+    locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+    truckLoc: { fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.8)' },
+    etaBar: { marginTop: 15, backgroundColor: 'rgba(255,255,255,0.1)', padding: 12, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    etaLabel: { fontSize: 9, fontWeight: '900', color: 'rgba(255,255,255,0.6)', letterSpacing: 1 },
+    etaTime: { fontSize: 14, fontWeight: '900', color: '#fff', marginTop: 2 },
+    liveRecordIndicator: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EF4444', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20 },
+    liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff', marginRight: 5 },
+    liveText: { color: '#fff', fontSize: 8, fontWeight: '900' },
+    noTrack: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
+    noTrackText: { color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: '700', marginTop: 10 },
+
+    // Branch Slide Styles
+    branchContent: { marginTop: -5 },
+    branchMainName: { fontSize: 22, fontWeight: '900', color: '#fff' },
+    branchMeta: { flexDirection: 'row', marginTop: 10 },
+    branchIdTag: { backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, marginRight: 8 },
+    branchIdText: { color: '#fff', fontSize: 11, fontWeight: '900' },
+    activeLabel: { backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+    activeLabelText: { color: '#fff', fontSize: 8, fontWeight: '900' },
+
+    pagination: { flexDirection: 'row', justifyContent: 'center', marginTop: 15, alignItems: 'center' },
+    dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#E2E8F0', marginHorizontal: 4 },
+    dotActive: { width: 22, backgroundColor: '#3861FB' },
+
+    // Swipe Hint
+    swipeHintBubble: { position: 'absolute', right: 30, flexDirection: 'row', alignItems: 'center', backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: '#A7F3D0' },
+    swipeHintDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981', marginRight: 4 },
+    swipeHintText: { fontSize: 9, fontWeight: '900', color: '#10B981' },
+
+    // Modules
+    moduleSection: { paddingHorizontal: 25, paddingTop: 10 },
+    sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+    sectionTitle: { fontSize: 20, fontWeight: '900', color: '#1A1A1A' },
+    activeBadge: { backgroundColor: '#F0F4FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+    activeBadgeText: { fontSize: 10, fontWeight: '900', color: '#3861FB' },
+    moduleGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+    moduleCard: { width: (width - 65) / 2, marginBottom: 15, borderRadius: 32, elevation: 3, shadowColor: '#3861FB', shadowOpacity: 0.05, shadowRadius: 15 },
+    moduleCardInner: { padding: 22, alignItems: 'center' },
+    modIconArea: { width: 56, height: 56, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 15 },
+    modLabel: { fontSize: 14, fontWeight: '900', color: '#1A1A1A', textAlign: 'center' },
+    modFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 6 },
+    modSub: { fontSize: 11, fontWeight: '700', color: '#A0AEC0', textAlign: 'center' },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#3861FB',
+    },
+});
+
+export default DashboardScreen;

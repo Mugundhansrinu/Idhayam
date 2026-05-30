@@ -1,0 +1,197 @@
+﻿> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+> Task :react-native-device-info:preBuild UP-TO-DATE
+> Task :react-native-device-info:preReleaseBuild UP-TO-DATE
+> Task :react-native-linear-gradient:preBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-vector-icons:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-linear-gradient:preReleaseBuild UP-TO-DATE
+> Task :react-native-device-info:generateReleaseResValues UP-TO-DATE
+> Task :react-native-webview:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-community_blur:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-blob-util:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-linear-gradient:generateReleaseResValues UP-TO-DATE
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-vector-icons:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-community_blur:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-webview:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-community_datetimepicker:preBuild UP-TO-DATE
+> Task :react-native-vector-icons:preBuild UP-TO-DATE
+> Task :react-native-linear-gradient:generateReleaseResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:preReleaseBuild UP-TO-DATE
+> Task :react-native-webview:preBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-community_blur:preBuild UP-TO-DATE
+> Task :react-native-blob-util:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-blob-util:preBuild UP-TO-DATE
+> Task :react-native-community_blur:preReleaseBuild UP-TO-DATE
+> Task :react-native-blob-util:preReleaseBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:preBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:preReleaseBuild UP-TO-DATE
+> Task :react-native-vector-icons:preReleaseBuild UP-TO-DATE
+> Task :react-native-webview:preReleaseBuild UP-TO-DATE
+> Task :react-native-blob-util:generateReleaseResValues UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateReleaseResValues UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-vector-icons:generateReleaseResValues UP-TO-DATE
+> Task :react-native-community_blur:generateReleaseResValues UP-TO-DATE
+> Task :react-native-webview:generateReleaseResValues UP-TO-DATE
+> Task :react-native-safe-area-context:preReleaseBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseResources UP-TO-DATE
+> Task :react-native-blob-util:generateReleaseResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResValues UP-TO-DATE
+> Task :react-native-webview:generateReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResources UP-TO-DATE
+> Task :react-native-vector-icons:generateReleaseResources UP-TO-DATE
+> Task :react-native-community_blur:generateReleaseResources UP-TO-DATE
+> Task :react-native-screens:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-screens:preReleaseBuild UP-TO-DATE
+> Task :react-native-screens:generateReleaseResValues UP-TO-DATE
+> Task :react-native-linear-gradient:packageReleaseResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:packageReleaseResources UP-TO-DATE
+> Task :react-native-webview:packageReleaseResources UP-TO-DATE
+> Task :react-native-blob-util:packageReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:packageReleaseResources UP-TO-DATE
+> Task :react-native-screens:generateReleaseResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:packageReleaseResources UP-TO-DATE
+> Task :react-native-community_blur:packageReleaseResources UP-TO-DATE
+> Task :react-native-vector-icons:packageReleaseResources UP-TO-DATE
+> Task :react-native-screens:packageReleaseResources UP-TO-DATE
+> Task :react-native-device-info:generateReleaseResources UP-TO-DATE
+> Task :react-native-device-info:packageReleaseResources UP-TO-DATE
+> Task :app:createBundleReleaseJsAndAssets UP-TO-DATE
+> Task :app:generateAutolinkingNewArchitectureFiles UP-TO-DATE
+> Task :app:generateAutolinkingPackageList UP-TO-DATE
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:generateReactNativeEntryPoint UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources FAILED
+
+[Incubating] Problems report is available at: file:///C:/ReactWorkSpace/IdmNew/Idhayam/android/build/reports/problems/problems-report.html
+.\gradlew : 
+At line:1 char:1
++ .\gradlew :app:mergeReleaseResources 2>&1 | 
+ForEach-Object { $_ } | O ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:S 
+   tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandErro 
+   r
+ 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task 
+':app:mergeReleaseResources'.
+> Multiple task action failures occurred:
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-hdpi\ic_launcher
+.png: AAPT: error: file failed to compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-mdpi\ic_launcher
+.png: AAPT: error: file failed to compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-xxhdpi\ic_launch
+er.png: AAPT: error: file failed to compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-mdpi\ic_launcher
+_round.png: AAPT: error: file failed to compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-xxxhdpi\ic_launc
+her.png: AAPT: error: file failed to compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-xhdpi\ic_launche
+r_round.png: AAPT: error: file failed to 
+compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-xhdpi\ic_launche
+r.png: AAPT: error: file failed to compile.
+            
+   > A failure occurred while executing com.andr
+oid.build.gradle.internal.res.Aapt2CompileRunnab
+le
+      > Android resource compilation failed
+        ERROR: C:\ReactWorkSpace\IdmNew\Idhayam\
+android\app\src\main\res\mipmap-hdpi\ic_launcher
+_round.png: AAPT: error: file failed to compile.
+            
+
+* Try:
+> Run with --stacktrace option to get the stack 
+trace.
+> Run with --info or --debug option to get more 
+log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 3s
+63 actionable tasks: 1 executed, 62 up-to-date
