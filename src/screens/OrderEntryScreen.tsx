@@ -32,8 +32,15 @@ const formatAmount = (value: any): string => {
     if (isNaN(num)) {
         return '0.00';
     }
-    const fixed = num.toFixed(2);
-    const [intPart, decPart] = fixed.split('.');
+    let str = num.toFixed(4);
+    while (str.endsWith('0') && str.includes('.')) {
+        const decimalPart = str.split('.')[1];
+        if (decimalPart.length <= 2) {
+            break;
+        }
+        str = str.slice(0, -1);
+    }
+    const [intPart, decPart] = str.split('.');
     const lastThree = intPart.slice(-3);
     const remaining = intPart.slice(0, -3);
     const formatted =
@@ -58,7 +65,7 @@ const ItemRow = React.memo(({ item, qty, onUpdate, index, onFocus }: any) => {
         <View style={[styles.itemRow, (hasQty || focused) && styles.itemRowActive]}>
             <View style={styles.itemMainContent}>
                 {/* 1. ITEM & MRP Combined */}
-                <View style={{ flex: 2, justifyContent: 'center' }}>
+                <View style={{ flex: 2.6, justifyContent: 'center' }}>
                     <Text style={styles.prodName}>{item.name}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                         <Text style={styles.prodMrp}>₹{item.mrp}</Text>
@@ -66,8 +73,8 @@ const ItemRow = React.memo(({ item, qty, onUpdate, index, onFocus }: any) => {
                 </View>
 
                 {/* 2. PRICE */}
-                <View style={{ flex: 1.9, alignItems: 'flex-end', justifyContent: 'flex-end', paddingRight: 10 }}>
-                    <Text style={styles.prodVal}>₹{formatAmount(parseFloat(item.price) || 0)}</Text>
+                <View style={{ flex: 1.6, alignItems: 'flex-end', justifyContent: 'center', paddingRight: 25 }}>
+                    <Text style={styles.prodVal}>₹{item.price}</Text>
                 </View>
 
                 {/* 3. BOX Input */}
@@ -125,9 +132,9 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
         if (listRef.current) {
             // Give a small timeout for keyboard to start opening
             setTimeout(() => {
-                listRef.current?.scrollToIndex({ 
-                    index, 
-                    animated: true, 
+                listRef.current?.scrollToIndex({
+                    index,
+                    animated: true,
                     viewPosition: 0, // 0 = top, 0.5 = middle, 1 = bottom
                 });
             }, 100);
@@ -315,8 +322,8 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
 
                     {/* Standardized Table Header */}
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.colLabel, { flex: 2.7, textAlign: 'left' }]}>ITEM / MRP</Text>
-                        <Text style={[styles.colLabel, { flex: 1.2 }]}>PRICE (₹)</Text>
+                        <Text style={[styles.colLabel, { flex: 2.6, textAlign: 'center' }]}>ITEM / MRP</Text>
+                        <Text style={[styles.colLabel, { flex: 2, textAlign: 'right', paddingRight: 25 }]}>PRICE (₹)</Text>
                         <Text style={[styles.colLabel, { flex: 1.3 }]}>BOX</Text>
                         <Text style={[styles.colLabel, { flex: 1.3 }]}>PCS</Text>
                     </View>
@@ -330,10 +337,10 @@ const OrderEntryScreen: React.FC<Props> = ({ navigation }) => {
                                 data={filteredData}
                                 keyExtractor={(p: any) => p.id}
                                 renderItem={({ item, index }: any) => (
-                                    <ItemRow 
-                                        item={item} 
-                                        qty={orders[item.id]} 
-                                        onUpdate={updateOrder} 
+                                    <ItemRow
+                                        item={item}
+                                        qty={orders[item.id]}
+                                        onUpdate={updateOrder}
                                         index={index}
                                         onFocus={handleItemFocus}
                                     />

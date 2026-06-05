@@ -197,7 +197,7 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                                             <Text style={[styles.cellText, { flex: 1 }]}>
                                                 {item.perBox || '—'}
                                             </Text>
-                                            <Text style={[styles.cellText, { flex: 1.1, color: '#059669', fontWeight: '800' }]}>
+                                            <Text style={[styles.cellText, { flex: 1.4, color: '#059669', fontWeight: '800' }]}>
                                                 {parseFloat(item.price || 0).toFixed(2)}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1 }]}>
