@@ -107,7 +107,8 @@ export async function getCustomerBalance(custId = FALLBACK_CUSTOMER_ID): Promise
             const inner = deepParse(outer.result);
             console.log('CUST_BALANCE_CHK Inner:', JSON.stringify(inner));
 
-            const balance = parseFloat(inner.NAME ?? '0') || 0;
+            const apiBalance = parseFloat(inner.NAME ?? '0') || 0;
+            const balance = -apiBalance;
             const pendingOrder = parseFloat(inner.DMOBNO ?? '0') || 0;
             const netBalance = balance - pendingOrder;
 

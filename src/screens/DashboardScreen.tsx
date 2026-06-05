@@ -49,8 +49,9 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     const insets = useSafeAreaInsets();
 
     const formatCurrency = useCallback((val: string | number) => {
-        // Strip any negative sign and format the absolute value
-        const num = Math.abs(parseFloat(String(val)) || 0);
+        const parsedVal = parseFloat(String(val)) || 0;
+        const isNegative = parsedVal < 0;
+        const num = Math.abs(parsedVal);
         const parts = num.toFixed(2).split('.');
         let integerPart = parts[0];
         const lastThree = integerPart.slice(-3);
@@ -58,7 +59,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         if (otherNumbers !== '') {
             integerPart = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
         }
-        return `${integerPart}.${parts[1]}`;
+        return `${isNegative ? '-' : ''}${integerPart}.${parts[1]}`;
     }, []);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -72,26 +73,10 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 getCustomerBalance(custId),
                 getInvoicedVehicleList(custId, branchId)
             ]);
-            // Compute Net Balance based on custom rules:
-            //  • If balance is negative, treat its absolute value, then subtract pending and keep the sign negative.
-            //  • If balance is positive, simply add pending to balance.
-            const balNum = parseFloat(bal.balance ?? '0');
-            const pendingNum = parseFloat(bal.pendingOrder ?? '0');
-            let computedNet;
-            if (balNum < 0) {
-                // Convert to positive, subtract pending, then apply negative sign
-                computedNet = -(Math.abs(balNum) - pendingNum);
-            } else {
-                // Positive balance: add pending order
-                computedNet = balNum + pendingNum;
-            }
-            // Use absolute values for display (ignore minus sign)
-            const absBalance = Math.abs(parseFloat(bal.balance ?? '0')).toFixed(2);
-            const absPending = Math.abs(parseFloat(bal.pendingOrder ?? '0')).toFixed(2);
             setBalanceData({
-                balance: absBalance,
-                pendingOrder: absPending,
-                netBalance: computedNet.toFixed(2)
+                balance: bal.balance ?? '0.00',
+                pendingOrder: bal.pendingOrder ?? '0.00',
+                netBalance: bal.netBalance ?? '0.00'
             });
             if (vehicles) setVehicleData(vehicles);
         } catch (e) {
@@ -212,13 +197,13 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                                             <Text style={styles.balLabel}>PENDING ORDER</Text>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444', marginRight: 6 }} />
-                                                <Text style={styles.balValue}>₹ {formatCurrency(parseFloat(balanceData.pendingOrder))}</Text>
+                                                <Text style={styles.balValue}>₹ {formatCurrency(balanceData.pendingOrder)}</Text>
                                             </View>
                                         </View>
                                         <View style={styles.balDivider} />
                                         <View style={styles.balRow}>
                                             <Text style={styles.balLabel}>NET BALANCE</Text>
-                                            <Text style={[styles.balValue, { color: Math.abs(parseFloat(balanceData.netBalance)) < 0 ? '#EF4444' : '#86efac' }]}>₹ {formatCurrency(Math.abs(parseFloat(balanceData.netBalance)))}</Text>
+                                            <Text style={[styles.balValue, { color: parseFloat(balanceData.netBalance) < 0 ? '#EF4444' : '#86efac' }]}>₹ {formatCurrency(balanceData.netBalance)}</Text>
                                         </View>
                                     </View>
                                 </LinearGradient>
