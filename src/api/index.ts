@@ -201,7 +201,7 @@ export async function getVehicleTracking(branchId: string, tripId: string, tripR
             method: 'POST',
             headers: {
                 'F': 'GetVehicleTrackingStatus',
-                'MODE': 'MOBILE',
+                'MODE': 'SCHOOL',
                 'P': '',
                 'J': minifiedJson,
                 'M': 'POST',

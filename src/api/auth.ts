@@ -14,16 +14,20 @@ export const AuthService = {
     async getMobileListByPan(pan: string): Promise<string[]> {
         const base64Pan = btoa(pan);
         const response = await fetch(API_URL, {
-            method: 'GET',
-            headers: {
-                'F': 'GetmobileListByPan',
-                'MODE': 'MOBILE',
-                'P': `pan=${base64Pan}`,
-                'J': '',
-                'M': 'GET',
-                'Authorization': API_TOKEN,
-            },
-        });
+    method: 'GET',
+    headers: {
+        'F': 'GetmobileListByPan',
+        'MODE': 'MOBILE',
+        'P': `pan=${base64Pan}`,
+        'J': '',
+        'M': 'GET',
+        'Authorization': API_TOKEN,
+    },
+});
+if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Server error ${response.status}: ${errText}`);
+}
 
         const textData = await response.text();
         console.log('GetmobileListByPan Response:', textData);
@@ -60,16 +64,20 @@ export const AuthService = {
         const payload = { mobilenumber: mobile, pan: base64Pan, pwd: deviceName };
 
         const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'F': 'Cust_OTP_GEN',
-                'MODE': 'MOBILE',
-                'P': '',
-                'J': JSON.stringify(payload),
-                'M': 'POST',
-                'Authorization': API_TOKEN,
-            },
-        });
+    method: 'POST',
+    headers: {
+        'F': 'Cust_OTP_GEN',
+        'MODE': 'MOBILE',
+        'P': '',
+        'J': JSON.stringify(payload),
+        'M': 'POST',
+        'Authorization': API_TOKEN,
+    },
+});
+if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Server error ${response.status}: ${errText}`);
+}
 
         const textData = await response.text();
         console.log('Cust_OTP_GEN Response:', textData);
@@ -93,7 +101,6 @@ export const AuthService = {
                 : 'Apple Device';
 
         const payload = { mobilenumber: mobile, pan: base64Pan, otp, pwd: deviceName };
-
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -105,6 +112,12 @@ export const AuthService = {
                 'Authorization': API_TOKEN,
             },
         });
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Server error ${response.status}: ${errText}`);
+        }
+
+
 
         const textData = await response.text();
         console.log('Cust_OTP_VER Response:', textData);
@@ -132,7 +145,7 @@ export const AuthService = {
     },
 
     /** Final Login Check — returns branch list and session data */
-    async checkLogin(pan: string, mobile: string, eid: string = '3004'): Promise<any> {
+
         const base64Pan = btoa(pan);
         const did = await DeviceInfo.getUniqueId();
         const deviceName =

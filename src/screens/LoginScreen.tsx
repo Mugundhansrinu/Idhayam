@@ -13,6 +13,7 @@ import {
     Alert,
     ActivityIndicator,
     Dimensions,
+    Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../theme';
@@ -128,7 +129,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             if (pan === 'VVVRM1234S' || pan === 'ABCDE1234Z') {
                 setApiMessage(response.message);
             }
-            
+
             // Only transition to OTP step if request succeeds
             setMaskedMobile(mobile);
             animateStep(() => setStep('otp'));
@@ -227,7 +228,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                             <View>
                                 <Text style={styles.formSectionTitle}>Enter PAN</Text>
                                 <Text style={styles.formSectionSub}>Your Permanent Account Number</Text>
-                                
+
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.inputLabel}>PAN NUMBER</Text>
                                     <View style={[styles.inputBox, panFocused && styles.inputBoxFocused]}>
@@ -257,9 +258,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                         <Text style={styles.inputLabel}>SELECT MOBILE NUMBER</Text>
                                         <View style={{ marginTop: 5 }}>
                                             {linkedMobiles.map((num, i) => (
-                                                <TouchableOpacity 
-                                                    key={i} 
-                                                    style={[styles.phoneOption, mobile === num && styles.phoneOptionActive]} 
+                                                <TouchableOpacity
+                                                    key={i}
+                                                    style={[styles.phoneOption, mobile === num && styles.phoneOptionActive]}
                                                     onPress={() => setMobile(num)}
                                                 >
                                                     <View style={[styles.rOuter, mobile === num && styles.rOuterActive]}>
@@ -300,7 +301,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                             <View>
                                 <Text style={styles.formSectionTitle}>Verify OTP</Text>
                                 <Text style={styles.formSectionSub}>Code sent to your mobile</Text>
-                                
+
                                 {(pan === 'VVVRM1234S' || pan === 'ABCDE1234Z') && !!apiMessage && (
                                     <View style={styles.testOtpBadge}>
                                         <Text style={styles.testOtpText}>OTP: {apiMessage}</Text>
@@ -371,7 +372,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                 <Text style={styles.secureSub}>Bank-level encryption</Text>
                             </View>
                         </View>
-                        <Text style={styles.versionText}>v6.7 • Idhayam Distributor</Text>
+                        <View style={styles.versionContainer}>
+                            <Text style={styles.versionText}>v6.7 • Idhayam Distributor</Text>
+                            <Image
+                                source={require('../assets/digisailor-logo.jpg')}
+                                style={styles.versionLogo}
+                                resizeMode="contain"
+                            />
+                        </View>
                     </View>
 
                 </ScrollView>
@@ -386,12 +394,12 @@ const styles = StyleSheet.create({
     scrollContent: { paddingTop: Platform.OS === 'ios' ? 70 : 50, paddingBottom: 60, alignItems: 'center' },
 
     topBadgeWrapper: { paddingTop: Platform.OS === 'ios' ? 70 : 50, marginBottom: 20 },
-    distributorBadge: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        backgroundColor: '#fff', 
-        paddingHorizontal: 15, 
-        paddingVertical: 10, 
+    distributorBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
         borderRadius: 25,
         shadowColor: '#3861FB',
         shadowOffset: { width: 0, height: 10 },
@@ -405,10 +413,10 @@ const styles = StyleSheet.create({
     welcomeTitle: { fontSize: 32, fontWeight: '900', color: '#1A1A1A', marginBottom: 10 },
     welcomeSubtitle: { fontSize: 15, color: '#718096', fontWeight: '500' },
 
-    formCard: { 
-        width: width * 0.9, 
-        backgroundColor: '#FFFFFF', 
-        borderRadius: 35, 
+    formCard: {
+        width: width * 0.9,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 35,
         padding: 28,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 20 },
@@ -432,14 +440,14 @@ const styles = StyleSheet.create({
 
     inputGroup: { marginBottom: 20 },
     inputLabel: { fontSize: 11, fontWeight: '900', color: '#1A1A1A', marginBottom: 12, letterSpacing: 1 },
-    inputBox: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        backgroundColor: '#F8F9FD', 
-        borderWidth: 1.5, 
-        borderColor: '#EDF2F7', 
-        borderRadius: 18, 
-        paddingHorizontal: 15, 
+    inputBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F8F9FD',
+        borderWidth: 1.5,
+        borderColor: '#EDF2F7',
+        borderRadius: 18,
+        paddingHorizontal: 15,
         paddingVertical: Platform.OS === 'ios' ? 16 : 4
     },
     inputBoxFocused: { borderColor: '#3861FB', backgroundColor: '#fff' },
@@ -447,10 +455,10 @@ const styles = StyleSheet.create({
     formatHint: { fontSize: 11, color: '#A0AEC0', marginTop: 10, fontWeight: '600' },
     editText: { color: '#3861FB', fontSize: 13, fontWeight: '800' },
 
-    phoneOption: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        padding: 18, 
+    phoneOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 18,
         backgroundColor: '#fff',
         borderRadius: 15,
         borderWidth: 1,
@@ -489,7 +497,14 @@ const styles = StyleSheet.create({
     secureBadge: { flexDirection: 'row', alignItems: 'center', padding: 15 },
     secureTitle: { fontSize: 14, fontWeight: '900', color: '#1A1A1A' },
     secureSub: { fontSize: 11, color: '#718096', fontWeight: '600' },
-    versionText: { fontSize: 11, color: '#CBD5E0', fontWeight: '700', marginTop: 20 },
+    versionContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
+    versionText: { fontSize: 11, color: '#CBD5E0', fontWeight: '700' },
+    versionLogo: { width: 83, height: 11, marginLeft: 6 },
 });
 
 export default LoginScreen;

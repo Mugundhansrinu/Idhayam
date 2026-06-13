@@ -141,7 +141,7 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                         <View style={styles.tableHeader}>
                             <Text style={[styles.headText, { flex: 1.8 }]}>ITEM</Text>
                             <Text style={[styles.headText, { flex: 1 }]}>PER{'\n'}BOX</Text>
-                            <Text style={[styles.headText, { flex: 1.1 }]}>PRICE</Text>
+                            <Text style={[styles.headText, { flex: 1.4 }]}>PRICE</Text>
                             <Text style={[styles.headText, { flex: 1 }]}>ORD{'\n'}BOX</Text>
                             <Text style={[styles.headText, { flex: 1 }]}>ORD{'\n'}PCS</Text>
                             <Text style={[styles.headText, { flex: 1 }]}>CNF{'\n'}BOX</Text>
@@ -197,7 +197,7 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                                             <Text style={[styles.cellText, { flex: 1 }]}>
                                                 {item.perBox || '—'}
                                             </Text>
-                                            <Text style={[styles.cellText, { flex: 1.1, color: '#059669', fontWeight: '800' }]}>
+                                            <Text style={[styles.cellText, { flex: 1.6, color: '#059669', fontWeight: '800' }]}>
                                                 {parseFloat(item.price || 0).toFixed(2)}
                                             </Text>
                                             <Text style={[styles.cellText, { flex: 1 }]}>
